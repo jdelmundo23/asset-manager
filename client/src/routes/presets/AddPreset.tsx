@@ -1,9 +1,6 @@
 import {
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
@@ -11,14 +8,20 @@ import {
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import PresetForm from "./PresetForm";
+import { useState } from "react";
 
 interface AddPresetProps {
-  presetType: string;
+  preset: {
+    displayName: string;
+    tableName: string;
+  };
+  reloadData: () => void;
 }
 
-function AddPreset({ presetType }: AddPresetProps) {
+function AddPreset({ preset, reloadData }: AddPresetProps) {
+  const [open, setOpen] = useState(false);
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger>
         <button className="w-full">
           <Card className="flex justify-center border-zinc-700 bg-zinc-800 px-2 py-1 transition-colors duration-150 ease-out hover:border-zinc-300">
@@ -28,13 +31,13 @@ function AddPreset({ presetType }: AddPresetProps) {
       </AlertDialogTrigger>
       <AlertDialogContent className="dark sm:max-w-sm">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-white">{`Add ${presetType} Preset`}</AlertDialogTitle>
+          <AlertDialogTitle className="text-white">{`Add ${preset.displayName} Preset`}</AlertDialogTitle>
         </AlertDialogHeader>
-        <PresetForm />
-        <AlertDialogFooter>
-          <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
-          <AlertDialogAction>Confirm</AlertDialogAction>
-        </AlertDialogFooter>
+        <PresetForm
+          presetTable={preset.tableName}
+          closeDialog={() => setOpen(false)}
+          reloadData={reloadData}
+        />
       </AlertDialogContent>
     </AlertDialog>
   );

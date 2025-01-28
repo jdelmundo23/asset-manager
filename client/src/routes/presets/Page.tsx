@@ -37,7 +37,7 @@ function Page() {
 
   return (
     <div className="dark container mx-auto w-11/12 py-10 md:w-3/5">
-      <h4 className="font-medium leading-none">Presets</h4>
+      <h4 className="text-xl font-medium leading-none">Presets</h4>
       <p className="text-muted-foreground">
         Manage the presets used for asset columns.
       </p>
@@ -80,7 +80,10 @@ function Page() {
                         </Card>
                       </div>
                     ))}
-                    <AddPreset presetType={preset.displayName} />
+                    <AddPreset
+                      preset={preset}
+                      reloadData={() => handleTabChange(preset.displayName)}
+                    />
                   </div>
                 </ScrollArea>
               )}

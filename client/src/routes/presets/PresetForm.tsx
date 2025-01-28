@@ -9,19 +9,36 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import axios from "axios";
+
+interface PresetFormProps {
+  presetTable: string;
+  closeDialog: () => void;
+  reloadData: () => void;
+}
 
 const formSchema = z.object({
-  presetName: z.string(),
+  presetName: z.string().min(2),
 });
 
-export default function PresetForm() {
+export default function PresetForm({
+  presetTable,
+  closeDialog,
+  reloadData,
+}: PresetFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      console.log(values);
+      const response = await axios.post(`/api/presets/${presetTable}`, {
+        name: values.presetName,
+      });
+      console.log("Preset added successfully", response.data);
+      closeDialog();
+      reloadData();
     } catch (error) {
       console.error("Form submission error", error);
     }
@@ -29,7 +46,10 @@ export default function PresetForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto w-full">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mx-auto flex w-full flex-col space-y-4"
+      >
         <FormField
           control={form.control}
           name="presetName"
@@ -48,6 +68,19 @@ export default function PresetForm() {
             </FormItem>
           )}
         />
+        <div className="flex justify-end space-x-2">
+          <Button
+            variant="outline"
+            className="text-white"
+            onClick={(e) => {
+              e.preventDefault();
+              closeDialog();
+            }}
+          >
+            Cancel
+          </Button>
+          <Button>Confirm</Button>
+        </div>
       </form>
     </Form>
   );
