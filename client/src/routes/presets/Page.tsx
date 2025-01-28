@@ -1,8 +1,10 @@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { Pencil, X } from "lucide-react";
+import { LoaderCircle, Pencil, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import AddPreset from "./AddPreset";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface tableRow {
   name: string;
@@ -16,26 +18,31 @@ const presets = [
 
 function Page() {
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const handleTabChange = async (tabValue: string) => {
     const table = presets.find((preset) => preset.displayName === tabValue);
     if (table) {
       try {
+        setIsLoading(true);
         const response = await fetch(`/api/presets/${table.tableName}`);
         const result = await response.json();
         setData(result);
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
+
   return (
-    <div className="dark container mx-auto w-3/5 py-10">
-      <h4 className="text-md font-medium leading-none">Presets</h4>
-      <p className="text-md text-muted-foreground">
+    <div className="dark container mx-auto w-11/12 py-10 md:w-3/5">
+      <h4 className="font-medium leading-none">Presets</h4>
+      <p className="text-muted-foreground">
         Manage the presets used for asset columns.
       </p>
       <Separator className="my-4" />
-      <Tabs className="w-1/2" onValueChange={handleTabChange}>
+      <Tabs className="w-full max-w-md" onValueChange={handleTabChange}>
         <TabsList>
           {presets.map((preset) => (
             <TabsTrigger key={preset.displayName} value={preset.displayName}>
@@ -45,22 +52,39 @@ function Page() {
         </TabsList>
         {presets.map((preset) => (
           <TabsContent key={preset.displayName} value={preset.displayName}>
-            <ScrollArea className="h-96 w-full rounded-md border">
-              <div className="p-4">
-                {data.map((row: tableRow) => (
-                  <div key={row.name} className="group">
-                    <div className="text-md group flex items-center justify-between">
-                      {row.name}
-                      <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-in-out group-hover:opacity-100">
-                        <Pencil className="h-4 w-4" />
-                        <X className="h-5 w-5" />
+            <Card className="h-96">
+              {isLoading ? (
+                <div className="flex h-full w-full items-center justify-center">
+                  <LoaderCircle
+                    className="h-10 w-10 animate-spin"
+                    color="gray"
+                  />
+                </div>
+              ) : (
+                <ScrollArea className="w-full rounded-md font-medium">
+                  <div className="flex flex-col space-y-3 p-4">
+                    {data.map((row: tableRow) => (
+                      <div key={row.name}>
+                        <Card className="border-zinc-700 bg-zinc-100 px-2 py-1 font-semibold text-black">
+                          <div className="group flex items-center justify-between">
+                            {row.name}
+                            <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
+                              <button>
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                              <button>
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </Card>
                       </div>
-                    </div>
-                    <Separator className="my-2" />
+                    ))}
+                    <AddPreset presetType={preset.displayName} />
                   </div>
-                ))}
-              </div>
-            </ScrollArea>
+                </ScrollArea>
+              )}
+            </Card>
           </TabsContent>
         ))}
       </Tabs>

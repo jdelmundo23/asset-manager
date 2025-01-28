@@ -3,6 +3,15 @@ import animate from "tailwindcss-animate";
 export const content = ["./src/**/*.tsx"];
 export const theme = {
   extend: {
+    animation: {
+      "fade-in": "fadeIn 0.2s ease-in-out forwards",
+    },
+    keyframes: {
+      fadeIn: {
+        "0%": { opacity: 0 },
+        "100%": { opacity: 1 },
+      },
+    },
     fontFamily: {
       inter: ["Inter", "sans-serif"],
     },
