@@ -1,10 +1,11 @@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LoaderCircle, Pencil, Trash2 } from "lucide-react";
+import { LoaderCircle, Pencil } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import AddPreset from "./AddPreset";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import DeletePreset from "./DeletePreset";
 
 interface tableRow {
   name: string;
@@ -61,7 +62,7 @@ function Page() {
                   />
                 </div>
               ) : (
-                <ScrollArea className="w-full rounded-md font-medium">
+                <ScrollArea className="h-full w-full rounded-md font-medium">
                   <div className="flex flex-col space-y-3 p-4">
                     {data.map((row: tableRow) => (
                       <div key={row.name}>
@@ -72,9 +73,13 @@ function Page() {
                               <button>
                                 <Pencil className="h-4 w-4" />
                               </button>
-                              <button>
-                                <Trash2 className="h-4 w-4" />
-                              </button>
+                              <DeletePreset
+                                preset={preset}
+                                presetName={row.name}
+                                reloadData={() =>
+                                  handleTabChange(preset.displayName)
+                                }
+                              />
                             </div>
                           </div>
                         </Card>
