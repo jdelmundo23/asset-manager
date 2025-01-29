@@ -54,6 +54,18 @@ router.post("/:tableName", async function (req: TableRequest, res) {
   try {
     const pool = await getPool();
 
+    const existingPreset = await pool
+      .request()
+      .input("name", name)
+      .query(
+        `SELECT COUNT(*) AS count FROM ${req.tableName} WHERE name = @name`
+      );
+
+    if (existingPreset.recordset[0].count > 0) {
+      res.status(400).json({ error: "Preset name already exists" });
+      return;
+    }
+
     const query = `INSERT INTO ${req.tableName} (name) VALUES (@name)`;
     await pool.request().input("name", name).query(query);
 

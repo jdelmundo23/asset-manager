@@ -11,6 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import { useState } from "react";
 
 interface PresetFormProps {
   presetTable: string;
@@ -27,6 +28,8 @@ export default function PresetForm({
   closeDialog,
   reloadData,
 }: PresetFormProps) {
+  const [msg, setMsg] = useState<string>("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -40,7 +43,12 @@ export default function PresetForm({
       closeDialog();
       reloadData();
     } catch (error) {
-      console.error("Form submission error", error);
+      if (axios.isAxiosError(error)) {
+        const errorMsg: string = error.response?.data.error;
+        setMsg(errorMsg);
+      } else {
+        console.error("Failed to add preset. Unexpected error:", error);
+      }
     }
   }
 
@@ -61,10 +69,14 @@ export default function PresetForm({
                   type="text"
                   {...field}
                   className="w-full text-white"
+                  onChange={(e) => {
+                    setMsg("");
+                    field.onChange(e);
+                  }}
                 />
               </FormControl>
 
-              <FormMessage />
+              <FormMessage>{msg}</FormMessage>
             </FormItem>
           )}
         />
@@ -79,7 +91,7 @@ export default function PresetForm({
           >
             Cancel
           </Button>
-          <Button>Confirm</Button>
+          <Button type="submit">Confirm</Button>
         </div>
       </form>
     </Form>
