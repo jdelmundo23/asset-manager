@@ -1,11 +1,12 @@
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LoaderCircle, Pencil } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import AddPreset from "./AddPreset";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import DeletePreset from "./DeletePreset";
+import EditPreset from "./EditPreset";
 
 interface tableRow {
   name: string;
@@ -81,9 +82,13 @@ function Page() {
                           <div className="group flex items-center justify-between">
                             {row.name}
                             <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
-                              <button>
-                                <Pencil className="h-4 w-4" />
-                              </button>
+                              <EditPreset
+                                preset={preset}
+                                presetName={row.name}
+                                reloadData={() =>
+                                  handleTabChange(preset.displayName)
+                                }
+                              />
                               <DeletePreset
                                 preset={preset}
                                 presetName={row.name}

@@ -121,7 +121,7 @@ router.put("/:tableName", async function (req: TableRequest, res) {
       .input("oldName", oldName)
       .query(query);
 
-    res.status(20).json({ message: "Preset updated successfully" });
+    res.status(200).json({ message: "Preset updated successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to update preset" });

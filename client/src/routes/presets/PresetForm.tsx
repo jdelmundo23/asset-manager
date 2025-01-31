@@ -14,6 +14,8 @@ import axios from "axios";
 import { useState } from "react";
 
 interface PresetFormProps {
+  mode: "add" | "edit";
+  oldPresetName?: string;
   presetTable: string;
   closeDialog: () => void;
   reloadData: () => void;
@@ -24,6 +26,8 @@ const formSchema = z.object({
 });
 
 export default function PresetForm({
+  mode,
+  oldPresetName,
   presetTable,
   closeDialog,
   reloadData,
@@ -35,19 +39,38 @@ export default function PresetForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const response = await axios.post(`/api/presets/${presetTable}`, {
-        name: values.presetName,
-      });
-      console.log("Preset added successfully", response.data);
-      closeDialog();
-      reloadData();
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMsg: string = error.response?.data.error;
-        setMsg(errorMsg);
-      } else {
-        console.error("Failed to add preset. Unexpected error:", error);
+    if (mode === "edit" && oldPresetName) {
+      try {
+        const response = await axios.put(`/api/presets/${presetTable}`, {
+          name: values.presetName,
+          oldName: oldPresetName,
+        });
+        console.log("Preset edited successfully", response.data);
+        closeDialog();
+        reloadData();
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errorMsg: string = error.response?.data.error;
+          setMsg(errorMsg);
+        } else {
+          console.error("Failed to edit preset. Unexpected error:", error);
+        }
+      }
+    } else {
+      try {
+        const response = await axios.post(`/api/presets/${presetTable}`, {
+          name: values.presetName,
+        });
+        console.log("Preset added successfully", response.data);
+        closeDialog();
+        reloadData();
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errorMsg: string = error.response?.data.error;
+          setMsg(errorMsg);
+        } else {
+          console.error("Failed to add preset. Unexpected error:", error);
+        }
       }
     }
   }
