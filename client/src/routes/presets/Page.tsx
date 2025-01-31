@@ -43,7 +43,11 @@ function Page() {
         Manage the presets used for asset columns.
       </p>
       <Separator className="my-4" />
-      <Tabs className="w-full max-w-md" onValueChange={handleTabChange}>
+      <Tabs
+        defaultValue="blank"
+        className="w-full max-w-md"
+        onValueChange={handleTabChange}
+      >
         <TabsList>
           {presets.map((preset) => (
             <TabsTrigger key={preset.displayName} value={preset.displayName}>
@@ -51,6 +55,13 @@ function Page() {
             </TabsTrigger>
           ))}
         </TabsList>
+        <TabsContent value="blank">
+          <Card className="flex h-96 items-center justify-center">
+            <p className="font-semibold text-zinc-500">
+              Select a preset to view
+            </p>
+          </Card>
+        </TabsContent>
         {presets.map((preset) => (
           <TabsContent key={preset.displayName} value={preset.displayName}>
             <Card className="h-96">
