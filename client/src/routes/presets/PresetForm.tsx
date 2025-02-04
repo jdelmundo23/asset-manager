@@ -22,7 +22,7 @@ interface PresetFormProps {
 }
 
 const formSchema = z.object({
-  presetName: z.string().min(2),
+  presetName: z.string().min(2).max(50),
 });
 
 export default function PresetForm({
@@ -103,7 +103,7 @@ export default function PresetForm({
             </FormItem>
           )}
         />
-        <div className="flex justify-end space-x-2">
+        <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
           <Button
             variant="outline"
             className="text-white"

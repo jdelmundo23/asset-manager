@@ -29,7 +29,7 @@ function AddPreset({ preset, presetName, reloadData }: AddPresetProps) {
           </button>
         </AlertDialogTrigger>
       </AlertDialogTrigger>
-      <AlertDialogContent className="dark sm:max-w-sm">
+      <AlertDialogContent className="dark">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white">{`Edit ${preset.displayName} Preset - ${presetName}`}</AlertDialogTitle>
         </AlertDialogHeader>

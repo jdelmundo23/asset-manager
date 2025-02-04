@@ -7,6 +7,10 @@ import AddPreset from "./AddPreset";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import DeletePreset from "./DeletePreset";
 import EditPreset from "./EditPreset";
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 interface tableRow {
   name: string;
@@ -26,9 +30,10 @@ function Page() {
     if (table) {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/presets/${table.tableName}`);
-        const result = await response.json();
-        setData(result);
+        const result = await axios.get(
+          `${apiUrl}/api/presets/${table.tableName}`
+        );
+        setData(result.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -80,7 +85,12 @@ function Page() {
                       <div key={row.name}>
                         <Card className="border-zinc-700 bg-zinc-100 px-2 py-1 font-semibold text-black">
                           <div className="group flex items-center justify-between">
-                            {row.name}
+                            <p
+                              title={row.name}
+                              className="w-5/6 max-w-[200px] truncate lg:max-w-[300px]"
+                            >
+                              {row.name}
+                            </p>
                             <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
                               <EditPreset
                                 preset={preset}
