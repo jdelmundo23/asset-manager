@@ -20,7 +20,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import PresetContext from "@/context/PresetContext";
 
 interface tableRow {
   name: string;
@@ -37,10 +38,7 @@ interface PresetFormProps {
   mode: "add" | "edit";
   oldPresetName?: string;
   oldPresetType?: string;
-  typeData: [];
-  presetTable: string;
   closeDialog: () => void;
-  reloadData: () => void;
 }
 
 const formSchema = z.object({
@@ -84,11 +82,10 @@ export default function PresetForm({
   mode,
   oldPresetName,
   oldPresetType,
-  typeData,
-  presetTable,
   closeDialog,
-  reloadData,
 }: PresetFormProps) {
+  const { reloadData, typeData, activePreset } = useContext(PresetContext);
+
   const [msg, setMsg] = useState<string>("");
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -98,7 +95,7 @@ export default function PresetForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      if (presetTable === "assetmodels" && values.presetType) {
+      if (activePreset.tableName === "assetmodels" && values.presetType) {
         if (mode === "edit" && oldPresetName) {
           await editModel(values.presetName, oldPresetName, values.presetType);
         } else {
@@ -106,9 +103,13 @@ export default function PresetForm({
         }
       } else {
         if (mode === "edit" && oldPresetName) {
-          await editCommon(presetTable, values.presetName, oldPresetName);
+          await editCommon(
+            activePreset.tableName,
+            values.presetName,
+            oldPresetName
+          );
         } else {
-          await addCommon(presetTable, values.presetName);
+          await addCommon(activePreset.tableName, values.presetName);
         }
       }
       closeDialog();

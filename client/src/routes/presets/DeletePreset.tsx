@@ -9,23 +9,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import PresetContext from "@/context/PresetContext";
 import axios from "axios";
 import { Trash2 } from "lucide-react";
+import { useContext } from "react";
 
 interface DeletePresetProps {
-  preset: {
-    displayName: string;
-    tableName: string;
-  };
   presetName: string;
-  reloadData: () => void;
 }
 
-function DeletePreset({ preset, presetName, reloadData }: DeletePresetProps) {
+function DeletePreset({ presetName }: DeletePresetProps) {
+  const { reloadData, activePreset } = useContext(PresetContext);
+
   async function onConfirm() {
     try {
       const response = await axios.delete(
-        `/api/presets/${preset.tableName}/${presetName}`
+        `/api/presets/${activePreset.tableName}/${presetName}`
       );
       console.log("Preset delete successfully", response.data);
       reloadData();
@@ -36,9 +35,7 @@ function DeletePreset({ preset, presetName, reloadData }: DeletePresetProps) {
   return (
     <AlertDialog>
       <AlertDialogTrigger>
-        <button>
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <Trash2 className="h-4 w-4" />
       </AlertDialogTrigger>
       <AlertDialogContent className="dark">
         <AlertDialogHeader>
@@ -50,7 +47,7 @@ function DeletePreset({ preset, presetName, reloadData }: DeletePresetProps) {
             <span className="font-semibold text-zinc-200">{presetName}</span>{" "}
             from the{" "}
             <span className="font-semibold text-zinc-200">
-              {preset.displayName}
+              {activePreset.displayName}
             </span>{" "}
             preset.
           </AlertDialogDescription>

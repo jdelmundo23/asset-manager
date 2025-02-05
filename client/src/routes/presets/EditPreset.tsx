@@ -7,48 +7,31 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Pencil } from "lucide-react";
 import PresetForm from "./PresetForm";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import PresetContext from "@/context/PresetContext";
 
 interface EditPresetProps {
-  preset: {
-    displayName: string;
-    tableName: string;
-  };
   presetName: string;
   presetType: string;
-  reloadData: () => void;
-  typeData: [];
 }
 
-function EditPreset({
-  preset,
-  presetName,
-  presetType,
-  reloadData,
-  typeData,
-}: EditPresetProps) {
+function EditPreset({ presetName, presetType }: EditPresetProps) {
+  const { activePreset } = useContext(PresetContext);
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger>
-        <AlertDialogTrigger>
-          <button>
-            <Pencil className="h-4 w-4" />
-          </button>
-        </AlertDialogTrigger>
+        <Pencil className="h-4 w-4" />
       </AlertDialogTrigger>
       <AlertDialogContent className="dark">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-white">{`Edit ${preset.displayName} Preset - ${presetName}`}</AlertDialogTitle>
+          <AlertDialogTitle className="text-white">{`Edit ${activePreset.displayName} Preset - ${presetName}`}</AlertDialogTitle>
         </AlertDialogHeader>
         <PresetForm
           mode="edit"
           oldPresetName={presetName}
           oldPresetType={presetType}
-          presetTable={preset.tableName}
           closeDialog={() => setOpen(false)}
-          reloadData={reloadData}
-          typeData={typeData}
         />
       </AlertDialogContent>
     </AlertDialog>

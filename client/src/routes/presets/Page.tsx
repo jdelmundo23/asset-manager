@@ -5,9 +5,9 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import AddPreset from "./AddPreset";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import DeletePreset from "./DeletePreset";
-import EditPreset from "./EditPreset";
 import axios from "axios";
+import PresetContext from "@/context/PresetContext";
+import Row from "./Row";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -25,7 +25,7 @@ const presets = [
 ];
 
 function Page() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<[]>([]);
   const [typeData, setTypeData] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const handleTabChange = async (tabValue: string) => {
@@ -79,74 +79,40 @@ function Page() {
           </Card>
         </TabsContent>
         {presets.map((preset) => (
-          <TabsContent key={preset.displayName} value={preset.displayName}>
-            <Card className="h-96">
-              {isLoading ? (
-                <div className="flex h-full w-full items-center justify-center">
-                  <LoaderCircle
-                    className="h-10 w-10 animate-spin"
-                    color="gray"
-                  />
-                </div>
-              ) : (
-                <ScrollArea className="h-full w-full rounded-md font-medium">
-                  <div className="flex flex-col space-y-3 p-4">
-                    {data.map((row: tableRow) => {
-                      const type =
-                        (
-                          typeData.find(
-                            (typeRow: tableRow) => typeRow.ID === row.typeID
-                          ) as tableRow | undefined
-                        )?.name || "";
-
-                      return (
-                        <div key={row.name}>
-                          <Card className="border-zinc-700 bg-zinc-100 px-2 py-1 font-semibold text-black">
-                            <div className="group flex items-center justify-between">
-                              <p
-                                title={row.name}
-                                className="w-5/6 max-w-[200px] truncate lg:max-w-[300px]"
-                              >
-                                {row.name}
-                                {preset.displayName === "Models" ? (
-                                  <p className="text-sm font-medium">{type}</p>
-                                ) : (
-                                  ""
-                                )}
-                              </p>
-                              <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
-                                <EditPreset
-                                  preset={preset}
-                                  presetName={row.name}
-                                  presetType={type}
-                                  reloadData={() =>
-                                    handleTabChange(preset.displayName)
-                                  }
-                                  typeData={typeData || []}
-                                />
-                                <DeletePreset
-                                  preset={preset}
-                                  presetName={row.name}
-                                  reloadData={() =>
-                                    handleTabChange(preset.displayName)
-                                  }
-                                />
-                              </div>
-                            </div>
-                          </Card>
-                        </div>
-                      );
-                    })}
-                    <AddPreset
-                      preset={preset}
-                      reloadData={() => handleTabChange(preset.displayName)}
-                      typeData={typeData}
+          <PresetContext.Provider
+            key={preset.displayName}
+            value={{
+              activePreset: {
+                displayName: preset.displayName,
+                tableName: preset.tableName,
+              },
+              presetData: data,
+              typeData: typeData,
+              reloadData: () => handleTabChange(preset.displayName),
+            }}
+          >
+            <TabsContent value={preset.displayName}>
+              <Card className="h-96">
+                {isLoading ? (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <LoaderCircle
+                      className="h-10 w-10 animate-spin"
+                      color="gray"
                     />
                   </div>
-                </ScrollArea>
-              )}
-            </Card>
-          </TabsContent>
+                ) : (
+                  <ScrollArea className="h-full w-full rounded-md font-medium">
+                    <div className="flex flex-col space-y-3 p-4">
+                      {data.map((row: tableRow) => (
+                        <Row key={row.ID} row={row} />
+                      ))}
+                      <AddPreset />
+                    </div>
+                  </ScrollArea>
+                )}
+              </Card>
+            </TabsContent>
+          </PresetContext.Provider>
         ))}
       </Tabs>
     </div>

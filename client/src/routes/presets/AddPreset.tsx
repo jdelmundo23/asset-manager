@@ -8,18 +8,11 @@ import {
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import PresetForm from "./PresetForm";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import PresetContext from "@/context/PresetContext";
 
-interface AddPresetProps {
-  preset: {
-    displayName: string;
-    tableName: string;
-  };
-  reloadData: () => void;
-  typeData: [];
-}
-
-function AddPreset({ preset, reloadData, typeData }: AddPresetProps) {
+function AddPreset() {
+  const { activePreset } = useContext(PresetContext);
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -32,15 +25,9 @@ function AddPreset({ preset, reloadData, typeData }: AddPresetProps) {
       </AlertDialogTrigger>
       <AlertDialogContent className="dark sm:max-w-sm">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-white">{`Add ${preset.displayName} Preset`}</AlertDialogTitle>
+          <AlertDialogTitle className="text-white">{`Add ${activePreset.displayName} Preset`}</AlertDialogTitle>
         </AlertDialogHeader>
-        <PresetForm
-          mode="add"
-          presetTable={preset.tableName}
-          closeDialog={() => setOpen(false)}
-          reloadData={reloadData}
-          typeData={typeData}
-        />
+        <PresetForm mode="add" closeDialog={() => setOpen(false)} />
       </AlertDialogContent>
     </AlertDialog>
   );
