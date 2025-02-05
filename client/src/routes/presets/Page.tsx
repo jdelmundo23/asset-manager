@@ -13,7 +13,9 @@ axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
 
 interface tableRow {
+  ID: number;
   name: string;
+  typeID?: number;
 }
 const presets = [
   { displayName: "Types", tableName: "assettypes" },
@@ -24,6 +26,7 @@ const presets = [
 
 function Page() {
   const [data, setData] = useState([]);
+  const [typeData, setTypeData] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const handleTabChange = async (tabValue: string) => {
     const table = presets.find((preset) => preset.displayName === tabValue);
@@ -34,6 +37,13 @@ function Page() {
           `${apiUrl}/api/presets/${table.tableName}`
         );
         setData(result.data);
+
+        if (tabValue === "Models") {
+          const result = await axios.get(`${apiUrl}/api/presets/assettypes`);
+          setTypeData(result.data);
+        } else {
+          setTypeData([]);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -81,39 +91,56 @@ function Page() {
               ) : (
                 <ScrollArea className="h-full w-full rounded-md font-medium">
                   <div className="flex flex-col space-y-3 p-4">
-                    {data.map((row: tableRow) => (
-                      <div key={row.name}>
-                        <Card className="border-zinc-700 bg-zinc-100 px-2 py-1 font-semibold text-black">
-                          <div className="group flex items-center justify-between">
-                            <p
-                              title={row.name}
-                              className="w-5/6 max-w-[200px] truncate lg:max-w-[300px]"
-                            >
-                              {row.name}
-                            </p>
-                            <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
-                              <EditPreset
-                                preset={preset}
-                                presetName={row.name}
-                                reloadData={() =>
-                                  handleTabChange(preset.displayName)
-                                }
-                              />
-                              <DeletePreset
-                                preset={preset}
-                                presetName={row.name}
-                                reloadData={() =>
-                                  handleTabChange(preset.displayName)
-                                }
-                              />
+                    {data.map((row: tableRow) => {
+                      const type =
+                        (
+                          typeData.find(
+                            (typeRow: tableRow) => typeRow.ID === row.typeID
+                          ) as tableRow | undefined
+                        )?.name || "";
+
+                      return (
+                        <div key={row.name}>
+                          <Card className="border-zinc-700 bg-zinc-100 px-2 py-1 font-semibold text-black">
+                            <div className="group flex items-center justify-between">
+                              <p
+                                title={row.name}
+                                className="w-5/6 max-w-[200px] truncate lg:max-w-[300px]"
+                              >
+                                {row.name}
+                                {preset.displayName === "Models" ? (
+                                  <p className="text-sm font-medium">{type}</p>
+                                ) : (
+                                  ""
+                                )}
+                              </p>
+                              <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
+                                <EditPreset
+                                  preset={preset}
+                                  presetName={row.name}
+                                  presetType={type}
+                                  reloadData={() =>
+                                    handleTabChange(preset.displayName)
+                                  }
+                                  typeData={typeData || []}
+                                />
+                                <DeletePreset
+                                  preset={preset}
+                                  presetName={row.name}
+                                  reloadData={() =>
+                                    handleTabChange(preset.displayName)
+                                  }
+                                />
+                              </div>
                             </div>
-                          </div>
-                        </Card>
-                      </div>
-                    ))}
+                          </Card>
+                        </div>
+                      );
+                    })}
                     <AddPreset
                       preset={preset}
                       reloadData={() => handleTabChange(preset.displayName)}
+                      typeData={typeData}
                     />
                   </div>
                 </ScrollArea>

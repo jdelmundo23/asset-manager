@@ -1,11 +1,13 @@
 import { getPool } from "../../sql";
 import express, { RequestHandler, Request } from "express";
+import { Int } from "mssql";
 
 interface TableRequest extends Request {
   tableName?: string;
   body: {
     name?: string;
     oldName?: string;
+    type?: string;
   };
 }
 
@@ -14,6 +16,21 @@ const validTables: { [key: string]: string } = {
   locations: "locations",
   assetmodels: "assetmodels",
   assettypes: "assettypes",
+};
+
+const getTypeID = async (typeName: string): Promise<number | undefined> => {
+  try {
+    const pool = await getPool();
+
+    const modelID = await pool
+      .request()
+      .input("name", typeName)
+      .query(`SELECT id FROM AssetTypes WHERE name = @name`);
+    return modelID.recordset[0].id;
+  } catch (err) {
+    console.error(err);
+    return undefined;
+  }
 };
 
 const validateTable: RequestHandler = (req: TableRequest, res, next) => {
@@ -38,7 +55,7 @@ const checkExistingPreset: RequestHandler = async (
     next();
   }
 
-  const { name } = req.body;
+  const { name, oldName } = req.body;
 
   try {
     const pool = await getPool();
@@ -50,7 +67,7 @@ const checkExistingPreset: RequestHandler = async (
         `SELECT COUNT(*) AS count FROM ${req.tableName} WHERE name = @name`
       );
 
-    if (existingPreset.recordset[0].count > 0) {
+    if (existingPreset.recordset[0].count > 0 && name !== oldName) {
       res.status(400).json({ error: "Preset already exists" });
       return;
     }
@@ -70,9 +87,7 @@ router.use("/:tableName", checkExistingPreset);
 router.get("/:tableName", async function (req: TableRequest, res) {
   try {
     const pool = await getPool();
-    const result = await pool
-      .request()
-      .query(`SELECT name FROM ${req.tableName}`);
+    const result = await pool.request().query(`SELECT * FROM ${req.tableName}`);
     res.json(result.recordset);
   } catch (err) {
     console.error(err);
@@ -81,7 +96,17 @@ router.get("/:tableName", async function (req: TableRequest, res) {
 });
 
 router.post("/:tableName", async function (req: TableRequest, res) {
-  const { name } = req.body;
+  const { name, type } = req.body;
+
+  let typeID;
+  if (req.tableName === "assetmodels") {
+    if (!type) {
+      res.status(400).json({ error: "Asset type is required" });
+      return;
+    } else {
+      typeID = await getTypeID(type);
+    }
+  }
 
   if (!name) {
     res.status(400).json({ error: "Preset name is required" });
@@ -91,8 +116,17 @@ router.post("/:tableName", async function (req: TableRequest, res) {
   try {
     const pool = await getPool();
 
-    const query = `INSERT INTO ${req.tableName} (name) VALUES (@name)`;
-    await pool.request().input("name", name).query(query);
+    if (req.tableName === "assetmodels") {
+      const query = `INSERT INTO ${req.tableName} (name, typeID) VALUES (@name, @typeID)`;
+      await pool
+        .request()
+        .input("name", name)
+        .input("typeID", Int, typeID)
+        .query(query);
+    } else {
+      const query = `INSERT INTO ${req.tableName} (name) VALUES (@name)`;
+      await pool.request().input("name", name).query(query);
+    }
 
     res.status(201).json({ message: "Preset added successfully" });
   } catch (err) {
@@ -102,7 +136,17 @@ router.post("/:tableName", async function (req: TableRequest, res) {
 });
 
 router.put("/:tableName", async function (req: TableRequest, res) {
-  const { name, oldName } = req.body;
+  const { name, type, oldName } = req.body;
+
+  let typeID;
+  if (req.tableName === "assetmodels") {
+    if (!type) {
+      res.status(400).json({ error: "Asset type is required" });
+      return;
+    } else {
+      typeID = await getTypeID(type);
+    }
+  }
 
   if (!name || !oldName) {
     res
@@ -114,12 +158,22 @@ router.put("/:tableName", async function (req: TableRequest, res) {
   try {
     const pool = await getPool();
 
-    const query = `UPDATE ${req.tableName} SET name = @name WHERE name = @oldName`;
-    await pool
-      .request()
-      .input("name", name)
-      .input("oldName", oldName)
-      .query(query);
+    if (req.tableName === "assetmodels") {
+      const query = `UPDATE ${req.tableName} SET name = @name, typeID = @typeID WHERE name = @oldName`;
+      await pool
+        .request()
+        .input("name", name)
+        .input("typeID", Int, typeID)
+        .input("oldName", oldName)
+        .query(query);
+    } else {
+      const query = `UPDATE ${req.tableName} SET name = @name WHERE name = @oldName`;
+      await pool
+        .request()
+        .input("name", name)
+        .input("oldName", oldName)
+        .query(query);
+    }
 
     res.status(200).json({ message: "Preset updated successfully" });
   } catch (err) {

@@ -9,16 +9,24 @@ import { Pencil } from "lucide-react";
 import PresetForm from "./PresetForm";
 import { useState } from "react";
 
-interface AddPresetProps {
+interface EditPresetProps {
   preset: {
     displayName: string;
     tableName: string;
   };
   presetName: string;
+  presetType: string;
   reloadData: () => void;
+  typeData: [];
 }
 
-function AddPreset({ preset, presetName, reloadData }: AddPresetProps) {
+function EditPreset({
+  preset,
+  presetName,
+  presetType,
+  reloadData,
+  typeData,
+}: EditPresetProps) {
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -36,13 +44,15 @@ function AddPreset({ preset, presetName, reloadData }: AddPresetProps) {
         <PresetForm
           mode="edit"
           oldPresetName={presetName}
+          oldPresetType={presetType}
           presetTable={preset.tableName}
           closeDialog={() => setOpen(false)}
           reloadData={reloadData}
+          typeData={typeData}
         />
       </AlertDialogContent>
     </AlertDialog>
   );
 }
 
-export default AddPreset;
+export default EditPreset;

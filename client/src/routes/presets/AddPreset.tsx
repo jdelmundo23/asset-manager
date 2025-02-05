@@ -16,9 +16,10 @@ interface AddPresetProps {
     tableName: string;
   };
   reloadData: () => void;
+  typeData: [];
 }
 
-function AddPreset({ preset, reloadData }: AddPresetProps) {
+function AddPreset({ preset, reloadData, typeData }: AddPresetProps) {
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
@@ -38,6 +39,7 @@ function AddPreset({ preset, reloadData }: AddPresetProps) {
           presetTable={preset.tableName}
           closeDialog={() => setOpen(false)}
           reloadData={reloadData}
+          typeData={typeData}
         />
       </AlertDialogContent>
     </AlertDialog>

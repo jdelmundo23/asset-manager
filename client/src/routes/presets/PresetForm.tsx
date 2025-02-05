@@ -6,16 +6,38 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import axios from "axios";
 import { useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+interface tableRow {
+  name: string;
+}
 
 interface PresetFormProps {
   mode: "add" | "edit";
   oldPresetName?: string;
+  oldPresetType?: string;
+  typeData: [];
   presetTable: string;
   closeDialog: () => void;
   reloadData: () => void;
@@ -23,11 +45,46 @@ interface PresetFormProps {
 
 const formSchema = z.object({
   presetName: z.string().min(2).max(50),
+  presetType: z.string().optional(),
 });
+
+async function addCommon(table: string, name: string) {
+  const response = await axios.post(`/api/presets/${table}`, {
+    name: name,
+  });
+  console.log("Preset added successfully", response.data);
+}
+
+async function editCommon(table: string, name: string, oldName: string) {
+  const response = await axios.put(`/api/presets/${table}`, {
+    name: name,
+    oldName: oldName,
+  });
+  console.log("Preset edited successfully", response.data);
+}
+
+async function addModel(name: string, type: string) {
+  const response = await axios.post(`/api/presets/assetmodels`, {
+    name: name,
+    type: type,
+  });
+  console.log("Model added successfully", response.data);
+}
+
+async function editModel(name: string, oldName: string, type: string) {
+  const response = await axios.put(`/api/presets/assetmodels`, {
+    name: name,
+    oldName: oldName,
+    type: type,
+  });
+  console.log("Model edit successfully", response.data);
+}
 
 export default function PresetForm({
   mode,
   oldPresetName,
+  oldPresetType,
+  typeData,
   presetTable,
   closeDialog,
   reloadData,
@@ -36,41 +93,32 @@ export default function PresetForm({
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: { presetName: oldPresetName, presetType: oldPresetType },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (mode === "edit" && oldPresetName) {
-      try {
-        const response = await axios.put(`/api/presets/${presetTable}`, {
-          name: values.presetName,
-          oldName: oldPresetName,
-        });
-        console.log("Preset edited successfully", response.data);
-        closeDialog();
-        reloadData();
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          const errorMsg: string = error.response?.data.error;
-          setMsg(errorMsg);
+    try {
+      if (presetTable === "assetmodels" && values.presetType) {
+        if (mode === "edit" && oldPresetName) {
+          await editModel(values.presetName, oldPresetName, values.presetType);
         } else {
-          console.error("Failed to edit preset. Unexpected error:", error);
+          await addModel(values.presetName, values.presetType);
+        }
+      } else {
+        if (mode === "edit" && oldPresetName) {
+          await editCommon(presetTable, values.presetName, oldPresetName);
+        } else {
+          await addCommon(presetTable, values.presetName);
         }
       }
-    } else {
-      try {
-        const response = await axios.post(`/api/presets/${presetTable}`, {
-          name: values.presetName,
-        });
-        console.log("Preset added successfully", response.data);
-        closeDialog();
-        reloadData();
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          const errorMsg: string = error.response?.data.error;
-          setMsg(errorMsg);
-        } else {
-          console.error("Failed to add preset. Unexpected error:", error);
-        }
+      closeDialog();
+      reloadData();
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        const errorMsg: string = error.response?.data.error;
+        setMsg(errorMsg);
+      } else {
+        console.error("Failed submission. Unexpected error:", error);
       }
     }
   }
@@ -89,6 +137,7 @@ export default function PresetForm({
               <FormControl>
                 <Input
                   placeholder="Name"
+                  defaultValue={oldPresetName}
                   type="text"
                   {...field}
                   className="w-full text-white"
@@ -98,11 +147,71 @@ export default function PresetForm({
                   }}
                 />
               </FormControl>
-
               <FormMessage>{msg}</FormMessage>
             </FormItem>
           )}
         />
+        {typeData.length > 0 ? (
+          <FormField
+            control={form.control}
+            name="presetType"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel>Type</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className={cn(
+                          "w-[200px] justify-between text-white",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value || "Select an asset type"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0">
+                    <Command className="dark">
+                      <CommandInput placeholder="Search asset type..." />
+                      <CommandList>
+                        <CommandEmpty>No asset type found.</CommandEmpty>
+                        <CommandGroup>
+                          {typeData.map((type: tableRow) => (
+                            <CommandItem
+                              value={type.name}
+                              key={type.name}
+                              onSelect={() => {
+                                form.setValue("presetType", type.name);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  type.name === field.value
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                              {type.name}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : (
+          ""
+        )}
         <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
           <Button
             variant="outline"
