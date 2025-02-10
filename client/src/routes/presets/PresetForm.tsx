@@ -35,7 +35,7 @@ interface tableRow {
 }
 
 interface PresetFormProps {
-  mode: "add" | "edit";
+  operation: "add" | "edit";
   oldPresetName?: string;
   oldPresetType?: string;
   closeDialog: () => void;
@@ -46,40 +46,26 @@ const formSchema = z.object({
   presetType: z.string().optional(),
 });
 
-async function addCommon(table: string, name: string) {
-  const response = await axios.post(`/api/presets/${table}`, {
-    name: name,
-  });
-  console.log("Preset added successfully", response.data);
-}
+async function handlePreset(
+  operation: "add" | "edit",
+  mode: "common" | "model",
+  table: string,
+  name: string,
+  oldName?: string,
+  type?: string
+) {
+  const url =
+    mode === "common" ? `/api/presets/${table}` : `/api/presets/assetmodels`;
+  const method = operation === "add" ? "post" : "put";
+  const data = mode === "common" ? { name, oldName } : { name, oldName, type };
 
-async function editCommon(table: string, name: string, oldName: string) {
-  const response = await axios.put(`/api/presets/${table}`, {
-    name: name,
-    oldName: oldName,
-  });
-  console.log("Preset edited successfully", response.data);
-}
-
-async function addModel(name: string, type: string) {
-  const response = await axios.post(`/api/presets/assetmodels`, {
-    name: name,
-    type: type,
-  });
-  console.log("Model added successfully", response.data);
-}
-
-async function editModel(name: string, oldName: string, type: string) {
-  const response = await axios.put(`/api/presets/assetmodels`, {
-    name: name,
-    oldName: oldName,
-    type: type,
-  });
-  console.log("Model edit successfully", response.data);
+  console.log(method);
+  const response = await axios[method](url, data);
+  console.log(`Preset  successfully`, response.data);
 }
 
 export default function PresetForm({
-  mode,
+  operation,
   oldPresetName,
   oldPresetType,
   closeDialog,
@@ -96,20 +82,40 @@ export default function PresetForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       if (activePreset.tableName === "assetmodels" && values.presetType) {
-        if (mode === "edit" && oldPresetName) {
-          await editModel(values.presetName, oldPresetName, values.presetType);
+        if (operation === "edit" && oldPresetName) {
+          await handlePreset(
+            "edit",
+            "model",
+            "assetModels",
+            values.presetName,
+            oldPresetName,
+            values.presetType
+          );
         } else {
-          await addModel(values.presetName, values.presetType);
+          await handlePreset(
+            "add",
+            "model",
+            "assetModels",
+            values.presetName,
+            values.presetType
+          );
         }
       } else {
-        if (mode === "edit" && oldPresetName) {
-          await editCommon(
+        if (operation === "edit" && oldPresetName) {
+          await handlePreset(
+            "edit",
+            "common",
             activePreset.tableName,
             values.presetName,
             oldPresetName
           );
         } else {
-          await addCommon(activePreset.tableName, values.presetName);
+          await handlePreset(
+            "add",
+            "common",
+            activePreset.tableName,
+            values.presetName
+          );
         }
       }
       closeDialog();

@@ -28,7 +28,7 @@ function EditPreset({ presetName, presetType }: EditPresetProps) {
           <AlertDialogTitle className="text-white">{`Edit ${activePreset.displayName} Preset - ${presetName}`}</AlertDialogTitle>
         </AlertDialogHeader>
         <PresetForm
-          mode="edit"
+          operation="edit"
           oldPresetName={presetName}
           oldPresetType={presetType}
           closeDialog={() => setOpen(false)}

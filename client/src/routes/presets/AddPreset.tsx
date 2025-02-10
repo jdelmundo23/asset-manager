@@ -27,7 +27,7 @@ function AddPreset() {
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white">{`Add ${activePreset.displayName} Preset`}</AlertDialogTitle>
         </AlertDialogHeader>
-        <PresetForm mode="add" closeDialog={() => setOpen(false)} />
+        <PresetForm operation="add" closeDialog={() => setOpen(false)} />
       </AlertDialogContent>
     </AlertDialog>
   );
