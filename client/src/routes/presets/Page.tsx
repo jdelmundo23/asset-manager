@@ -3,11 +3,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import AddPreset from "./AddPreset";
+import AddPreset from "./components/AddPreset";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import PresetContext from "@/context/PresetContext";
-import Row from "./Row";
+import Row from "./components/Row";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;

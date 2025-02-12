@@ -1,9 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
 import { Outlet, useLoaderData } from "react-router";
-import AuthContext from "../context/AuthContext";
-import Sidebar from "../components/Sidebar";
-import Main from "../components/Main";
+import AuthContext from "../../context/AuthContext";
+import Sidebar from "./components/Sidebar";
+import Main from "./components/Main";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;

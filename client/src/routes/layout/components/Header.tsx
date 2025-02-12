@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Link } from "react-router";
-import AuthContext from "../context/AuthContext";
+import AuthContext from "../../../context/AuthContext";
 import { Button } from "@/components/ui/button";
 
 interface HeaderProps {
