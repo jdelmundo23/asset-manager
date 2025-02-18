@@ -11,6 +11,7 @@ import { getPool } from "./sql";
 import authRouter from "./routes/auth";
 import apiRouter from "./routes/api/middleware";
 import presetRouter from "./routes/api/presets";
+import assetRouter from "./routes/api/assets";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env.dev") });
 
@@ -42,6 +43,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 app.use("/api/presets", presetRouter);
+app.use("/api/assets", assetRouter);
 app.get("/", function (req, res) {
   res.json("API for inventory management");
 });

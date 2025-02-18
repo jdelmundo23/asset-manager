@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App, { loader as AppAuthloader } from "./routes/layout/App";
+import App, { loader as appAuthloader } from "./routes/layout/App";
 import reportWebVitals from "./reportWebVitals";
 import {
   createBrowserRouter,
@@ -9,12 +9,13 @@ import {
   RouterProvider,
   Route,
 } from "react-router";
-import ErrorPage from "./error-page";
+import ErrorPage from "./ErrorPage";
 import Signin from "./routes/Signin";
 import Dashboard from "./routes/Dashboard";
 import Protected from "./routes/protected/Protected";
 import Admin from "./routes/Admin";
 import Presets from "./routes/presets/Page";
+import Assets, { loader as assetLoader } from "./routes/assets/Page";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,13 +23,18 @@ const router = createBrowserRouter(
       path="/"
       element={<App />}
       errorElement={<ErrorPage />}
-      loader={AppAuthloader}
+      loader={appAuthloader}
     >
       <Route path="signin" element={<Signin />}></Route>
       <Route element={<Protected />}>
         <Route path="dashboard" element={<Dashboard />}></Route>
         <Route path="admin" element={<Admin />}></Route>
         <Route path="admin/presets" element={<Presets />}></Route>
+        <Route
+          path="admin/assets"
+          element={<Assets />}
+          loader={assetLoader}
+        ></Route>
       </Route>
     </Route>
   )
