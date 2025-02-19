@@ -2,6 +2,7 @@ import { useLoaderData } from "react-router";
 import { getColumns } from "./components/Columns";
 import { DataTable } from "./components/DataTable";
 import axios from "axios";
+import AddAsset from "./components/AddAsset";
 
 type tableData = {
   assets: [];
@@ -39,13 +40,14 @@ function Page() {
   const data = useLoaderData();
 
   return (
-    <div className="dark container mx-auto py-10">
+    <div className="dark container mx-auto py-10 flex flex-col gap-2">
+      <AddAsset />
       <DataTable
         columns={getColumns(
           data.locations,
           data.departments,
           data.types,
-          data.models
+          data.models,
         )}
         data={data.assets}
       />

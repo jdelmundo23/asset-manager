@@ -52,7 +52,7 @@ async function handlePreset(
   table: string,
   name: string,
   oldName?: string,
-  type?: string,
+  type?: string
 ) {
   const url =
     mode === "common" ? `/api/presets/${table}` : `/api/presets/assetmodels`;
@@ -89,7 +89,7 @@ export default function PresetForm({
             "assetModels",
             values.presetName,
             oldPresetName,
-            values.presetType,
+            values.presetType
           );
         } else {
           await handlePreset(
@@ -97,7 +97,7 @@ export default function PresetForm({
             "model",
             "assetModels",
             values.presetName,
-            values.presetType,
+            values.presetType
           );
         }
       } else {
@@ -107,14 +107,14 @@ export default function PresetForm({
             "common",
             activePreset.tableName,
             values.presetName,
-            oldPresetName,
+            oldPresetName
           );
         } else {
           await handlePreset(
             "add",
             "common",
             activePreset.tableName,
-            values.presetName,
+            values.presetName
           );
         }
       }
@@ -173,7 +173,7 @@ export default function PresetForm({
                         role="combobox"
                         className={cn(
                           "w-[200px] justify-between text-white",
-                          !field.value && "text-muted-foreground",
+                          !field.value && "text-muted-foreground"
                         )}
                       >
                         {field.value || "Select an asset type"}
@@ -200,7 +200,7 @@ export default function PresetForm({
                                   "mr-2 h-4 w-4",
                                   type.name === field.value
                                     ? "opacity-100"
-                                    : "opacity-0",
+                                    : "opacity-0"
                                 )}
                               />
                               {type.name}

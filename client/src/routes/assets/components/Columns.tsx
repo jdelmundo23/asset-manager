@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-export type Payment = {
+export type Asset = {
   ID: number;
   name: string;
   identifier: string;
@@ -8,7 +8,7 @@ export type Payment = {
   modelID: number;
   assignedTo: string;
   purchaseDate: string;
-  warrantyDate: string;
+  warrantyExp: string;
   cost: number;
   macAddress: string;
   ipAddress: string;
@@ -26,7 +26,7 @@ export const getColumns = (
   departments: reference[],
   types: reference[],
   models: reference[]
-): ColumnDef<Payment>[] => [
+): ColumnDef<Asset>[] => [
   {
     accessorKey: "name",
     header: "Name",
@@ -89,10 +89,10 @@ export const getColumns = (
     },
   },
   {
-    accessorKey: "warrantyDate",
+    accessorKey: "warrantyExp",
     header: "Warranty Exp.",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("warrantyDate"));
+      const date = new Date(row.getValue("warrantyExp"));
       return new Intl.DateTimeFormat("en-us").format(date);
     },
   },
