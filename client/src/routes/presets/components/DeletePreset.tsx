@@ -24,7 +24,7 @@ function DeletePreset({ presetName }: DeletePresetProps) {
   async function onConfirm() {
     try {
       const response = await axios.delete(
-        `/api/presets/${activePreset.tableName}/${presetName}`,
+        `/api/presets/${activePreset.tableName}/${presetName}`
       );
       console.log("Preset delete successfully", response.data);
       reloadData();

@@ -29,10 +29,7 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PresetContext from "@/context/PresetContext";
-
-interface tableRow {
-  name: string;
-}
+import { Preset } from "@/types";
 
 interface PresetFormProps {
   operation: "add" | "edit";
@@ -187,7 +184,7 @@ export default function PresetForm({
                       <CommandList>
                         <CommandEmpty>No asset type found.</CommandEmpty>
                         <CommandGroup>
-                          {typeData.map((type: tableRow) => (
+                          {typeData.map((type: Preset) => (
                             <CommandItem
                               value={type.name}
                               key={type.name}

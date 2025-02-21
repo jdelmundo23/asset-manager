@@ -1,10 +1,8 @@
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   Table,
   TableBody,
@@ -13,16 +11,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useContext } from "react";
+import AssetContext from "@/context/AssetContext";
+import { getColumns } from "./Columns";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-}
-
-export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>() {
+  const contextData = useContext(AssetContext);
+  const data = contextData.assets;
+  const columns = getColumns(
+    contextData.locations,
+    contextData.departments,
+    contextData.types,
+    contextData.models,
+  );
   const table = useReactTable({
     data,
     columns,

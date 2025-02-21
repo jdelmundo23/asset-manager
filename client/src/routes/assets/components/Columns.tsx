@@ -1,4 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { Preset } from "@/types";
 export type Asset = {
   ID: number;
   name: string;
@@ -15,17 +16,11 @@ export type Asset = {
   note: string;
 };
 
-type reference = {
-  ID: number;
-  name: string;
-  typeID?: number;
-};
-
 export const getColumns = (
-  locations: reference[],
-  departments: reference[],
-  types: reference[],
-  models: reference[]
+  locations: Preset[],
+  departments: Preset[],
+  types: Preset[],
+  models: Preset[]
 ): ColumnDef<Asset>[] => [
   {
     accessorKey: "name",

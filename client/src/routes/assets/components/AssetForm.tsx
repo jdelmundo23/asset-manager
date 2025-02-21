@@ -32,6 +32,9 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
+import AssetContext from "@/context/AssetContext";
+import { useContext } from "react";
+import { Preset } from "@/types";
 
 interface AssetFormProps {
   closeDialog: () => void;
@@ -40,19 +43,26 @@ interface AssetFormProps {
 const formSchema = z.object({
   asset_name: z.string().min(2).max(100),
   identifier: z.string().min(2).max(100),
-  type: z.string(),
-  model: z.string(),
-  location: z.string(),
-  department: z.string(),
+  typeID: z.number(),
+  modelID: z.number(),
+  locationID: z.number(),
+  departmentID: z.number(),
   assignedTo: z.string(),
   purchaseDate: z.coerce.date(),
   warrantyDate: z.coerce.date().optional(),
-  ipAddress: z.string().ip().min(7).max(15).optional(),
-  macAddress: z.string().min(17).max(17).optional(),
-  cost: z.string(),
+  ipAddress: z.string().ip().optional(),
+  macAddress: z
+    .string()
+    .regex(
+      /^(?:[0-9A-Fa-f]{2}([-:])(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{12})$/,
+      "Invalid MAC address format"
+    )
+    .optional(),
+  cost: z.number(),
 });
 
 export default function AssetForm({ closeDialog }: AssetFormProps) {
+  const { types, models, locations, departments } = useContext(AssetContext);
   const languages = [
     {
       label: "English",
@@ -103,6 +113,12 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
     }
   }
 
+  const selectedType = form.watch("typeID");
+
+  const filteredModels = selectedType
+    ? models.filter((model) => model.typeID === selectedType)
+    : models;
+
   return (
     <Form {...form}>
       <form
@@ -116,7 +132,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
             <FormItem>
               <FormLabel>Asset Name</FormLabel>
               <FormControl>
-                <Input placeholder="" type="text" {...field} />
+                <Input placeholder="ex: LAPTOP-XX" type="text" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -131,7 +147,11 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
             <FormItem>
               <FormLabel>Identifier</FormLabel>
               <FormControl>
-                <Input placeholder="" type="text" {...field} />
+                <Input
+                  placeholder="ex: Serial Number / Product Tag"
+                  type="text"
+                  {...field}
+                />
               </FormControl>
 
               <FormMessage />
@@ -143,7 +163,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           <div className="col-span-6">
             <FormField
               control={form.control}
-              name="type"
+              name="typeID"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Type</FormLabel>
@@ -159,37 +179,47 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                           )}
                         >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
-                              )?.label
-                            : "Select language"}
+                            ? types.find((type) => type.ID === field.value)
+                                ?.name
+                            : "Select type"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0">
                       <Command className="dark">
-                        <CommandInput placeholder="Search language..." />
+                        <CommandInput placeholder="Search type..." />
                         <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandEmpty>No type found.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {types.map((type: Preset) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
-                                onSelect={() => {
-                                  form.setValue("type", language.value);
+                                value={type.name}
+                                key={type.ID}
+                                onSelect={async () => {
+                                  if (type.ID === field.value) {
+                                    form.resetField("typeID");
+                                    if (form.getValues("modelID")) {
+                                      form.resetField("modelID");
+                                    }
+                                  } else {
+                                    if (form.getValues("modelID")) {
+                                      form.resetField("modelID");
+                                    }
+                                    form.setValue("typeID", type.ID);
+                                    await form.trigger("typeID");
+                                  }
                                 }}
                               >
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    language.value === field.value
+                                    type.ID === field.value
                                       ? "opacity-100"
                                       : "opacity-0"
                                   )}
                                 />
-                                {language.label}
+                                {type.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -207,7 +237,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           <div className="col-span-6">
             <FormField
               control={form.control}
-              name="model"
+              name="modelID"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Model</FormLabel>
@@ -223,37 +253,49 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                           )}
                         >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
-                              )?.label
-                            : "Select language"}
+                            ? filteredModels.find(
+                                (model) => model.ID === field.value
+                              )?.name
+                            : "Select model"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0">
                       <Command className="dark">
-                        <CommandInput placeholder="Search language..." />
+                        <CommandInput placeholder="Search model..." />
                         <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandEmpty>No model found.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {filteredModels.map((model) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
-                                onSelect={() => {
-                                  form.setValue("model", language.value);
+                                value={model.name}
+                                key={model.ID}
+                                onSelect={async () => {
+                                  if (field.value === model.ID) {
+                                    form.resetField("modelID");
+                                  } else {
+                                    form.setValue("modelID", model.ID);
+                                    await form.trigger("modelID");
+                                    if (
+                                      model.typeID &&
+                                      selectedType !== model.typeID
+                                    ) {
+                                      form.setValue("typeID", model.typeID);
+                                      await form.trigger("typeID");
+                                    }
+                                  }
                                 }}
                               >
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    language.value === field.value
+                                    model.ID === field.value
                                       ? "opacity-100"
                                       : "opacity-0"
                                   )}
                                 />
-                                {language.label}
+                                {model.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -273,7 +315,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           <div className="col-span-6">
             <FormField
               control={form.control}
-              name="location"
+              name="locationID"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Location</FormLabel>
@@ -289,37 +331,42 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                           )}
                         >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
-                              )?.label
-                            : "Select language"}
+                            ? locations.find(
+                                (location) => location.ID === field.value
+                              )?.name
+                            : "Select location"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0">
                       <Command className="dark">
-                        <CommandInput placeholder="Search language..." />
+                        <CommandInput placeholder="Search location..." />
                         <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandEmpty>No location found.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {locations.map((location) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
-                                onSelect={() => {
-                                  form.setValue("location", language.value);
+                                value={location.name}
+                                key={location.ID}
+                                onSelect={async () => {
+                                  if (field.value === location.ID) {
+                                    form.resetField("locationID");
+                                  } else {
+                                    form.setValue("locationID", location.ID);
+                                    await form.trigger("locationID");
+                                  }
                                 }}
                               >
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    language.value === field.value
+                                    location.ID === field.value
                                       ? "opacity-100"
                                       : "opacity-0"
                                   )}
                                 />
-                                {language.label}
+                                {location.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -337,7 +384,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           <div className="col-span-6">
             <FormField
               control={form.control}
-              name="department"
+              name="departmentID"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Department</FormLabel>
@@ -353,37 +400,45 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                           )}
                         >
                           {field.value
-                            ? languages.find(
-                                (language) => language.value === field.value
-                              )?.label
-                            : "Select language"}
+                            ? departments.find(
+                                (department) => department.ID === field.value
+                              )?.name
+                            : "Select department"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-[200px] p-0">
                       <Command className="dark">
-                        <CommandInput placeholder="Search language..." />
+                        <CommandInput placeholder="Search department..." />
                         <CommandList>
-                          <CommandEmpty>No language found.</CommandEmpty>
+                          <CommandEmpty>No department found.</CommandEmpty>
                           <CommandGroup>
-                            {languages.map((language) => (
+                            {departments.map((department) => (
                               <CommandItem
-                                value={language.label}
-                                key={language.value}
-                                onSelect={() => {
-                                  form.setValue("department", language.value);
+                                value={department.name}
+                                key={department.ID}
+                                onSelect={async () => {
+                                  if (field.value === department.ID) {
+                                    form.resetField("departmentID");
+                                  } else {
+                                    form.setValue(
+                                      "departmentID",
+                                      department.ID
+                                    );
+                                    await form.trigger("departmentID");
+                                  }
                                 }}
                               >
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    language.value === field.value
+                                    department.ID === field.value
                                       ? "opacity-100"
                                       : "opacity-0"
                                   )}
                                 />
-                                {language.label}
+                                {department.name}
                               </CommandItem>
                             ))}
                           </CommandGroup>
@@ -556,7 +611,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                 <FormItem>
                   <FormLabel>IP Address</FormLabel>
                   <FormControl>
-                    <Input placeholder="" type="text" {...field} />
+                    <Input placeholder="0.0.0.0" type="text" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -573,7 +628,11 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                 <FormItem>
                   <FormLabel>MAC Address</FormLabel>
                   <FormControl>
-                    <Input placeholder="" type="text" {...field} />
+                    <Input
+                      placeholder="00-00-00-00-00-00"
+                      type="text"
+                      {...field}
+                    />
                   </FormControl>
 
                   <FormMessage />
@@ -592,7 +651,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
               <FormControl>
                 <CurrencyInput
                   id="cost"
-                  placeholder=""
+                  placeholder="$0.00"
                   decimalsLimit={2}
                   prefix="$"
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"

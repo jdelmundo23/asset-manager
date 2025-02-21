@@ -4,23 +4,18 @@ import DeletePreset from "./DeletePreset";
 import EditPreset from "./EditPreset";
 import MissingAlert from "./MissingAlert";
 import { Card } from "@/components/ui/card";
-
-interface tableRow {
-  ID: number;
-  name: string;
-  typeID?: number;
-}
+import { Preset } from "@/types";
 
 interface RowProps {
-  row: tableRow;
+  row: Preset;
 }
 
 function Row({ row }: RowProps) {
   const { typeData, activePreset } = useContext(PresetContext);
   const type =
     (
-      typeData.find((typeRow: tableRow) => typeRow.ID === row.typeID) as
-        | tableRow
+      typeData.find((typeRow: Preset) => typeRow.ID === row.typeID) as
+        | Preset
         | undefined
     )?.name || "";
 
