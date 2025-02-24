@@ -4,18 +4,10 @@ import axios from "axios";
 import AddAsset from "./components/AddAsset";
 import AssetContext from "@/context/AssetContext";
 
-type tableData = {
-  assets: [];
-  locations: [];
-  departments: [];
-  types: [];
-  models: [];
-};
-
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
 
-export async function loader(): Promise<tableData | undefined> {
+export async function loader() {
   try {
     const [assetRes, locRes, depRes, typeRes, modelRes] = await Promise.all([
       axios.get(`${apiUrl}/api/assets/all`),
@@ -25,11 +17,11 @@ export async function loader(): Promise<tableData | undefined> {
       axios.get(`${apiUrl}/api/presets/assetmodels`),
     ]);
     return {
-      assets: assetRes.data,
-      locations: locRes.data,
-      departments: depRes.data,
-      types: typeRes.data,
-      models: modelRes.data,
+      assets: assetRes.data ?? [],
+      locations: locRes.data ?? [],
+      departments: depRes.data ?? [],
+      types: typeRes.data ?? [],
+      models: modelRes.data ?? [],
     };
   } catch {
     console.error("Not authenticated");

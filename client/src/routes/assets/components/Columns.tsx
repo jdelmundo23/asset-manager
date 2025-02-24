@@ -1,27 +1,16 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Preset } from "@/types";
-export type Asset = {
+import { Asset, Preset } from "@/types";
+
+interface AssetRow extends Asset {
   ID: number;
-  name: string;
-  identifier: string;
-  locationID: number;
-  departmentID: number;
-  modelID: number;
-  assignedTo: string;
-  purchaseDate: string;
-  warrantyExp: string;
-  cost: number;
-  macAddress: string;
-  ipAddress: string;
-  note: string;
-};
+}
 
 export const getColumns = (
   locations: Preset[],
   departments: Preset[],
   types: Preset[],
-  models: Preset[]
-): ColumnDef<Asset>[] => [
+  models: Preset[],
+): ColumnDef<AssetRow>[] => [
   {
     accessorKey: "name",
     header: "Name",
@@ -35,7 +24,7 @@ export const getColumns = (
     header: "Model",
     cell: ({ row }) => {
       const model = models.find(
-        (model) => row.getValue("modelID") === model.ID
+        (model) => row.getValue("modelID") === model.ID,
       );
       return model ? model.name : "N/A";
     },
@@ -45,7 +34,7 @@ export const getColumns = (
     header: "Type",
     cell: ({ row }) => {
       const model = models.find(
-        (model) => row.getValue("modelID") === model.ID
+        (model) => row.getValue("modelID") === model.ID,
       );
       const type = types.find((type) => model?.typeID === type.ID);
       return type ? type.name : "N/A";
@@ -56,7 +45,7 @@ export const getColumns = (
     header: "Location",
     cell: ({ row }) => {
       const location = locations.find(
-        (location) => row.getValue("locationID") === location.ID
+        (location) => row.getValue("locationID") === location.ID,
       );
       return location ? location.name : "N/A";
     },
@@ -66,7 +55,7 @@ export const getColumns = (
     header: "Department",
     cell: ({ row }) => {
       const department = departments.find(
-        (department) => row.getValue("departmentID") === department.ID
+        (department) => row.getValue("departmentID") === department.ID,
       );
       return department ? department.name : "N/A";
     },

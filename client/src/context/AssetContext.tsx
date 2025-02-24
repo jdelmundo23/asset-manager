@@ -1,7 +1,7 @@
 import { createContext } from "react";
-import { Preset } from "@/types";
+import { AssetRow, Preset } from "@/types";
 interface AssetContextType {
-  assets: [];
+  assets: AssetRow[];
   locations: Preset[];
   departments: Preset[];
   types: Preset[];

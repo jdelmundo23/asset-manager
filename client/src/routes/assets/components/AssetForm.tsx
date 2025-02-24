@@ -34,78 +34,26 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import AssetContext from "@/context/AssetContext";
 import { useContext } from "react";
-import { Preset } from "@/types";
+import { Asset, assetSchema, Preset } from "@/types";
+import FormCombobox from "./FormCombobox";
 
 interface AssetFormProps {
   closeDialog: () => void;
 }
 
-const formSchema = z.object({
-  asset_name: z.string().min(2).max(100),
-  identifier: z.string().min(2).max(100),
-  typeID: z.number(),
-  modelID: z.number(),
-  locationID: z.number(),
-  departmentID: z.number(),
-  assignedTo: z.string(),
-  purchaseDate: z.coerce.date(),
-  warrantyDate: z.coerce.date().optional(),
-  ipAddress: z.string().ip().optional(),
-  macAddress: z
-    .string()
-    .regex(
-      /^(?:[0-9A-Fa-f]{2}([-:])(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{12})$/,
-      "Invalid MAC address format"
-    )
-    .optional(),
-  cost: z.number(),
-});
-
 export default function AssetForm({ closeDialog }: AssetFormProps) {
   const { types, models, locations, departments } = useContext(AssetContext);
-  const languages = [
+  const users = [
     {
-      label: "English",
-      value: "en",
-    },
-    {
-      label: "French",
-      value: "fr",
-    },
-    {
-      label: "German",
-      value: "de",
-    },
-    {
-      label: "Spanish",
-      value: "es",
-    },
-    {
-      label: "Portuguese",
-      value: "pt",
-    },
-    {
-      label: "Russian",
-      value: "ru",
-    },
-    {
-      label: "Japanese",
-      value: "ja",
-    },
-    {
-      label: "Korean",
-      value: "ko",
-    },
-    {
-      label: "Chinese",
-      value: "zh",
+      label: "John Doe",
+      value: "John Doe",
     },
   ] as const;
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<Asset>({
+    resolver: zodResolver(assetSchema),
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof assetSchema>) {
     try {
       console.log(values);
     } catch (error) {
@@ -127,7 +75,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
       >
         <FormField
           control={form.control}
-          name="asset_name"
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Asset Name</FormLabel>
@@ -311,147 +259,52 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="locationID"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Location</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? locations.find(
-                                (location) => location.ID === field.value
-                              )?.name
-                            : "Select location"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command className="dark">
-                        <CommandInput placeholder="Search location..." />
-                        <CommandList>
-                          <CommandEmpty>No location found.</CommandEmpty>
-                          <CommandGroup>
-                            {locations.map((location) => (
-                              <CommandItem
-                                value={location.name}
-                                key={location.ID}
-                                onSelect={async () => {
-                                  if (field.value === location.ID) {
-                                    form.resetField("locationID");
-                                  } else {
-                                    form.setValue("locationID", location.ID);
-                                    await form.trigger("locationID");
-                                  }
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    location.ID === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {location.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+        <div className="grid sm:grid-cols-12 gap-4">
+          <FormCombobox
+            form={form}
+            options={{
+              field: "locationID",
+              label: "Location",
+              msgLabel: "location",
+            }}
+            type="indepenent"
+            choices={locations}
+            onSelect={async (
+              val: Asset[keyof Asset],
+              name: keyof Asset,
+              newVal: Asset[keyof Asset]
+            ) => {
+              if (val === newVal) {
+                form.resetField(name);
+              } else {
+                form.setValue(name, newVal);
+                await form.trigger(name);
+              }
+            }}
+          />
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="departmentID"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Department</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? departments.find(
-                                (department) => department.ID === field.value
-                              )?.name
-                            : "Select department"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command className="dark">
-                        <CommandInput placeholder="Search department..." />
-                        <CommandList>
-                          <CommandEmpty>No department found.</CommandEmpty>
-                          <CommandGroup>
-                            {departments.map((department) => (
-                              <CommandItem
-                                value={department.name}
-                                key={department.ID}
-                                onSelect={async () => {
-                                  if (field.value === department.ID) {
-                                    form.resetField("departmentID");
-                                  } else {
-                                    form.setValue(
-                                      "departmentID",
-                                      department.ID
-                                    );
-                                    await form.trigger("departmentID");
-                                  }
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    department.ID === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {department.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormCombobox
+            form={form}
+            options={{
+              field: "departmentID",
+              label: "Department",
+              msgLabel: "department",
+            }}
+            type="indepenent"
+            choices={departments}
+            onSelect={async (
+              val: Asset[keyof Asset],
+              name: keyof Asset,
+              newVal: Asset[keyof Asset]
+            ) => {
+              if (val === newVal) {
+                form.resetField(name);
+              } else {
+                form.setValue(name, newVal);
+                await form.trigger(name);
+              }
+            }}
+          />
         </div>
 
         <FormField
@@ -472,37 +325,41 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                       )}
                     >
                       {field.value
-                        ? languages.find(
-                            (language) => language.value === field.value
-                          )?.label
-                        : "Select language"}
+                        ? users.find((user) => user.value === field.value)
+                            ?.label
+                        : "Select user"}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
                 <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                   <Command className="dark">
-                    <CommandInput placeholder="Search language..." />
+                    <CommandInput placeholder="Search user..." />
                     <CommandList>
-                      <CommandEmpty>No language found.</CommandEmpty>
+                      <CommandEmpty>No user found.</CommandEmpty>
                       <CommandGroup>
-                        {languages.map((language) => (
+                        {users.map((user) => (
                           <CommandItem
-                            value={language.label}
-                            key={language.value}
-                            onSelect={() => {
-                              form.setValue("assignedTo", language.value);
+                            value={user.label}
+                            key={user.value}
+                            onSelect={async () => {
+                              if (field.value === user.value) {
+                                form.resetField("assignedTo");
+                              } else {
+                                form.setValue("assignedTo", user.value);
+                                await form.trigger("assignedTo");
+                              }
                             }}
                           >
                             <Check
                               className={cn(
                                 "mr-2 h-4 w-4",
-                                language.value === field.value
+                                user.value === field.value
                                   ? "opacity-100"
                                   : "opacity-0"
                               )}
                             />
-                            {language.label}
+                            {user.label}
                           </CommandItem>
                         ))}
                       </CommandGroup>
@@ -516,7 +373,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid sm:grid-cols-12 gap-4">
           <div className="col-span-6">
             <FormField
               control={form.control}
