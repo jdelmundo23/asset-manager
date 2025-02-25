@@ -14,7 +14,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import {
   Popover,
   PopoverContent,
@@ -22,99 +21,104 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import { Asset, Preset } from "@/types";
+import { Asset } from "@/types";
 import { cn } from "@/lib/utils";
 
-interface FormComboboxProps<T extends keyof Asset> {
+interface FormComboboxProps<
+  T extends keyof Asset,
+  C extends Record<L, string>,
+  V extends keyof C,
+  L extends keyof C,
+> {
   form: UseFormReturn<Asset>;
   options: {
     field: T;
-    label: string;
+    fieldLabel: string;
     msgLabel: string;
   };
-  choices: Preset[];
-  type: "indepenent" | "parent" | "child" | "custom";
-  onSelect: (
-    val: Asset[keyof Asset],
-    name: keyof Asset,
-    newVal: Asset[keyof Asset]
-  ) => void;
+  choices: {
+    items: C[];
+    valueKey: V;
+    labelKey: L;
+  };
+  onSelect: (val: Asset[T], fieldName: T, newVal: C) => void;
+  className?: string;
 }
-
-function FormCombobox<T extends keyof Asset>({
-  form,
-  options,
-  choices,
-  type,
-  onSelect,
-}: FormComboboxProps<T>) {
+function FormCombobox<
+  T extends keyof Asset,
+  C extends Record<L, string>,
+  V extends keyof C,
+  L extends keyof C,
+>(props: FormComboboxProps<T, C, V, L>) {
+  const { items, valueKey, labelKey } = props.choices;
   return (
-    <div className="col-span-6">
-      <FormField
-        control={form.control}
-        name={options.field}
-        render={({ field }) => (
-          <FormItem className="flex flex-col">
-            <FormLabel>{options.label}</FormLabel>
-            <Popover>
-              <PopoverTrigger asChild>
-                <FormControl>
-                  <Button
-                    variant="outline"
-                    role="combobox"
-                    className={cn(
-                      "w-[200px] justify-between",
-                      !field.value && "text-muted-foreground"
-                    )}
-                  >
-                    {field.value
-                      ? choices.find((choice) => choice.ID === field.value)
-                          ?.name
-                      : `Select ${options.msgLabel}`}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-                </FormControl>
-              </PopoverTrigger>
-              <PopoverContent className="w-[200px] p-0">
-                <Command className="dark">
-                  <CommandInput placeholder={`Search ${options.msgLabel}...`} />
-                  <CommandList>
-                    <CommandEmpty>{`No ${options.msgLabel} found.`}</CommandEmpty>
-                    <CommandGroup>
-                      {choices.map((choice) => (
-                        <CommandItem
-                          value={choice.name}
-                          key={choice.ID}
-                          onSelect={async () => {
-                            switch (type) {
-                              case "indepenent": {
-                                onSelect(field.value, options.field, choice.ID);
-                              }
-                            }
-                          }}
-                        >
-                          <Check
-                            className={cn(
-                              "mr-2 h-4 w-4",
-                              choice.ID === field.value
-                                ? "opacity-100"
-                                : "opacity-0"
-                            )}
-                          />
-                          {choice.name}
-                        </CommandItem>
-                      ))}
-                    </CommandGroup>
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
-
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
+    <FormField
+      control={props.form.control}
+      name={props.options.field}
+      render={({ field }) => (
+        <FormItem className="flex flex-col">
+          <FormLabel>{props.options.fieldLabel}</FormLabel>
+          <Popover>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className={cn(
+                    "w-[200px] justify-between",
+                    !field.value && "text-muted-foreground",
+                    props.className
+                  )}
+                >
+                  {field.value
+                    ? items.find(
+                        (choice) => choice[valueKey] === field.value
+                      )?.[labelKey]
+                    : `Select ${props.options.msgLabel}`}
+                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+              <Command className="dark">
+                <CommandInput
+                  placeholder={`Search ${props.options.msgLabel}...`}
+                />
+                <CommandList>
+                  <CommandEmpty>{`No ${props.options.msgLabel} found.`}</CommandEmpty>
+                  <CommandGroup>
+                    {items.map((choice) => (
+                      <CommandItem
+                        value={choice[labelKey]}
+                        key={choice[valueKey]}
+                        onSelect={async () => {
+                          props.onSelect(
+                            field.value,
+                            props.options.field,
+                            choice
+                          );
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            choice[valueKey] === field.value
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {choice[labelKey]}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 }
 

@@ -7,22 +7,12 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import { Check, ChevronsUpDown } from "lucide-react";
 import { format } from "date-fns";
 import {
   Popover,
@@ -34,7 +24,7 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import AssetContext from "@/context/AssetContext";
 import { useContext } from "react";
-import { Asset, assetSchema, Preset } from "@/types";
+import { Asset, assetSchema } from "@/types";
 import FormCombobox from "./FormCombobox";
 
 interface AssetFormProps {
@@ -45,10 +35,10 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
   const { types, models, locations, departments } = useContext(AssetContext);
   const users = [
     {
-      label: "John Doe",
+      id: "dwahjdh3j12h3jk12312",
       value: "John Doe",
     },
-  ] as const;
+  ];
   const form = useForm<Asset>({
     resolver: zodResolver(assetSchema),
   });
@@ -82,7 +72,6 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
               <FormControl>
                 <Input placeholder="ex: LAPTOP-XX" type="text" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -107,270 +96,137 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-12 gap-4">
+        <div className="grid sm:grid-cols-12 gap-4">
           <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="typeID"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Type</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? types.find((type) => type.ID === field.value)
-                                ?.name
-                            : "Select type"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command className="dark">
-                        <CommandInput placeholder="Search type..." />
-                        <CommandList>
-                          <CommandEmpty>No type found.</CommandEmpty>
-                          <CommandGroup>
-                            {types.map((type: Preset) => (
-                              <CommandItem
-                                value={type.name}
-                                key={type.ID}
-                                onSelect={async () => {
-                                  if (type.ID === field.value) {
-                                    form.resetField("typeID");
-                                    if (form.getValues("modelID")) {
-                                      form.resetField("modelID");
-                                    }
-                                  } else {
-                                    if (form.getValues("modelID")) {
-                                      form.resetField("modelID");
-                                    }
-                                    form.setValue("typeID", type.ID);
-                                    await form.trigger("typeID");
-                                  }
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    type.ID === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {type.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-
-                  <FormMessage />
-                </FormItem>
-              )}
+            <FormCombobox
+              form={form}
+              options={{
+                field: "typeID",
+                fieldLabel: "Type",
+                msgLabel: "type",
+              }}
+              choices={{
+                items: types,
+                valueKey: "ID",
+                labelKey: "name",
+              }}
+              onSelect={async (val, fieldName, newVal) => {
+                if (val === newVal.ID) {
+                  form.resetField(fieldName);
+                  if (form.getValues("modelID")) {
+                    form.resetField("modelID");
+                  }
+                } else {
+                  if (form.getValues("modelID")) {
+                    form.resetField("modelID");
+                  }
+                  form.setValue(fieldName, newVal.ID);
+                  await form.trigger(fieldName);
+                }
+              }}
             />
           </div>
 
           <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="modelID"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Model</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-[200px] justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? filteredModels.find(
-                                (model) => model.ID === field.value
-                              )?.name
-                            : "Select model"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command className="dark">
-                        <CommandInput placeholder="Search model..." />
-                        <CommandList>
-                          <CommandEmpty>No model found.</CommandEmpty>
-                          <CommandGroup>
-                            {filteredModels.map((model) => (
-                              <CommandItem
-                                value={model.name}
-                                key={model.ID}
-                                onSelect={async () => {
-                                  if (field.value === model.ID) {
-                                    form.resetField("modelID");
-                                  } else {
-                                    form.setValue("modelID", model.ID);
-                                    await form.trigger("modelID");
-                                    if (
-                                      model.typeID &&
-                                      selectedType !== model.typeID
-                                    ) {
-                                      form.setValue("typeID", model.typeID);
-                                      await form.trigger("typeID");
-                                    }
-                                  }
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    model.ID === field.value
-                                      ? "opacity-100"
-                                      : "opacity-0"
-                                  )}
-                                />
-                                {model.name}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-
-                  <FormMessage />
-                </FormItem>
-              )}
+            <FormCombobox
+              form={form}
+              options={{
+                field: "modelID",
+                fieldLabel: "Model",
+                msgLabel: "model",
+              }}
+              choices={{
+                items: models,
+                valueKey: "ID",
+                labelKey: "name",
+              }}
+              onSelect={async (val, fieldName, newVal) => {
+                if (val === newVal.ID) {
+                  form.resetField(fieldName);
+                } else {
+                  form.setValue(fieldName, newVal.ID);
+                  await form.trigger(fieldName);
+                  if (newVal.typeID && selectedType !== newVal.typeID) {
+                    form.setValue("typeID", newVal.typeID);
+                    await form.trigger("typeID");
+                  }
+                }
+              }}
             />
           </div>
         </div>
 
         <div className="grid sm:grid-cols-12 gap-4">
-          <FormCombobox
-            form={form}
-            options={{
-              field: "locationID",
-              label: "Location",
-              msgLabel: "location",
-            }}
-            type="indepenent"
-            choices={locations}
-            onSelect={async (
-              val: Asset[keyof Asset],
-              name: keyof Asset,
-              newVal: Asset[keyof Asset]
-            ) => {
-              if (val === newVal) {
-                form.resetField(name);
-              } else {
-                form.setValue(name, newVal);
-                await form.trigger(name);
-              }
-            }}
-          />
+          <div className="col-span-6">
+            <FormCombobox
+              form={form}
+              options={{
+                field: "locationID",
+                fieldLabel: "Location",
+                msgLabel: "location",
+              }}
+              choices={{
+                items: locations,
+                valueKey: "ID",
+                labelKey: "name",
+              }}
+              onSelect={async (val, fieldName, newVal) => {
+                if (val === newVal.ID) {
+                  form.resetField(fieldName);
+                } else {
+                  form.setValue(fieldName, newVal.ID);
+                  await form.trigger(fieldName);
+                }
+              }}
+            />
+          </div>
 
-          <FormCombobox
-            form={form}
-            options={{
-              field: "departmentID",
-              label: "Department",
-              msgLabel: "department",
-            }}
-            type="indepenent"
-            choices={departments}
-            onSelect={async (
-              val: Asset[keyof Asset],
-              name: keyof Asset,
-              newVal: Asset[keyof Asset]
-            ) => {
-              if (val === newVal) {
-                form.resetField(name);
-              } else {
-                form.setValue(name, newVal);
-                await form.trigger(name);
-              }
-            }}
-          />
+          <div className="col-span-6">
+            <FormCombobox
+              form={form}
+              options={{
+                field: "departmentID",
+                fieldLabel: "Department",
+                msgLabel: "department",
+              }}
+              choices={{
+                items: departments,
+                valueKey: "ID",
+                labelKey: "name",
+              }}
+              onSelect={async (val, fieldName, newVal) => {
+                if (val === newVal.ID) {
+                  form.resetField(fieldName);
+                } else {
+                  form.setValue(fieldName, newVal.ID);
+                  await form.trigger(fieldName);
+                }
+              }}
+            />
+          </div>
         </div>
 
-        <FormField
-          control={form.control}
-          name="assignedTo"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Assigned To</FormLabel>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <FormControl>
-                    <Button
-                      variant="outline"
-                      role="combobox"
-                      className={cn(
-                        "w-full justify-between",
-                        !field.value && "text-muted-foreground"
-                      )}
-                    >
-                      {field.value
-                        ? users.find((user) => user.value === field.value)
-                            ?.label
-                        : "Select user"}
-                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                    </Button>
-                  </FormControl>
-                </PopoverTrigger>
-                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                  <Command className="dark">
-                    <CommandInput placeholder="Search user..." />
-                    <CommandList>
-                      <CommandEmpty>No user found.</CommandEmpty>
-                      <CommandGroup>
-                        {users.map((user) => (
-                          <CommandItem
-                            value={user.label}
-                            key={user.value}
-                            onSelect={async () => {
-                              if (field.value === user.value) {
-                                form.resetField("assignedTo");
-                              } else {
-                                form.setValue("assignedTo", user.value);
-                                await form.trigger("assignedTo");
-                              }
-                            }}
-                          >
-                            <Check
-                              className={cn(
-                                "mr-2 h-4 w-4",
-                                user.value === field.value
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                            {user.label}
-                          </CommandItem>
-                        ))}
-                      </CommandGroup>
-                    </CommandList>
-                  </Command>
-                </PopoverContent>
-              </Popover>
-
-              <FormMessage />
-            </FormItem>
-          )}
+        <FormCombobox
+          className="w-full"
+          form={form}
+          options={{
+            field: "assignedTo",
+            fieldLabel: "Assigned To",
+            msgLabel: "user",
+          }}
+          choices={{
+            items: users,
+            valueKey: "id",
+            labelKey: "value",
+          }}
+          onSelect={async (val, fieldName, newVal) => {
+            if (val === newVal.id) {
+              form.resetField(fieldName);
+            } else {
+              form.setValue(fieldName, newVal.id);
+              await form.trigger(fieldName);
+            }
+          }}
         />
 
         <div className="grid sm:grid-cols-12 gap-4">
