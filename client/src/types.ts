@@ -21,15 +21,19 @@ export const assetSchema = z.object({
   assignedTo: z.string(),
   purchaseDate: z.coerce.date(),
   warrantyDate: z.coerce.date().optional(),
-  ipAddress: z.string().ip().optional(),
+  ipAddress: z.union([z.string().ip(), z.literal("")]).optional(),
   macAddress: z
-    .string()
-    .regex(
-      /^(?:[0-9A-Fa-f]{2}([-:])(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{12})$/,
-      "Invalid MAC address format"
-    )
+    .union([
+      z
+        .string()
+        .regex(
+          /^(?:[0-9A-Fa-f]{2}([-:])(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{12})$/,
+          "Invalid MAC address format"
+        ),
+      z.literal(""),
+    ])
     .optional(),
-  cost: z.number(),
+  cost: z.string(),
 });
 
 export type Asset = z.infer<typeof assetSchema>;

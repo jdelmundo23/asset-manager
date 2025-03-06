@@ -132,7 +132,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                 msgLabel: "model",
               }}
               choices={{
-                items: models,
+                items: filteredModels,
                 valueKey: "ID",
                 labelKey: "name",
               }}
