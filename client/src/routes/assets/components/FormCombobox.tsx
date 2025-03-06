@@ -58,7 +58,7 @@ function FormCombobox<
       render={({ field }) => (
         <FormItem className="flex flex-col">
           <FormLabel>{props.options.fieldLabel}</FormLabel>
-          <Popover>
+          <Popover modal={true}>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button

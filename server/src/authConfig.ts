@@ -23,4 +23,4 @@ export const msalConfig: Configuration = {
 
 export const REDIRECT_URI = process.env.REDIRECT_URI;
 export const POST_LOGOUT_REDIRECT_URI = process.env.POST_LOGOUT_REDIRECT_URI;
-export const GRAPH_ME_ENDPOINT = process.env.GRAPH_API_ENDPOINT + "v1.0/me";
+export const GRAPH_ENDPOINT = process.env.GRAPH_API_ENDPOINT + "v1.0/";

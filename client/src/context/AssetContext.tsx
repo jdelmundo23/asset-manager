@@ -1,11 +1,12 @@
 import { createContext } from "react";
-import { AssetRow, Preset } from "@/types";
+import { AssetRow, Preset, User } from "@/types";
 interface AssetContextType {
   assets: AssetRow[];
   locations: Preset[];
   departments: Preset[];
   types: Preset[];
   models: Preset[];
+  users: User[];
 }
 
 const AssetContext = createContext<AssetContextType>({
@@ -14,6 +15,7 @@ const AssetContext = createContext<AssetContextType>({
   departments: [],
   types: [],
   models: [],
+  users: [],
 });
 
 export default AssetContext;

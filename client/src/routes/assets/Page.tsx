@@ -9,19 +9,22 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export async function loader() {
   try {
-    const [assetRes, locRes, depRes, typeRes, modelRes] = await Promise.all([
-      axios.get(`${apiUrl}/api/assets/all`),
-      axios.get(`${apiUrl}/api/presets/locations`),
-      axios.get(`${apiUrl}/api/presets/departments`),
-      axios.get(`${apiUrl}/api/presets/assettypes`),
-      axios.get(`${apiUrl}/api/presets/assetmodels`),
-    ]);
+    const [assetRes, locRes, depRes, typeRes, modelRes, usersRes] =
+      await Promise.all([
+        axios.get(`${apiUrl}/api/assets/all`),
+        axios.get(`${apiUrl}/api/presets/locations`),
+        axios.get(`${apiUrl}/api/presets/departments`),
+        axios.get(`${apiUrl}/api/presets/assettypes`),
+        axios.get(`${apiUrl}/api/presets/assetmodels`),
+        axios.get(`${apiUrl}/api/users/all`),
+      ]);
     return {
       assets: assetRes.data ?? [],
       locations: locRes.data ?? [],
       departments: depRes.data ?? [],
       types: typeRes.data ?? [],
       models: modelRes.data ?? [],
+      users: usersRes.data ?? [],
     };
   } catch {
     console.error("Not authenticated");

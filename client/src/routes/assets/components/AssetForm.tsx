@@ -32,13 +32,9 @@ interface AssetFormProps {
 }
 
 export default function AssetForm({ closeDialog }: AssetFormProps) {
-  const { types, models, locations, departments } = useContext(AssetContext);
-  const users = [
-    {
-      id: "dwahjdh3j12h3jk12312",
-      value: "John Doe",
-    },
-  ];
+  const { types, models, locations, departments, users } =
+    useContext(AssetContext);
+
   const form = useForm<Asset>({
     resolver: zodResolver(assetSchema),
   });
@@ -216,14 +212,14 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           }}
           choices={{
             items: users,
-            valueKey: "id",
+            valueKey: "ID",
             labelKey: "value",
           }}
           onSelect={async (val, fieldName, newVal) => {
-            if (val === newVal.id) {
+            if (val === newVal.ID) {
               form.resetField(fieldName);
             } else {
-              form.setValue(fieldName, newVal.id);
+              form.setValue(fieldName, newVal.ID);
               await form.trigger(fieldName);
             }
           }}

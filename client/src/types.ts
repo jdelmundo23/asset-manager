@@ -6,6 +6,11 @@ export interface Preset {
   typeID?: number;
 }
 
+export interface User {
+  ID: string;
+  value: string;
+}
+
 export const assetSchema = z.object({
   name: z.string().min(2).max(100),
   identifier: z.string().min(2).max(100),
@@ -21,7 +26,7 @@ export const assetSchema = z.object({
     .string()
     .regex(
       /^(?:[0-9A-Fa-f]{2}([-:])(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{12})$/,
-      "Invalid MAC address format",
+      "Invalid MAC address format"
     )
     .optional(),
   cost: z.number(),

@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.use(
   authProvider.acquireToken({
-    scopes: ["User.Read"],
+    scopes: ["User.Read", "GroupMember.Read.All", "Directory.Read.All"],
     redirectUri: REDIRECT_URI as string,
     successRedirect: "http://localhost:3000/dashboard",
   })

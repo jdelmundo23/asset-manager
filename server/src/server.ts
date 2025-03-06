@@ -6,14 +6,16 @@ import createError from "http-errors";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from "cors";
+
+dotenv.config({ path: path.resolve(__dirname, "../.env.dev") });
+
 import { getPool } from "./sql";
 
 import authRouter from "./routes/auth";
 import apiRouter from "./routes/api/middleware";
 import presetRouter from "./routes/api/presets";
 import assetRouter from "./routes/api/assets";
-
-dotenv.config({ path: path.resolve(__dirname, "../.env.dev") });
+import usersRouter from "./routes/api/users";
 
 const corsOptions = {
   origin: "http://localhost:3000",
@@ -44,6 +46,7 @@ app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 app.use("/api/presets", presetRouter);
 app.use("/api/assets", assetRouter);
+app.use("/api/users", usersRouter);
 app.get("/", function (req, res) {
   res.json("API for inventory management");
 });

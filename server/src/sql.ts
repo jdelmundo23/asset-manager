@@ -1,8 +1,4 @@
 import sql, { ConnectionPool } from "mssql";
-import * as dotenv from "dotenv";
-import { resolve } from "path";
-
-dotenv.config({ path: resolve(__dirname, "../.env.dev") });
 
 const sqlConfig = {
   user: process.env.SQL_USER,
