@@ -58,7 +58,7 @@ async function handlePreset(
 
   console.log(method);
   const response = await axios[method](url, data);
-  console.log(`Preset  successfully`, response.data);
+  console.log(`Preset operation successful`, response.data);
 }
 
 export default function PresetForm({

@@ -23,6 +23,7 @@ export function DataTable<TData, TValue>() {
     contextData.departments,
     contextData.types,
     contextData.models,
+    contextData.users
   );
   const table = useReactTable({
     data,
@@ -47,7 +48,7 @@ export function DataTable<TData, TValue>() {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </p>
                   </TableHead>
@@ -71,7 +72,7 @@ export function DataTable<TData, TValue>() {
                     <p className="px-2">
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </p>
                   </TableCell>

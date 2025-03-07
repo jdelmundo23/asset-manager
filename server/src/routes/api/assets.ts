@@ -1,5 +1,6 @@
 import express from "express";
 import { getPool } from "../../sql";
+import { Asset, assetSchema } from "../../types/assetSchema";
 const router = express.Router();
 
 router.get("/all", async function (req, res) {
@@ -8,8 +9,42 @@ router.get("/all", async function (req, res) {
     const result = await pool.request().query(`SELECT * FROM Assets`);
     res.json(result.recordset);
   } catch (err) {
+    res.status(500).json({ error: "Failed to retrieve asset data:" + err });
+  }
+});
+
+router.post("/add", async function (req, res) {
+  const result = assetSchema.safeParse(req.body);
+
+  if (!result.success) {
+    res.status(400).json({ error: result.error.format() });
+    return;
+  }
+
+  const asset: Asset = req.body;
+  try {
+    const pool = await getPool();
+    await pool
+      .request()
+      .input("name", asset.name)
+      .input("identifier", asset.identifier)
+      .input("locationID", asset.locationID)
+      .input("departmentID", asset.departmentID)
+      .input("modelID", asset.modelID)
+      .input("assignedTo", asset.assignedTo)
+      .input("purchaseDate", asset.purchaseDate)
+      .input("warrantyExp", asset.warrantyExp)
+      .input("cost", asset.cost)
+      .input("macAddress", asset.macAddress)
+      .input("ipAddress", asset.ipAddress).query(`
+    INSERT INTO Assets (name, identifier, locationID, departmentID, modelID, assignedTo, purchaseDate, warrantyExp, cost, macAddress, ipAddress)
+    VALUES (@name, @identifier, @locationID, @departmentID, @modelID, @assignedTo, @purchaseDate, @warrantyExp, @cost, @macAddress, @ipAddress)
+  `);
+
+    res.status(200).json({ message: "Data inserted successfully!" });
+  } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to retrieve asset data" });
+    res.status(500).json({ error: "Failed to add asset" });
   }
 });
 

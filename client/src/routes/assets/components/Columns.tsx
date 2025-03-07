@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Asset, Preset } from "@/types";
+import { Asset, Preset, User } from "@/types";
 
 interface AssetRow extends Asset {
   ID: number;
@@ -10,6 +10,7 @@ export const getColumns = (
   departments: Preset[],
   types: Preset[],
   models: Preset[],
+  users: User[]
 ): ColumnDef<AssetRow>[] => [
   {
     accessorKey: "name",
@@ -24,7 +25,7 @@ export const getColumns = (
     header: "Model",
     cell: ({ row }) => {
       const model = models.find(
-        (model) => row.getValue("modelID") === model.ID,
+        (model) => row.getValue("modelID") === model.ID
       );
       return model ? model.name : "N/A";
     },
@@ -34,7 +35,7 @@ export const getColumns = (
     header: "Type",
     cell: ({ row }) => {
       const model = models.find(
-        (model) => row.getValue("modelID") === model.ID,
+        (model) => row.getValue("modelID") === model.ID
       );
       const type = types.find((type) => model?.typeID === type.ID);
       return type ? type.name : "N/A";
@@ -45,7 +46,7 @@ export const getColumns = (
     header: "Location",
     cell: ({ row }) => {
       const location = locations.find(
-        (location) => row.getValue("locationID") === location.ID,
+        (location) => row.getValue("locationID") === location.ID
       );
       return location ? location.name : "N/A";
     },
@@ -55,7 +56,7 @@ export const getColumns = (
     header: "Department",
     cell: ({ row }) => {
       const department = departments.find(
-        (department) => row.getValue("departmentID") === department.ID,
+        (department) => row.getValue("departmentID") === department.ID
       );
       return department ? department.name : "N/A";
     },
@@ -63,6 +64,12 @@ export const getColumns = (
   {
     accessorKey: "assignedTo",
     header: "Assigned To",
+    cell: ({ row }) => {
+      return (
+        users.find((user) => user.ID === row.getValue("assignedTo"))?.value ||
+        row.getValue("assignedTo")
+      );
+    },
   },
   {
     accessorKey: "purchaseDate",

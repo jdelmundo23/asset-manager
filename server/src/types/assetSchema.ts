@@ -1,14 +1,4 @@
-import { z } from "zod";
-export interface Preset {
-  ID: number;
-  name: string;
-  typeID?: number;
-}
-
-export interface User {
-  ID: string;
-  value: string;
-}
+import z from "zod";
 
 export const assetSchema = z.object({
   name: z.string().min(2).max(100),
@@ -36,7 +26,3 @@ export const assetSchema = z.object({
 });
 
 export type Asset = z.infer<typeof assetSchema>;
-
-export interface AssetRow extends Asset {
-  ID: number;
-}

@@ -26,6 +26,7 @@ import AssetContext from "@/context/AssetContext";
 import { useContext } from "react";
 import { Asset, assetSchema } from "@/types";
 import FormCombobox from "./FormCombobox";
+import axios from "axios";
 
 interface AssetFormProps {
   closeDialog: () => void;
@@ -39,11 +40,16 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
     resolver: zodResolver(assetSchema),
   });
 
-  function onSubmit(values: z.infer<typeof assetSchema>) {
+  async function onSubmit(values: z.infer<typeof assetSchema>) {
     try {
-      console.log(values);
+      const response = await axios.post("/api/assets/add", values);
+      console.log(response.data);
     } catch (error) {
-      console.error("Form submission error", error);
+      if (axios.isAxiosError(error)) {
+        console.error(error.response?.data.error);
+      } else {
+        console.error("Failed submission. Unexpected error:", error);
+      }
     }
   }
 
@@ -271,7 +277,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           <div className="col-span-6">
             <FormField
               control={form.control}
-              name="warrantyDate"
+              name="warrantyExp"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Warranty Exp.</FormLabel>
