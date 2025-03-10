@@ -41,9 +41,9 @@ export function DataTable<TData, TValue>() {
                 return (
                   <TableHead
                     key={header.id}
-                    className="px-0 last:pr-0.5 first:pl-0.5"
+                    className="px-0 last:pr-0.5 first:pl-0.5 last:w-0 group"
                   >
-                    <p className="hover:bg-black hover:text-white transition-all px-2 duration-150 ease-in-out rounded-sm py-1.5">
+                    <p className="hover:bg-black hover:text-white transition-all px-2 duration-150 ease-in-out rounded-sm py-1.5 group-last:pointer-events-none">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -67,9 +67,9 @@ export function DataTable<TData, TValue>() {
                 {row.getVisibleCells().map((cell) => (
                   <TableCell
                     key={cell.id}
-                    className="px-0 first:pl-0.5 last:pr-0.5 border-r border-r-black last:border-none"
+                    className="group px-0 first:pl-0.5 border-r border-r-black last:border-none last:py-0 "
                   >
-                    <p className="px-2">
+                    <p className="px-2 group-last:px-1">
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

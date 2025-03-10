@@ -1,6 +1,20 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Asset, Preset, User } from "@/types";
 
+import { MoreHorizontal } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import axios from "axios";
+
 interface AssetRow extends Asset {
   ID: number;
 }
@@ -106,6 +120,49 @@ export const getColumns = (
       }).format(amount);
 
       return <div className="font-medium">{formatted}</div>;
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const asset = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="w-6 h-6 p-0 ">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="dark">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() =>
+                navigator.clipboard.writeText(asset.identifier.toString())
+              }
+            >
+              Copy Identifier
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={async () => {
+                try {
+                  const response = await axios.delete(
+                    `/api/assets/delete/${row.original.ID}`
+                  );
+                  console.log("Preset delete successfully", response.data);
+                } catch (error) {
+                  console.error("Delete failed", error);
+                }
+              }}
+            >
+              Delete Asset
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
     },
   },
 ];

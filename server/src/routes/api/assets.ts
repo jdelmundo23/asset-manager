@@ -48,4 +48,23 @@ router.post("/add", async function (req, res) {
   }
 });
 
+router.delete("/delete/:assetID", async function (req, res) {
+  const { assetID } = req.params;
+
+  if (!assetID) {
+    res.status(400).json({ error: "Asset ID is required" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+    const query = `DELETE FROM Assets WHERE ID = @ID`;
+    await pool.request().input("ID", assetID).query(query);
+    res.status(200).json({ message: "Asset deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete asset" });
+  }
+});
+
 export default router;
