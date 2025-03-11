@@ -1,6 +1,6 @@
 import { getPool } from "../../sql";
 import express, { RequestHandler, Request } from "express";
-import { Int } from "mssql";
+import sql from "mssql";
 
 interface TableRequest extends Request {
   tableName?: string;
@@ -24,7 +24,7 @@ const getTypeID = async (typeName: string): Promise<number | undefined> => {
 
     const modelID = await pool
       .request()
-      .input("name", typeName)
+      .input("name", sql.VarChar(50), typeName)
       .query(`SELECT id FROM AssetTypes WHERE name = @name`);
     return modelID.recordset[0].id;
   } catch (err) {
@@ -62,7 +62,7 @@ const checkExistingPreset: RequestHandler = async (
 
     const existingPreset = await pool
       .request()
-      .input("name", name)
+      .input("name", sql.VarChar(255), name)
       .query(
         `SELECT COUNT(*) AS count FROM ${req.tableName} WHERE name = @name`
       );
@@ -120,12 +120,12 @@ router.post("/:tableName", async function (req: TableRequest, res) {
       const query = `INSERT INTO ${req.tableName} (name, typeID) VALUES (@name, @typeID)`;
       await pool
         .request()
-        .input("name", name)
-        .input("typeID", Int, typeID)
+        .input("name", sql.VarChar(255), name)
+        .input("typeID", sql.Int, typeID)
         .query(query);
     } else {
       const query = `INSERT INTO ${req.tableName} (name) VALUES (@name)`;
-      await pool.request().input("name", name).query(query);
+      await pool.request().input("name", sql.VarChar(50), name).query(query);
     }
 
     res.status(201).json({ message: "Preset added successfully" });
@@ -162,16 +162,16 @@ router.put("/:tableName", async function (req: TableRequest, res) {
       const query = `UPDATE ${req.tableName} SET name = @name, typeID = @typeID WHERE name = @oldName`;
       await pool
         .request()
-        .input("name", name)
-        .input("typeID", Int, typeID)
-        .input("oldName", oldName)
+        .input("name", sql.VarChar(255), name)
+        .input("typeID", sql.Int, typeID)
+        .input("oldName", sql.VarChar(255), oldName)
         .query(query);
     } else {
       const query = `UPDATE ${req.tableName} SET name = @name WHERE name = @oldName`;
       await pool
         .request()
-        .input("name", name)
-        .input("oldName", oldName)
+        .input("name", sql.VarChar(50), name)
+        .input("oldName", sql.VarChar(50), oldName)
         .query(query);
     }
 
@@ -193,7 +193,7 @@ router.delete("/:tableName/:name", async function (req: TableRequest, res) {
   try {
     const pool = await getPool();
     const query = `DELETE FROM ${req.tableName} WHERE name = @name`;
-    await pool.request().input("name", name).query(query);
+    await pool.request().input("name", sql.VarChar(255), name).query(query);
     res.status(200).json({ message: "Preset deleted successfully" });
   } catch (err) {
     console.error(err);

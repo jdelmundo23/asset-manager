@@ -54,9 +54,9 @@ async function handlePreset(
   const url =
     mode === "common" ? `/api/presets/${table}` : `/api/presets/assetmodels`;
   const method = operation === "add" ? "post" : "put";
-  const data = mode === "common" ? { name, oldName } : { name, oldName, type };
+  const data = mode === "common" ? { name, oldName } : { name, type, oldName };
 
-  console.log(method);
+  console.log(data);
   const response = await axios[method](url, data);
   console.log(`Preset operation successful`, response.data);
 }
@@ -94,6 +94,7 @@ export default function PresetForm({
             "model",
             "assetModels",
             values.presetName,
+            "",
             values.presetType
           );
         }

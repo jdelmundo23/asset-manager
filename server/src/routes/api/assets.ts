@@ -1,6 +1,7 @@
 import express from "express";
 import { getPool } from "../../sql";
 import { Asset, assetSchema } from "../../types/assetSchema";
+import sql from "mssql";
 const router = express.Router();
 
 router.get("/all", async function (req, res) {
@@ -26,17 +27,17 @@ router.post("/add", async function (req, res) {
     const pool = await getPool();
     await pool
       .request()
-      .input("name", asset.name)
-      .input("identifier", asset.identifier)
-      .input("locationID", asset.locationID)
-      .input("departmentID", asset.departmentID)
-      .input("modelID", asset.modelID)
-      .input("assignedTo", asset.assignedTo)
-      .input("purchaseDate", asset.purchaseDate)
-      .input("warrantyExp", asset.warrantyExp)
-      .input("cost", asset.cost)
-      .input("macAddress", asset.macAddress)
-      .input("ipAddress", asset.ipAddress).query(`
+      .input("name", sql.VarChar(100), asset.name)
+      .input("identifier", sql.VarChar(100), asset.identifier)
+      .input("locationID", sql.Int, asset.locationID)
+      .input("departmentID", sql.Int, asset.departmentID)
+      .input("modelID", sql.Int, asset.modelID)
+      .input("assignedTo", sql.VarChar(75), asset.assignedTo)
+      .input("purchaseDate", sql.Date, asset.purchaseDate)
+      .input("warrantyExp", sql.Date, asset.warrantyExp)
+      .input("cost", sql.Decimal(6, 2), asset.cost)
+      .input("macAddress", sql.VarChar(24), asset.macAddress)
+      .input("ipAddress", sql.VarChar(15), asset.ipAddress).query(`
     INSERT INTO Assets (name, identifier, locationID, departmentID, modelID, assignedTo, purchaseDate, warrantyExp, cost, macAddress, ipAddress)
     VALUES (@name, @identifier, @locationID, @departmentID, @modelID, @assignedTo, @purchaseDate, @warrantyExp, @cost, @macAddress, @ipAddress)
   `);
@@ -59,7 +60,7 @@ router.delete("/delete/:assetID", async function (req, res) {
   try {
     const pool = await getPool();
     const query = `DELETE FROM Assets WHERE ID = @ID`;
-    await pool.request().input("ID", assetID).query(query);
+    await pool.request().input("ID", sql.Int, assetID).query(query);
     res.status(200).json({ message: "Asset deleted successfully" });
   } catch (err) {
     console.error(err);
