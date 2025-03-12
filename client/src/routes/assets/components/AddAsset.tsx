@@ -1,6 +1,5 @@
 import {
   AlertDialog,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";

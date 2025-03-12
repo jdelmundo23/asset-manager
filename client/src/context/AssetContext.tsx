@@ -1,5 +1,5 @@
-import { createContext } from "react";
-import { AssetRow, Preset, User } from "@/types";
+import { createContext } from "react";import { AssetRow, Preset, User } from "@/types";
+import { FetcherWithComponents } from "react-router";
 interface AssetContextType {
   assets: AssetRow[];
   locations: Preset[];
@@ -7,6 +7,7 @@ interface AssetContextType {
   types: Preset[];
   models: Preset[];
   users: User[];
+  fetcher: FetcherWithComponents<any> | undefined;
 }
 
 const AssetContext = createContext<AssetContextType>({
@@ -16,6 +17,7 @@ const AssetContext = createContext<AssetContextType>({
   types: [],
   models: [],
   users: [],
+  fetcher: undefined,
 });
 
 export default AssetContext;

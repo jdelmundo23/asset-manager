@@ -20,37 +20,34 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon, LoaderCircle } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import AssetContext from "@/context/AssetContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Asset, assetSchema } from "@/types";
 import FormCombobox from "./FormCombobox";
-import axios from "axios";
+import { addAsset } from "./Actions";
 
 interface AssetFormProps {
   closeDialog: () => void;
 }
 
 export default function AssetForm({ closeDialog }: AssetFormProps) {
-  const { types, models, locations, departments, users } =
+  const { types, models, locations, departments, users, fetcher } =
     useContext(AssetContext);
 
   const form = useForm<Asset>({
     resolver: zodResolver(assetSchema),
   });
 
-  async function onSubmit(values: z.infer<typeof assetSchema>) {
-    try {
-      const response = await axios.post("/api/assets/add", values);
-      console.log(response.data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data.error);
-      } else {
-        console.error("Failed submission. Unexpected error:", error);
-      }
+  useEffect(() => {
+    if (form.formState.isSubmitSuccessful) {
+      closeDialog();
     }
+  }, [form.formState.isSubmitSuccessful]);
+
+  async function onSubmit(values: Asset) {
+    addAsset(values, fetcher);
   }
 
   const selectedType = form.watch("typeID");
@@ -246,7 +243,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                           variant={"outline"}
                           className={cn(
                             "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
@@ -288,7 +285,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                           variant={"outline"}
                           className={cn(
                             "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
+                            !field.value && "text-muted-foreground",
                           )}
                         >
                           {field.value ? (
@@ -382,6 +379,16 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           )}
         />
         <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
+          {form.formState.isSubmitting ? (
+            <div className="flex items-center">
+              <LoaderCircle
+                className="aspect-square animate-spin"
+                color="gray"
+              />
+            </div>
+          ) : (
+            <></>
+          )}
           <Button
             variant="outline"
             className="text-white"

@@ -13,7 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import axios from "axios";
+import { deleteAsset } from "./Actions";
+import { useContext } from "react";
+import AssetContext from "@/context/AssetContext";
 
 interface AssetRow extends Asset {
   ID: number;
@@ -127,6 +129,8 @@ export const getColumns = (
     cell: ({ row }) => {
       const asset = row.original;
 
+      const { fetcher } = useContext(AssetContext);
+
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -147,16 +151,9 @@ export const getColumns = (
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-red-600"
-              onClick={async () => {
-                try {
-                  const response = await axios.delete(
-                    `/api/assets/delete/${row.original.ID}`
-                  );
-                  console.log("Preset delete successfully", response.data);
-                } catch (error) {
-                  console.error("Delete failed", error);
-                }
-              }}
+              onClick={() =>
+                deleteAsset(row.original.name, row.original.ID, fetcher)
+              }
             >
               Delete Asset
             </DropdownMenuItem>

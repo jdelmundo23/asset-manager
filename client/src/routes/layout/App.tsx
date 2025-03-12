@@ -4,6 +4,7 @@ import { Outlet, useLoaderData } from "react-router";
 import AuthContext from "../../context/AuthContext";
 import Sidebar from "./components/Sidebar";
 import Main from "./components/Main";
+import { Toaster } from "sonner";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -22,6 +23,7 @@ function App() {
 
   return (
     <AuthContext.Provider value={user}>
+      <Toaster richColors />
       <div className="flex h-full w-full">
         <Sidebar active={sidebarActive} />
         <Main sidebarActive={sidebarActive}>

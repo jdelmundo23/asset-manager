@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router";
+import { useFetcher, useLoaderData } from "react-router";
 import { DataTable } from "./components/DataTable";
 import axios from "axios";
 import AddAsset from "./components/AddAsset";
@@ -32,11 +32,12 @@ export async function loader() {
 }
 
 function Page() {
-  const data = useLoaderData();
+  const fetcher = useFetcher();
+  const data = fetcher.data || useLoaderData();
 
   return (
     <div className="dark container mx-auto py-10 flex flex-col gap-2">
-      <AssetContext.Provider value={data}>
+      <AssetContext.Provider value={{ ...data, fetcher }}>
         <AddAsset />
         <DataTable />
       </AssetContext.Provider>
