@@ -14,7 +14,7 @@ router.get("/all", async function (req, res) {
   }
 });
 
-router.post("/add", async function (req, res) {
+router.post("/", async function (req, res) {
   const result = assetSchema.safeParse(req.body);
 
   if (!result.success) {
@@ -49,7 +49,7 @@ router.post("/add", async function (req, res) {
   }
 });
 
-router.delete("/delete/:assetID", async function (req, res) {
+router.delete("/:assetID", async function (req, res) {
   const { assetID } = req.params;
 
   if (!assetID) {

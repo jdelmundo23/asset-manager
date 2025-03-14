@@ -1,70 +1,61 @@
 import { toast } from "sonner";
-import axios from "axios";
-import { Asset } from "@/types";
+import axios, { AxiosStatic } from "axios";
+import { Asset, AssetRow } from "@/types";
 import { FetcherWithComponents } from "react-router";
 
-export const addAsset = async (
-  values: Asset,
-  fetcher: FetcherWithComponents<any> | undefined
-) => {
-  const loadingToast = toast.loading(
-    <div>
-      Adding asset: <b>{values.name}</b>
-    </div>
-  );
-  try {
-    const response = await axios.post("/api/assets/add", values);
-    console.log("Asset added successfully: ", response.data);
-    try {
-      await fetcher?.load("/admin/assets");
-      toast.success(
-        <div>
-          Asset added: <b>{values.name}</b>
-        </div>,
-        {
-          id: loadingToast,
-        }
-      );
-    } catch {
-      toast.error(<div>Failed to update assets list</div>, {
-        id: loadingToast,
-      });
-    }
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error(error.response?.data.error);
-    } else {
-      console.error("Failed submission. Unexpected error:", error);
-    }
-    toast.error(
-      <div>
-        Failed to add asset: <b>{values.name}</b>
-      </div>,
-      {
-        id: loadingToast,
-      }
-    );
-  }
-};
+type ActionType = "add" | "edit" | "delete";
 
-export const deleteAsset = async (
-  rowName: string,
-  rowID: number,
+interface Action {
+  ing: string;
+  ed: string;
+  url: (values: Asset | AssetRow) => string;
+  method: "post" | "put" | "delete";
+}
+
+const actions: Record<ActionType, Action> = {
+  add: { method: "post", url: () => `/api/assets`, ing: "Adding", ed: "added" },
+  edit: {
+    method: "put",
+    url: () => `/api/assets`,
+    ing: "Editing",
+    ed: "edited",
+  },
+  delete: {
+    method: "delete",
+    url: (values) => `/api/assets/${values.ID}`,
+    ing: "Deleting",
+    ed: "deleted",
+  },
+} as const;
+
+export const handleAssetAction = async (
+  actionType: ActionType,
+  values: Asset | AssetRow,
   fetcher: FetcherWithComponents<any> | undefined
 ) => {
+  if ((actionType === "edit" || actionType === "delete") && !("ID" in values)) {
+    throw new Error(`Cannot ${actionType} asset: Missing ID.`);
+  }
+
+  const action = actions[actionType];
+
   const loadingToast = toast.loading(
     <div>
-      Deleting asset: <b>{rowName}</b>
+      {action.ing} asset: <b>{values.name}</b>
     </div>
   );
+
   try {
-    const response = await axios.delete(`/api/assets/delete/${rowID}`);
-    console.log("Preset delete successfully", response.data);
+    const response = await axios[action.method](action.url(values), values);
+    console.log(`Successfully ${action.ed}`, response.data);
     try {
       await fetcher?.load("/admin/assets");
-      toast.info(
+
+      const toastType = actionType === "add" ? toast.success : toast.info;
+
+      toastType(
         <div>
-          Asset deleted: <b>{rowName}</b>
+          Asset {action.ed}: <b>{values.name}</b>
         </div>,
         {
           id: loadingToast,
@@ -76,10 +67,15 @@ export const deleteAsset = async (
       });
     }
   } catch (error) {
-    console.error("Delete asset failed", error);
+    console.error(
+      `${action.ing} asset failed: Error: `,
+      axios.isAxiosError(error)
+        ? (error.response?.data?.error ?? error.message)
+        : error
+    );
     toast.error(
       <div>
-        Asset deletion failed: <b>{rowName}</b>
+        Failed to {actionType} asset: <b>{values.name}</b>
       </div>,
       {
         id: loadingToast,

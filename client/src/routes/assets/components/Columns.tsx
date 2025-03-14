@@ -1,5 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { Asset, Preset, User } from "@/types";
+import { AssetRow, Preset, User } from "@/types";
 
 import { MoreHorizontal } from "lucide-react";
 
@@ -13,13 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { deleteAsset } from "./Actions";
+import { handleAssetAction } from "./Actions";
 import { useContext } from "react";
 import AssetContext from "@/context/AssetContext";
-
-interface AssetRow extends Asset {
-  ID: number;
-}
 
 export const getColumns = (
   locations: Preset[],
@@ -151,9 +147,7 @@ export const getColumns = (
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-red-600"
-              onClick={() =>
-                deleteAsset(row.original.name, row.original.ID, fetcher)
-              }
+              onClick={() => handleAssetAction("delete", row.original, fetcher)}
             >
               Delete Asset
             </DropdownMenuItem>

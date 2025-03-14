@@ -26,7 +26,7 @@ import AssetContext from "@/context/AssetContext";
 import { useContext, useEffect } from "react";
 import { Asset, assetSchema } from "@/types";
 import FormCombobox from "./FormCombobox";
-import { addAsset } from "./Actions";
+import { handleAssetAction } from "./Actions";
 
 interface AssetFormProps {
   closeDialog: () => void;
@@ -47,7 +47,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
   }, [form.formState.isSubmitSuccessful]);
 
   async function onSubmit(values: Asset) {
-    addAsset(values, fetcher);
+    handleAssetAction("add", values, fetcher);
   }
 
   const selectedType = form.watch("typeID");
@@ -243,7 +243,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                           variant={"outline"}
                           className={cn(
                             "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground",
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           {field.value ? (
@@ -285,7 +285,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
                           variant={"outline"}
                           className={cn(
                             "w-[240px] pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground",
+                            !field.value && "text-muted-foreground"
                           )}
                         >
                           {field.value ? (

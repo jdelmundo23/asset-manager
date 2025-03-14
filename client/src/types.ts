@@ -1,5 +1,4 @@
-import { z } from "zod";
-export interface Preset {
+import { z } from "zod";export interface Preset {
   ID: number;
   name: string;
   typeID?: number;
@@ -11,6 +10,7 @@ export interface User {
 }
 
 export const assetSchema = z.object({
+  ID: z.number().optional(),
   name: z.string().min(2).max(100),
   identifier: z.string().min(2).max(100),
   typeID: z.number(),
