@@ -23,7 +23,7 @@ function AddAsset() {
           >
             <X className="w-6 h-6 text-muted-foreground" />
           </div>
-          <AssetForm closeDialog={() => setOpen(false)} />
+          <AssetForm mode="add" closeDialog={() => setOpen(false)} />
         </AlertDialogContent>
       </AlertDialog>
     </div>

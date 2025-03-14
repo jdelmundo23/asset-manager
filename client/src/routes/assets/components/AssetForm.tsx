@@ -1,7 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,20 +23,37 @@ import { Calendar as CalendarIcon, LoaderCircle } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import AssetContext from "@/context/AssetContext";
 import { useContext, useEffect } from "react";
-import { Asset, assetSchema } from "@/types";
+import { Asset, AssetRow, assetSchema } from "@/types";
 import FormCombobox from "./FormCombobox";
 import { handleAssetAction } from "./Actions";
 
-interface AssetFormProps {
+interface BaseProps {
   closeDialog: () => void;
 }
 
-export default function AssetForm({ closeDialog }: AssetFormProps) {
+interface AddModeProps extends BaseProps {
+  mode: "add";
+  asset?: never;
+}
+
+interface EditModeProps extends BaseProps {
+  mode: "edit";
+  asset: AssetRow;
+}
+
+type AssetFormProps = AddModeProps | EditModeProps;
+
+export default function AssetForm({
+  mode,
+  closeDialog,
+  asset,
+}: AssetFormProps) {
   const { types, models, locations, departments, users, fetcher } =
     useContext(AssetContext);
 
   const form = useForm<Asset>({
     resolver: zodResolver(assetSchema),
+    ...(mode === "edit" && asset ? { defaultValues: asset } : {}),
   });
 
   useEffect(() => {
@@ -47,7 +63,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
   }, [form.formState.isSubmitSuccessful]);
 
   async function onSubmit(values: Asset) {
-    handleAssetAction("add", values, fetcher);
+    mode === "add" ? handleAssetAction("add", values, fetcher) : "";
   }
 
   const selectedType = form.watch("typeID");
@@ -399,7 +415,7 @@ export default function AssetForm({ closeDialog }: AssetFormProps) {
           >
             Cancel
           </Button>
-          <Button type="submit">Add</Button>
+          <Button type="submit">{mode === "add" ? "Add" : "Edit"}</Button>
         </div>
       </form>
     </Form>

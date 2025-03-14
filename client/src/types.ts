@@ -20,7 +20,11 @@ export const assetSchema = z.object({
   assignedTo: z.string(),
   purchaseDate: z.coerce.date(),
   warrantyExp: z.coerce.date().optional(),
-  ipAddress: z.union([z.string().ip(), z.literal("")]).optional(),
+  ipAddress: z
+    .union([z.string().ip(), z.literal("")])
+    .optional()
+    .nullable()
+    .transform((value) => value ?? ""),
   macAddress: z
     .union([
       z
@@ -31,8 +35,15 @@ export const assetSchema = z.object({
         ),
       z.literal(""),
     ])
-    .optional(),
-  cost: z.string(),
+    .optional()
+    .nullable()
+    .transform((value) => value ?? ""),
+  cost: z
+    .union([
+      z.string().transform((x) => x.replace(/[^0-9.-]+/g, "")),
+      z.number(),
+    ])
+    .pipe(z.coerce.number().min(0.01).max(999999999)),
 });
 
 export type Asset = z.infer<typeof assetSchema>;
