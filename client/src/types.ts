@@ -1,4 +1,5 @@
-import { z } from "zod";export interface Preset {
+import { z } from "zod";
+export interface Preset {
   ID: number;
   name: string;
   typeID?: number;

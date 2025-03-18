@@ -63,7 +63,9 @@ export default function AssetForm({
   }, [form.formState.isSubmitSuccessful]);
 
   async function onSubmit(values: Asset) {
-    mode === "add" ? handleAssetAction("add", values, fetcher) : "";
+    mode === "add"
+      ? handleAssetAction("add", values, fetcher)
+      : handleAssetAction("edit", values, fetcher);
   }
 
   const selectedType = form.watch("typeID");
