@@ -1,5 +1,4 @@
-import { z } from "zod";
-export interface Preset {
+import { z } from "zod";export interface Preset {
   ID: number;
   name: string;
   typeID?: number;
@@ -44,7 +43,8 @@ export const assetSchema = z.object({
       z.string().transform((x) => x.replace(/[^0-9.-]+/g, "")),
       z.number(),
     ])
-    .pipe(z.coerce.number().min(0.01).max(999999999)),
+    .pipe(z.coerce.number().min(0.01).max(9999))
+    .transform((num) => num.toString()),
 });
 
 export type Asset = z.infer<typeof assetSchema>;

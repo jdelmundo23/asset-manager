@@ -417,7 +417,15 @@ export default function AssetForm({
           >
             Cancel
           </Button>
-          <Button type="submit">{mode === "add" ? "Add" : "Edit"}</Button>
+          <Button
+            type="submit"
+            disabled={
+              mode === "edit" &&
+              JSON.stringify(asset) === JSON.stringify(form.getValues())
+            }
+          >
+            {mode === "add" ? "Add" : "Edit"}
+          </Button>
         </div>
       </form>
     </Form>
