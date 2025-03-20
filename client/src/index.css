@@ -98,3 +98,7 @@
     @apply rounded-md h-8 flex flex-shrink-0 items-center px-2 w-full hover:bg-zinc-800 transition-colors duration-100 ease-in-out cursor-pointer whitespace-nowrap;
   }
 }
+
+.rdp-vhidden {
+  @apply hidden;
+}

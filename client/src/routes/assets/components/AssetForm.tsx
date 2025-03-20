@@ -253,14 +253,30 @@ export default function AssetForm({
               name="purchaseDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Purchase Date</FormLabel>
+                  <FormLabel
+                    onClick={(e) => {
+                      e.preventDefault();
+                    }}
+                    className="flex justify-between items-baseline"
+                  >
+                    <p>Purchase Date</p>
+                    {field.value ? (
+                      <button onClick={() => form.resetField(field.name)}>
+                        <p className="text-[0.55rem] opacity-50 font-light underline">
+                          Clear date
+                        </p>
+                      </button>
+                    ) : (
+                      ""
+                    )}
+                  </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
+                            "w-[240px] pl-3 pr-2 text-left font-normal",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -269,7 +285,9 @@ export default function AssetForm({
                           ) : (
                             <span>Pick a date</span>
                           )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <div className="ml-auto flex gap-x-1">
+                            <CalendarIcon className="h-4 w-4 opacity-50" />
+                          </div>
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -278,7 +296,10 @@ export default function AssetForm({
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
+                        captionLayout="dropdown-buttons"
                         initialFocus
+                        fromYear={2000}
+                        toYear={2040}
                       />
                     </PopoverContent>
                   </Popover>
@@ -295,14 +316,30 @@ export default function AssetForm({
               name="warrantyExp"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Warranty Exp.</FormLabel>
+                  <FormLabel
+                    onClick={(e) => {
+                      e.preventDefault();
+                    }}
+                    className="flex justify-between items-baseline"
+                  >
+                    <p>Warranty Exp.</p>
+                    {field.value ? (
+                      <button onClick={() => form.resetField(field.name)}>
+                        <p className="text-[0.55rem] opacity-50 font-light underline">
+                          Clear date
+                        </p>
+                      </button>
+                    ) : (
+                      ""
+                    )}
+                  </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "w-[240px] pl-3 text-left font-normal",
+                            "w-[240px] pl-3 pr-2 text-left font-normal",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -311,7 +348,9 @@ export default function AssetForm({
                           ) : (
                             <span>Pick a date</span>
                           )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <div className="ml-auto flex gap-x-1">
+                            <CalendarIcon className="h-4 w-4 opacity-50" />
+                          </div>
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -320,7 +359,10 @@ export default function AssetForm({
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
+                        captionLayout="dropdown-buttons"
                         initialFocus
+                        fromYear={2000}
+                        toYear={2040}
                       />
                     </PopoverContent>
                   </Popover>
