@@ -92,6 +92,9 @@ export const getColumns = (
       accessorKey: "purchaseDate",
       header: "Purchase",
       cell: ({ row }) => {
+        if (!row.original.purchaseDate) {
+          return "";
+        }
         const date = new Date(row.getValue("purchaseDate"));
         return new Intl.DateTimeFormat("en-us").format(date);
       },
@@ -100,6 +103,9 @@ export const getColumns = (
       accessorKey: "warrantyExp",
       header: "Warranty Exp.",
       cell: ({ row }) => {
+        if (!row.original.warrantyExp) {
+          return "";
+        }
         const date = new Date(row.getValue("warrantyExp"));
         return new Intl.DateTimeFormat("en-us").format(date);
       },

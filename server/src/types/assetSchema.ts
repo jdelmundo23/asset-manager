@@ -11,7 +11,7 @@ export const assetSchema = z
     departmentID: z.number(),
     assignedTo: z.string(),
     purchaseDate: z.coerce.date(),
-    warrantyExp: z.coerce.date().optional(),
+    warrantyExp: z.coerce.date().nullish(),
     ipAddress: z
       .union([z.string().ip(), z.literal("")])
       .optional()
@@ -27,8 +27,7 @@ export const assetSchema = z
           ),
         z.literal(""),
       ])
-      .optional()
-      .nullable()
+      .nullish()
       .transform((value) => value ?? ""),
     cost: z
       .union([
@@ -40,7 +39,7 @@ export const assetSchema = z
   })
   .refine(
     (data) => {
-      if (data.warrantyExp !== undefined) {
+      if (data.warrantyExp) {
         return data.purchaseDate < data.warrantyExp;
       }
       return true;

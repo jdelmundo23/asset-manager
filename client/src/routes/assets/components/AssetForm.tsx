@@ -70,6 +70,8 @@ export default function AssetForm({
 
   const selectedType = form.watch("typeID");
 
+  console.log(asset);
+  console.log(form.getValues());
   const filteredModels = selectedType
     ? models.filter((model) => model.typeID === selectedType)
     : models;
@@ -260,15 +262,6 @@ export default function AssetForm({
                     className="flex justify-between items-baseline"
                   >
                     <p>Purchase Date</p>
-                    {field.value ? (
-                      <button onClick={() => form.resetField(field.name)}>
-                        <p className="text-[0.55rem] opacity-50 font-light underline">
-                          Clear date
-                        </p>
-                      </button>
-                    ) : (
-                      ""
-                    )}
                   </FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
@@ -324,7 +317,11 @@ export default function AssetForm({
                   >
                     <p>Warranty Exp.</p>
                     {field.value ? (
-                      <button onClick={() => form.resetField(field.name)}>
+                      <button
+                        onClick={() =>
+                          form.setValue(field.name, null, { shouldDirty: true })
+                        }
+                      >
                         <p className="text-[0.55rem] opacity-50 font-light underline">
                           Clear date
                         </p>
@@ -357,7 +354,9 @@ export default function AssetForm({
                     <PopoverContent className="w-auto p-0 dark" align="start">
                       <Calendar
                         mode="single"
-                        selected={field.value}
+                        selected={
+                          field.value === null ? undefined : field.value
+                        }
                         onSelect={field.onChange}
                         captionLayout="dropdown-buttons"
                         initialFocus
