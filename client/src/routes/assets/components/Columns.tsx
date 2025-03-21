@@ -18,10 +18,6 @@ import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import EditAsset from "./EditAsset";
 
-function getTypeID(modelID: number, models: Preset[]) {
-  return models.find((model) => model.ID === modelID)?.typeID ?? 0;
-}
-
 export const getColumns = (
   locations: Preset[],
   departments: Preset[],
@@ -52,9 +48,7 @@ export const getColumns = (
       accessorKey: "typeID",
       header: "Type",
       cell: ({ row }) => {
-        const type = types.find(
-          (type) => type.ID === getTypeID(row.original.modelID, models)
-        );
+        const type = types.find((type) => row.getValue("typeID") === type.ID);
         return type ? type.name : "N/A";
       },
     },
@@ -176,7 +170,6 @@ export const getColumns = (
               setOpen={setAlertOpen}
               asset={{
                 ...row.original,
-                typeID: getTypeID(row.original.modelID, models),
               }}
             />
           </DropdownMenu>

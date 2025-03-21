@@ -70,8 +70,6 @@ export default function AssetForm({
 
   const selectedType = form.watch("typeID");
 
-  console.log(asset);
-  console.log(form.getValues());
   const filteredModels = selectedType
     ? models.filter((model) => model.typeID === selectedType)
     : models;
@@ -255,12 +253,7 @@ export default function AssetForm({
               name="purchaseDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                    className="flex justify-between items-baseline"
-                  >
+                  <FormLabel className="flex justify-between items-baseline">
                     <p>Purchase Date</p>
                   </FormLabel>
                   <Popover>
@@ -288,7 +281,11 @@ export default function AssetForm({
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
+                        onSelect={(day, selectedDay) => {
+                          if (field.value !== selectedDay) {
+                            field.onChange(selectedDay);
+                          }
+                        }}
                         captionLayout="dropdown-buttons"
                         initialFocus
                         fromYear={2000}
@@ -309,18 +306,17 @@ export default function AssetForm({
               name="warrantyExp"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel
-                    onClick={(e) => {
-                      e.preventDefault();
-                    }}
-                    className="flex justify-between items-baseline"
-                  >
+                  <FormLabel className="flex justify-between items-baseline">
                     <p>Warranty Exp.</p>
                     {field.value ? (
                       <button
-                        onClick={() =>
-                          form.setValue(field.name, null, { shouldDirty: true })
-                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          form.setValue(field.name, null, {
+                            shouldDirty: true,
+                          });
+                        }}
                       >
                         <p className="text-[0.55rem] opacity-50 font-light underline">
                           Clear date
@@ -357,9 +353,12 @@ export default function AssetForm({
                         selected={
                           field.value === null ? undefined : field.value
                         }
-                        onSelect={field.onChange}
+                        onSelect={(day, selectedDay) => {
+                          if (field.value !== selectedDay) {
+                            field.onChange(selectedDay);
+                          }
+                        }}
                         captionLayout="dropdown-buttons"
-                        initialFocus
                         fromYear={2000}
                         toYear={2040}
                       />

@@ -2,13 +2,37 @@ import express from "express";
 import { getPool } from "../../sql";
 import { Asset, assetSchema } from "../../types/assetSchema";
 import sql from "mssql";
+import { z } from "zod";
 const router = express.Router();
 
 router.get("/all", async function (req, res) {
   try {
     const pool = await getPool();
-    const result = await pool.request().query(`SELECT * FROM Assets`);
-    res.json(result.recordset);
+    const result = await pool.request().query(
+      `SELECT Assets.ID,
+      Assets.name,
+      Assets.identifier,
+      Assets.locationID,
+      Assets.departmentID,
+      Assets.modelID,
+      AssetModels.typeID,
+      Assets.assignedTo,
+      Assets.purchaseDate,
+      Assets.warrantyExp,
+      Assets.cost,
+      Assets.ipAddress,
+      Assets.note FROM Assets JOIN AssetModels ON Assets.modelID = AssetModels.ID`
+    );
+
+    const parse = z.array(assetSchema).safeParse(result.recordset);
+
+    if (parse.error) {
+      console.error(parse.error);
+      res.status(500).json({ error: "Failed to parse database records" });
+      return;
+    }
+
+    res.json(parse.data);
   } catch (err) {
     res.status(500).json({ error: "Failed to retrieve asset data:" + err });
   }
@@ -22,7 +46,7 @@ router.post("/", async function (req, res) {
     return;
   }
 
-  const asset: Asset = req.body;
+  const asset: Asset = result.data;
   try {
     const pool = await getPool();
     await pool
@@ -33,8 +57,8 @@ router.post("/", async function (req, res) {
       .input("departmentID", sql.Int, asset.departmentID)
       .input("modelID", sql.Int, asset.modelID)
       .input("assignedTo", sql.VarChar(75), asset.assignedTo)
-      .input("purchaseDate", sql.Date, asset.purchaseDate)
-      .input("warrantyExp", sql.Date, asset.warrantyExp)
+      .input("purchaseDate", sql.DateTime, asset.purchaseDate)
+      .input("warrantyExp", sql.DateTime, asset.warrantyExp)
       .input("cost", sql.Decimal(6, 2), asset.cost)
       .input("macAddress", sql.VarChar(24), asset.macAddress)
       .input("ipAddress", sql.VarChar(15), asset.ipAddress).query(`
@@ -79,8 +103,7 @@ router.put("/", async function (req, res) {
     res.status(400).json({ error: result.error.format() });
     return;
   }
-
-  const asset: Asset = req.body;
+  const asset: Asset = result.data;
 
   if (!asset.ID) {
     res.status(400).json({ error: "Missing ID of asset to edit" });
@@ -98,8 +121,8 @@ router.put("/", async function (req, res) {
       .input("departmentID", sql.Int, asset.departmentID)
       .input("modelID", sql.Int, asset.modelID)
       .input("assignedTo", sql.VarChar(75), asset.assignedTo)
-      .input("purchaseDate", sql.Date, asset.purchaseDate)
-      .input("warrantyExp", sql.Date, asset.warrantyExp)
+      .input("purchaseDate", sql.DateTime, asset.purchaseDate)
+      .input("warrantyExp", sql.DateTime, asset.warrantyExp)
       .input("cost", sql.Decimal(6, 2), asset.cost)
       .input("macAddress", sql.VarChar(24), asset.macAddress)
       .input("ipAddress", sql.VarChar(15), asset.ipAddress).query(`

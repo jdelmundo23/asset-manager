@@ -3,6 +3,8 @@ import { DataTable } from "./components/DataTable";
 import axios from "axios";
 import AddAsset from "./components/AddAsset";
 import AssetContext from "@/context/AssetContext";
+import { assetSchema } from "@/types";
+import { z } from "zod";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -18,8 +20,10 @@ export async function loader() {
         axios.get(`${apiUrl}/api/presets/assetmodels`),
         axios.get(`${apiUrl}/api/users/all`),
       ]);
+    const parsedAssets = z.array(assetSchema).parse(assetRes.data ?? []);
+
     return {
-      assets: assetRes.data ?? [],
+      assets: parsedAssets,
       locations: locRes.data ?? [],
       departments: depRes.data ?? [],
       types: typeRes.data ?? [],
