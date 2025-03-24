@@ -21,23 +21,6 @@ export const assetSchema = z
     assignedTo: z.string(),
     purchaseDate: z.coerce.date(),
     warrantyExp: z.coerce.date().nullish(),
-    ipAddress: z
-      .union([z.string().ip(), z.literal("")])
-      .optional()
-      .nullable()
-      .transform((value) => value ?? ""),
-    macAddress: z
-      .union([
-        z
-          .string()
-          .regex(
-            /^(?:[0-9A-Fa-f]{2}([-:])(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{12})$/,
-            "Invalid MAC address format"
-          ),
-        z.literal(""),
-      ])
-      .nullish()
-      .transform((value) => value ?? ""),
     cost: z
       .union([
         z.string().transform((x) => x.replace(/[^0-9.-]+/g, "")),
@@ -64,3 +47,27 @@ export type Asset = z.infer<typeof assetSchema>;
 export interface AssetRow extends Asset {
   ID: number;
 }
+
+export const IPSchema = z.object({
+  ID: z.number().optional(),
+  name: z.string().min(2).max(100),
+  ipAddress: z
+    .union([z.string().ip(), z.literal("")])
+    .optional()
+    .nullable()
+    .transform((value) => value ?? ""),
+  macAddress: z
+    .union([
+      z
+        .string()
+        .regex(
+          /^(?:[0-9A-Fa-f]{2}([-:])(?:[0-9A-Fa-f]{2}\1){4}[0-9A-Fa-f]{2}|[0-9A-Fa-f]{12})$/,
+          "Invalid MAC address format"
+        ),
+      z.literal(""),
+    ])
+    .nullish()
+    .transform((value) => value ?? ""),
+});
+
+export type IP = z.infer<typeof IPSchema>;

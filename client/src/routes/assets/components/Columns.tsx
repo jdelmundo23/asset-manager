@@ -105,14 +105,6 @@ export const getColumns = (
       },
     },
     {
-      accessorKey: "ipAddress",
-      header: "IP Address",
-    },
-    {
-      accessorKey: "macAddress",
-      header: "MAC Address",
-    },
-    {
       accessorKey: "cost",
       header: () => <div>Cost</div>,
       cell: ({ row }) => {

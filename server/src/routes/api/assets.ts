@@ -20,7 +20,6 @@ router.get("/all", async function (req, res) {
       Assets.purchaseDate,
       Assets.warrantyExp,
       Assets.cost,
-      Assets.ipAddress,
       Assets.note FROM Assets JOIN AssetModels ON Assets.modelID = AssetModels.ID`
     );
 
@@ -59,9 +58,7 @@ router.post("/", async function (req, res) {
       .input("assignedTo", sql.VarChar(75), asset.assignedTo)
       .input("purchaseDate", sql.DateTime, asset.purchaseDate)
       .input("warrantyExp", sql.DateTime, asset.warrantyExp)
-      .input("cost", sql.Decimal(6, 2), asset.cost)
-      .input("macAddress", sql.VarChar(24), asset.macAddress)
-      .input("ipAddress", sql.VarChar(15), asset.ipAddress).query(`
+      .input("cost", sql.Decimal(6, 2), asset.cost).query(`
     INSERT INTO Assets (
       name, 
       identifier, 
@@ -72,8 +69,6 @@ router.post("/", async function (req, res) {
       purchaseDate, 
       warrantyExp, 
       cost, 
-      macAddress, 
-      ipAddress
     )
     VALUES (
       @name, 
@@ -85,8 +80,6 @@ router.post("/", async function (req, res) {
       @purchaseDate, 
       @warrantyExp, 
       @cost, 
-      @macAddress, 
-      @ipAddress
     )
   `);
     res.status(200).json({ message: "Data inserted successfully!" });
@@ -123,9 +116,7 @@ router.put("/", async function (req, res) {
       .input("assignedTo", sql.VarChar(75), asset.assignedTo)
       .input("purchaseDate", sql.DateTime, asset.purchaseDate)
       .input("warrantyExp", sql.DateTime, asset.warrantyExp)
-      .input("cost", sql.Decimal(6, 2), asset.cost)
-      .input("macAddress", sql.VarChar(24), asset.macAddress)
-      .input("ipAddress", sql.VarChar(15), asset.ipAddress).query(`
+      .input("cost", sql.Decimal(6, 2), asset.cost).query(`
     UPDATE Assets
     SET 
       name = @name,
@@ -137,8 +128,6 @@ router.put("/", async function (req, res) {
       purchaseDate = @purchaseDate,
       warrantyExp = @warrantyExp,
       cost = @cost,
-      macAddress = @macAddress,
-      ipAddress = @ipAddress
     WHERE ID = @ID
   `);
 

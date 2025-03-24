@@ -372,46 +372,6 @@ export default function AssetForm({
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="ipAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>IP Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="0.0.0.0" type="text" {...field} />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <div className="col-span-6">
-            <FormField
-              control={form.control}
-              name="macAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>MAC Address</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="00-00-00-00-00-00"
-                      type="text"
-                      {...field}
-                    />
-                  </FormControl>
-
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-
         <FormField
           control={form.control}
           name="cost"
