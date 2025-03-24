@@ -1,6 +1,8 @@
 import {
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -11,11 +13,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import { getColumns } from "./Columns";
 
 export function DataTable<TData, TValue>() {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const contextData = useContext(AssetContext);
   const data = contextData.assets;
   const columns = getColumns(
@@ -29,6 +33,9 @@ export function DataTable<TData, TValue>() {
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    state: { sorting },
   });
 
   return (

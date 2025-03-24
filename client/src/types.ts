@@ -1,4 +1,5 @@
-import { z } from "zod";export interface Preset {
+import { z } from "zod";
+export interface Preset {
   ID: number;
   name: string;
   typeID?: number;
@@ -6,7 +7,7 @@ import { z } from "zod";export interface Preset {
 
 export interface User {
   ID: string;
-  value: string;
+  name: string;
 }
 
 export const assetSchema = z

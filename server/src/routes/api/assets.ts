@@ -68,7 +68,7 @@ router.post("/", async function (req, res) {
       assignedTo, 
       purchaseDate, 
       warrantyExp, 
-      cost, 
+      cost
     )
     VALUES (
       @name, 
@@ -79,7 +79,7 @@ router.post("/", async function (req, res) {
       @assignedTo, 
       @purchaseDate, 
       @warrantyExp, 
-      @cost, 
+      @cost
     )
   `);
     res.status(200).json({ message: "Data inserted successfully!" });
@@ -127,7 +127,7 @@ router.put("/", async function (req, res) {
       assignedTo = @assignedTo,
       purchaseDate = @purchaseDate,
       warrantyExp = @warrantyExp,
-      cost = @cost,
+      cost = @cost
     WHERE ID = @ID
   `);
 

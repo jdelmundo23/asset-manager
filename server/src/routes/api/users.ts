@@ -22,7 +22,7 @@ router.get("/all", async function (req, res) {
     res.json(
       data.value.map((user: User) => ({
         ID: user.id,
-        value: user.displayName,
+        name: user.displayName,
       }))
     );
   } catch (err) {
