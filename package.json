@@ -3,13 +3,19 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "concurrently \"npm start --prefix client\" \"npm start --prefix server\""
+    "lint": "eslint . --ext .js,.ts,.jsx,.tsx",
+    "start": "concurrently \"npm run lint && npm start --prefix client\" \"npm run lint && npm start --prefix server\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "@eslint/js": "^9.23.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.23.0",
+    "eslint-plugin-react": "^7.37.4",
+    "globals": "^16.0.0",
+    "typescript-eslint": "^8.28.0"
   },
   "dependencies": {
     "zod": "^3.24.2"

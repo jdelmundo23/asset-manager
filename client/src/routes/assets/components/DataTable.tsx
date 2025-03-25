@@ -17,7 +17,7 @@ import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import { getColumns } from "./Columns";
 
-export function DataTable<TData, TValue>() {
+export function DataTable() {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const contextData = useContext(AssetContext);
