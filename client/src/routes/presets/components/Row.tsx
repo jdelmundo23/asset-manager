@@ -4,7 +4,7 @@ import DeletePreset from "./DeletePreset";
 import EditPreset from "./EditPreset";
 import MissingAlert from "./MissingAlert";
 import { Card } from "@/components/ui/card";
-import { Preset } from "@/types";
+import { Preset } from "@shared/schemas";
 
 interface RowProps {
   row: Preset;

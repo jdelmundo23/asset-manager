@@ -1,5 +1,5 @@
 import { Column, ColumnDef } from "@tanstack/react-table";
-import { AssetRow, Preset, User } from "@/types";
+import { AssetRow, Preset, User } from "@shared/schemas";
 
 import { MoreHorizontal, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 

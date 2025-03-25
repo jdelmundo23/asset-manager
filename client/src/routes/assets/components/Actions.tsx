@@ -1,6 +1,6 @@
 import { toast } from "sonner";
-import axios, { AxiosStatic } from "axios";
-import { Asset, AssetRow } from "@/types";
+import axios from "axios";
+import { Asset, AssetRow } from "@shared/schemas";
 import { FetcherWithComponents } from "react-router";
 
 type ActionType = "add" | "edit" | "delete";

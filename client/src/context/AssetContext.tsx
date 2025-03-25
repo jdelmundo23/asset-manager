@@ -1,4 +1,5 @@
-import { createContext } from "react";import { AssetRow, Preset, User } from "@/types";
+import { createContext } from "react";
+import { AssetRow, Preset, User } from "@shared/schemas";
 import { FetcherWithComponents } from "react-router";
 interface AssetContextType {
   assets: AssetRow[];

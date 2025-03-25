@@ -1,6 +1,6 @@
 import express from "express";
 import { getPool } from "../../sql";
-import { Asset, assetSchema } from "../../types/assetSchema";
+import { Asset, assetSchema } from "@shared/schemas";
 import sql from "mssql";
 import { z } from "zod";
 const router = express.Router();

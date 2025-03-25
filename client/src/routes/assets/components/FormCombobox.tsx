@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
-import { Asset } from "@/types";
+import { Asset } from "@shared/schemas";
 import { cn } from "@/lib/utils";
 
 interface FormComboboxProps<

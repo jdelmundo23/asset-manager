@@ -29,7 +29,7 @@ import {
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PresetContext from "@/context/PresetContext";
-import { Preset } from "@/types";
+import { Preset } from "@shared/schemas";
 
 interface PresetFormProps {
   operation: "add" | "edit";

@@ -3,7 +3,7 @@ import { DataTable } from "./components/DataTable";
 import axios from "axios";
 import AddAsset from "./components/AddAsset";
 import AssetContext from "@/context/AssetContext";
-import { assetSchema } from "@/types";
+import { assetSchema } from "@shared/schemas";
 import { z } from "zod";
 
 axios.defaults.withCredentials = true;
@@ -40,7 +40,7 @@ function Page() {
   const data = fetcher.data || useLoaderData();
 
   return (
-    <div className="dark container mx-auto py-10 flex flex-col gap-2">
+    <div className="dark container mx-auto flex flex-col gap-2 py-10">
       <AssetContext.Provider value={{ ...data, fetcher }}>
         <AddAsset />
         <DataTable />

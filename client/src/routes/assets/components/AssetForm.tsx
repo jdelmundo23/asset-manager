@@ -23,7 +23,7 @@ import { Calendar as CalendarIcon, LoaderCircle } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import AssetContext from "@/context/AssetContext";
 import { useContext, useEffect } from "react";
-import { Asset, AssetRow, assetSchema } from "@/types";
+import { Asset, AssetRow, assetSchema } from "@shared/schemas";
 import FormCombobox from "./FormCombobox";
 import { handleAssetAction } from "./Actions";
 
@@ -78,7 +78,7 @@ export default function AssetForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-3 mx-auto py-1 text-white"
+        className="mx-auto space-y-3 py-1 text-white"
       >
         <FormField
           control={form.control}
@@ -113,7 +113,7 @@ export default function AssetForm({
           )}
         />
 
-        <div className="grid sm:grid-cols-12 gap-4">
+        <div className="grid gap-4 sm:grid-cols-12">
           <div className="col-span-6">
             <FormCombobox
               form={form}
@@ -173,7 +173,7 @@ export default function AssetForm({
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-12 gap-4">
+        <div className="grid gap-4 sm:grid-cols-12">
           <div className="col-span-6">
             <FormCombobox
               form={form}
@@ -234,7 +234,7 @@ export default function AssetForm({
           choices={{
             items: users,
             valueKey: "ID",
-            labelKey: "value",
+            labelKey: "name",
           }}
           onSelect={async (val, fieldName, newVal) => {
             if (val === newVal.ID) {
@@ -246,14 +246,14 @@ export default function AssetForm({
           }}
         />
 
-        <div className="grid sm:grid-cols-12 gap-4">
+        <div className="grid gap-4 sm:grid-cols-12">
           <div className="col-span-6">
             <FormField
               control={form.control}
               name="purchaseDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="flex justify-between items-baseline">
+                  <FormLabel className="flex items-baseline justify-between">
                     <p>Purchase Date</p>
                   </FormLabel>
                   <Popover>
@@ -277,7 +277,7 @@ export default function AssetForm({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 dark" align="start">
+                    <PopoverContent className="dark w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={field.value}
@@ -306,7 +306,7 @@ export default function AssetForm({
               name="warrantyExp"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel className="flex justify-between items-baseline">
+                  <FormLabel className="flex items-baseline justify-between">
                     <p>Warranty Exp.</p>
                     {field.value ? (
                       <button
@@ -318,7 +318,7 @@ export default function AssetForm({
                           });
                         }}
                       >
-                        <p className="text-[0.55rem] opacity-50 font-light underline">
+                        <p className="text-[0.55rem] font-light underline opacity-50">
                           Clear date
                         </p>
                       </button>
@@ -347,7 +347,7 @@ export default function AssetForm({
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 dark" align="start">
+                    <PopoverContent className="dark w-auto p-0" align="start">
                       <Calendar
                         mode="single"
                         selected={
