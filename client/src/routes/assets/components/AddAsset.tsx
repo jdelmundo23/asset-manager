@@ -16,12 +16,12 @@ function AddAsset() {
         <AlertDialogTrigger>
           <Button variant={"secondary"}>Add Asset</Button>
         </AlertDialogTrigger>
-        <AlertDialogContent className="dark sm:max-w-2xl overflow-y-auto max-h-screen">
+        <AlertDialogContent className="dark max-h-screen overflow-y-auto sm:max-w-2xl">
           <div
-            className="absolute right-4 top-4 text-white cursor-pointer"
+            className="absolute right-4 top-4 cursor-pointer text-white"
             onClick={() => setOpen(false)}
           >
-            <X className="w-6 h-6 text-muted-foreground" />
+            <X className="text-muted-foreground h-6 w-6" />
           </div>
           <AssetForm mode="add" closeDialog={() => setOpen(false)} />
         </AlertDialogContent>

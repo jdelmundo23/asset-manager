@@ -22,7 +22,7 @@ function EditAsset({ open, setOpen, asset }: EditAssetProps) {
           className="absolute right-4 top-4 cursor-pointer text-white"
           onClick={() => setOpen(false)}
         >
-          <X className="h-6 w-6 text-muted-foreground" />
+          <X className="text-muted-foreground h-6 w-6" />
         </div>
         <AssetForm
           mode="edit"

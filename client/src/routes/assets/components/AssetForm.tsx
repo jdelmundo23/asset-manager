@@ -64,10 +64,10 @@ export default function AssetForm({
 
   async function onSubmit(values: Asset) {
     if (mode === "add") {
-      handleAssetAction("add", values, fetcher)
+      handleAssetAction("add", values, fetcher);
     } else {
-      handleAssetAction("edit", values, fetcher)
-     }
+      handleAssetAction("edit", values, fetcher);
+    }
   }
 
   const selectedType = form.watch("typeID");
@@ -386,7 +386,7 @@ export default function AssetForm({
                   placeholder="$0.00"
                   decimalsLimit={2}
                   prefix="$"
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                  className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
                   value={field.value}
                   onValueChange={(value) => {
                     field.onChange(value || "");

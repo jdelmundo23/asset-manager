@@ -24,7 +24,7 @@ const filterHeader = (column: Column<AssetRow, unknown>, header: string) => {
     case false:
       arrow = (
         <ArrowUpDown
-          className={`h-4 w-4 cursor-pointer opacity-0 group-hover:opacity-100 rounded-sm hover:bg-zinc-700`}
+          className={`h-4 w-4 cursor-pointer rounded-sm opacity-0 hover:bg-zinc-700 group-hover:opacity-100`}
           onClick={() => column.toggleSorting(false)}
         />
       );
@@ -40,14 +40,14 @@ const filterHeader = (column: Column<AssetRow, unknown>, header: string) => {
     case "desc":
       arrow = (
         <ArrowDown
-          className={`h-4 w-4 cursor-pointer  rounded-sm hover:bg-zinc-700`}
+          className={`h-4 w-4 cursor-pointer rounded-sm hover:bg-zinc-700`}
           onClick={() => column.toggleSorting(false)}
         />
       );
       break;
   }
   return (
-    <div className="flex justify-between items-center group">
+    <div className="group flex items-center justify-between">
       {header}
       {arrow}
     </div>
@@ -232,7 +232,7 @@ export const getColumns = (
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-6 h-6 p-0 ">
+              <Button variant="ghost" className="h-6 w-6 p-0">
                 <span className="sr-only">Open menu</span>
                 <MoreHorizontal className="" />
               </Button>

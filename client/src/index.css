@@ -80,7 +80,7 @@
     @apply border-border;
   }
   body {
-    @apply font-inter antialiased bg-background text-foreground;
+    @apply font-inter bg-background text-foreground antialiased;
   }
 }
 
@@ -95,7 +95,7 @@
 
 @layer components {
   .nav-item {
-    @apply rounded-md h-8 flex flex-shrink-0 items-center px-2 w-full hover:bg-zinc-800 transition-colors duration-100 ease-in-out cursor-pointer whitespace-nowrap;
+    @apply flex h-8 w-full flex-shrink-0 cursor-pointer items-center whitespace-nowrap rounded-md px-2 transition-colors duration-100 ease-in-out hover:bg-zinc-800;
   }
 }
 

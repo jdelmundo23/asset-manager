@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "lint": "eslint . --ext .js,.ts,.jsx,.tsx",
-    "start": "concurrently \"npm run lint && npm start --prefix client\" \"npm run lint && npm start --prefix server\""
+    "start": "npm run lint && concurrently \"npm start --prefix client\" \"npm start --prefix server\""
   },
   "keywords": [],
   "author": "",
@@ -13,8 +13,11 @@
     "@eslint/js": "^9.23.0",
     "concurrently": "^9.1.0",
     "eslint": "^9.23.0",
+    "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-react": "^7.37.4",
     "globals": "^16.0.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "typescript-eslint": "^8.28.0"
   },
   "dependencies": {

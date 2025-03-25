@@ -34,7 +34,7 @@ function Page() {
       try {
         setIsLoading(true);
         const result = await axios.get(
-          `${apiUrl}/api/presets/${table.tableName}`,
+          `${apiUrl}/api/presets/${table.tableName}`
         );
         setData(result.data);
 
