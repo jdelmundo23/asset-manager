@@ -1,7 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,20 +11,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { format } from "date-fns";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import AssetContext from "@/context/AssetContext";
 import { useContext, useEffect } from "react";
 import { Asset, AssetRow, assetSchema } from "@shared/schemas";
 import FormCombobox from "./FormCombobox";
 import { handleAssetAction } from "./Actions";
+import CalendarPopover from "@/components/CalendarPopover";
 
 interface BaseProps {
   closeDialog: () => void;
@@ -258,44 +251,12 @@ export default function AssetForm({
                   <FormLabel className="flex items-baseline justify-between">
                     <p>Purchase Date</p>
                   </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 pr-2 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <div className="ml-auto flex gap-x-1">
-                            <CalendarIcon className="h-4 w-4 opacity-50" />
-                          </div>
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="dark w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={(day, selectedDay) => {
-                          if (field.value !== selectedDay) {
-                            field.onChange(selectedDay);
-                          }
-                        }}
-                        captionLayout="dropdown-buttons"
-                        initialFocus
-                        fromYear={2000}
-                        toYear={2040}
-                      />
-                    </PopoverContent>
-                  </Popover>
-
+                  <CalendarPopover
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeHolder="Pick a date"
+                    width={240}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
@@ -328,45 +289,12 @@ export default function AssetForm({
                       ""
                     )}
                   </FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-[240px] pl-3 pr-2 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <div className="ml-auto flex gap-x-1">
-                            <CalendarIcon className="h-4 w-4 opacity-50" />
-                          </div>
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="dark w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={
-                          field.value === null ? undefined : field.value
-                        }
-                        onSelect={(day, selectedDay) => {
-                          if (field.value !== selectedDay) {
-                            field.onChange(selectedDay);
-                          }
-                        }}
-                        captionLayout="dropdown-buttons"
-                        fromYear={2000}
-                        toYear={2040}
-                      />
-                    </PopoverContent>
-                  </Popover>
-
+                  <CalendarPopover
+                    value={field.value === null ? undefined : field.value}
+                    onChange={field.onChange}
+                    placeHolder="Pick a date"
+                    width={240}
+                  />
                   <FormMessage />
                 </FormItem>
               )}

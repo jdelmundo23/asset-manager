@@ -46,7 +46,7 @@ export const handleAssetAction = async (
   );
 
   try {
-    const response = await axios[action.method](action.url(values), values);
+    await axios[action.method](action.url(values), values);
     try {
       await fetcher?.load("/admin/assets");
 

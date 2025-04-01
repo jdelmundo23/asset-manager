@@ -1,7 +1,7 @@
-import { Column, ColumnDef } from "@tanstack/react-table";
+import { ColumnDef } from "@tanstack/react-table";
 import { AssetRow, Preset, User } from "@shared/schemas";
 
-import { MoreHorizontal, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,46 +13,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { handleAssetAction } from "./Actions";
+import { handleAssetAction } from "../table_actions/Actions";
 import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
-import EditAsset from "./EditAsset";
-
-const filterHeader = (column: Column<AssetRow, unknown>, header: string) => {
-  let arrow: JSX.Element = <></>;
-  switch (column.getIsSorted()) {
-    case false:
-      arrow = (
-        <ArrowUpDown
-          className={`h-4 w-4 cursor-pointer rounded-sm opacity-0 hover:bg-zinc-700 group-hover:opacity-100`}
-          onClick={() => column.toggleSorting(false)}
-        />
-      );
-      break;
-    case "asc":
-      arrow = (
-        <ArrowUp
-          className={`h-4 w-4 cursor-pointer rounded-sm hover:bg-zinc-700`}
-          onClick={() => column.toggleSorting(true)}
-        />
-      );
-      break;
-    case "desc":
-      arrow = (
-        <ArrowDown
-          className={`h-4 w-4 cursor-pointer rounded-sm hover:bg-zinc-700`}
-          onClick={() => column.toggleSorting(false)}
-        />
-      );
-      break;
-  }
-  return (
-    <div className="group flex items-center justify-between">
-      {header}
-      {arrow}
-    </div>
-  );
-};
+import EditAsset from "../table_actions/EditAsset";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";
@@ -68,6 +32,44 @@ const compareNames = (
   return nameA.localeCompare(nameB);
 };
 
+const selectFilterFn = (
+  rowValue: unknown,
+  filterValue: string[],
+  items: Preset[] | User[]
+): boolean => {
+  const name = items.find((item) => item.ID === rowValue)?.name;
+  if (!name) {
+    return false;
+  }
+  if (filterValue.length <= 0) {
+    return true;
+  }
+  return filterValue.includes(name);
+};
+
+const dateFilterFn = (
+  rowValue: Date | undefined,
+  filterValue: [Date | undefined, Date | undefined]
+): boolean => {
+  if (filterValue.some((item: Date | undefined) => item !== undefined)) {
+    const [from, to] = filterValue;
+    const date: Date | undefined = rowValue;
+    if (!date) {
+      return false;
+    }
+    if (from !== undefined && to === undefined) {
+      return date >= from;
+    }
+    if (from === undefined && to !== undefined) {
+      return date <= to;
+    }
+    if (from !== undefined && to !== undefined) {
+      return date >= from && date <= to;
+    }
+  }
+  return true;
+};
+
 export const getColumns = (
   locations: Preset[],
   departments: Preset[],
@@ -78,21 +80,17 @@ export const getColumns = (
   return [
     {
       accessorKey: "name",
-      header: ({ column }) => {
-        return filterHeader(column, "Name");
-      },
+      header: "Name",
+      meta: { type: "text" },
     },
     {
       accessorKey: "identifier",
-      header: ({ column }) => {
-        return filterHeader(column, "Identifier");
-      },
+      header: "Identifier",
+      meta: { type: "text" },
     },
     {
       accessorKey: "modelID",
-      header: ({ column }) => {
-        return filterHeader(column, "Model");
-      },
+      header: "Model",
       cell: ({ row }) => {
         const model = models.find(
           (model) => row.getValue("modelID") === model.ID
@@ -106,12 +104,14 @@ export const getColumns = (
           rowB.original.modelID
         );
       },
+      filterFn: (row, columnId, filterValue) => {
+        return selectFilterFn(row.getValue(columnId), filterValue, models);
+      },
+      meta: { type: "select", options: models },
     },
     {
       accessorKey: "typeID",
-      header: ({ column }) => {
-        return filterHeader(column, "Type");
-      },
+      header: "Type",
       cell: ({ row }) => {
         const type = types.find((type) => row.getValue("typeID") === type.ID);
         return type ? type.name : "N/A";
@@ -119,12 +119,14 @@ export const getColumns = (
       sortingFn: (rowA, rowB) => {
         return compareNames(types, rowA.original.typeID, rowB.original.typeID);
       },
+      filterFn: (row, columnId, filterValue) => {
+        return selectFilterFn(row.getValue(columnId), filterValue, types);
+      },
+      meta: { type: "select", options: types },
     },
     {
       accessorKey: "locationID",
-      header: ({ column }) => {
-        return filterHeader(column, "Location");
-      },
+      header: "Location",
       cell: ({ row }) => {
         const location = locations.find(
           (location) => row.getValue("locationID") === location.ID
@@ -138,12 +140,14 @@ export const getColumns = (
           rowB.original.locationID
         );
       },
+      filterFn: (row, columnId, filterValue) => {
+        return selectFilterFn(row.getValue(columnId), filterValue, locations);
+      },
+      meta: { type: "select", options: locations },
     },
     {
       accessorKey: "departmentID",
-      header: ({ column }) => {
-        return filterHeader(column, "Department");
-      },
+      header: "Department",
       cell: ({ row }) => {
         const department = departments.find(
           (department) => row.getValue("departmentID") === department.ID
@@ -157,12 +161,14 @@ export const getColumns = (
           rowB.original.departmentID
         );
       },
+      filterFn: (row, columnId, filterValue) => {
+        return selectFilterFn(row.getValue(columnId), filterValue, departments);
+      },
+      meta: { type: "select", options: departments },
     },
     {
       accessorKey: "assignedTo",
-      header: ({ column }) => {
-        return filterHeader(column, "Assigned To");
-      },
+      header: "Assigned To",
       cell: ({ row }) => {
         return (
           users.find((user) => user.ID === row.getValue("assignedTo"))?.name ||
@@ -176,12 +182,14 @@ export const getColumns = (
           rowB.original.assignedTo
         );
       },
+      filterFn: (row, columnId, filterValue) => {
+        return selectFilterFn(row.getValue(columnId), filterValue, users);
+      },
+      meta: { type: "select", options: users },
     },
     {
       accessorKey: "purchaseDate",
-      header: ({ column }) => {
-        return filterHeader(column, "Purchase Date");
-      },
+      header: "Purchase Date",
       cell: ({ row }) => {
         if (!row.original.purchaseDate) {
           return "";
@@ -189,13 +197,14 @@ export const getColumns = (
         const date = new Date(row.getValue("purchaseDate"));
         return new Intl.DateTimeFormat("en-us").format(date);
       },
-      sortingFn: "datetime",
+      filterFn: (row, columnId, filterValue) => {
+        return dateFilterFn(row.getValue(columnId), filterValue);
+      },
+      meta: { type: "date" },
     },
     {
       accessorKey: "warrantyExp",
-      header: ({ column }) => {
-        return filterHeader(column, "Warranty Exp.");
-      },
+      header: "Warranty Exp.",
       cell: ({ row }) => {
         if (!row.original.warrantyExp) {
           return "";
@@ -204,12 +213,14 @@ export const getColumns = (
         return new Intl.DateTimeFormat("en-us").format(date);
       },
       sortingFn: "datetime",
+      filterFn: (row, columnId, filterValue) => {
+        return dateFilterFn(row.getValue(columnId), filterValue);
+      },
+      meta: { type: "date" },
     },
     {
       accessorKey: "cost",
-      header: ({ column }) => {
-        return filterHeader(column, "Cost");
-      },
+      header: "Cost",
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("cost"));
         const formatted = new Intl.NumberFormat("en-US", {
@@ -218,6 +229,9 @@ export const getColumns = (
         }).format(amount);
 
         return <div className="">{formatted}</div>;
+      },
+      sortingFn: (rowA, rowB) => {
+        return parseFloat(rowA.original.cost) - parseFloat(rowB.original.cost);
       },
     },
     {
