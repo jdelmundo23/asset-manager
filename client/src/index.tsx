@@ -14,8 +14,8 @@ import Signin from "./routes/Signin";
 import Dashboard from "./routes/Dashboard";
 import Protected from "./routes/protected/Protected";
 import Admin from "./routes/Admin";
-import Presets from "./routes/presets/Page";
-import Assets, { loader as assetLoader } from "./routes/assets/Page";
+import Presets from "./routes/modules/presets/Page";
+import Assets, { loader as assetLoader } from "./routes/modules/assets/Page";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
