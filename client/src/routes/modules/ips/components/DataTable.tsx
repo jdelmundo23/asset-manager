@@ -17,7 +17,7 @@ import IPContext from "@/context/IPContext";
 
 export function DataTable() {
   const contextData = useContext(IPContext);
-  const data = contextData.IPs;
+  const data = contextData.ips;
   const columns = getColumns();
   const table = useReactTable({
     data,
