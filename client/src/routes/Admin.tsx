@@ -22,6 +22,11 @@ const cards = [
     title: "Presets",
     description: "Manage inventory presets",
   },
+  {
+    link: "/admin/ips",
+    title: "IP Addresses",
+    description: "View and manage IP addresses",
+  },
 ];
 
 function Admin() {

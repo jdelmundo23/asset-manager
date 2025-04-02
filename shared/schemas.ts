@@ -49,7 +49,7 @@ export interface AssetRow extends Asset {
   ID: number;
 }
 
-export const IPSchema = z.object({
+export const ipSchema = z.object({
   ID: z.number().optional(),
   ipAddress: z
     .union([z.string().ip(), z.literal("")])
@@ -69,7 +69,12 @@ export const IPSchema = z.object({
     ])
     .nullish()
     .transform((value) => value ?? ""),
-  assetID: z.number(),
+  assetID: z.number().nullish(),
+  assetName: z.string().min(2).max(100).nullish(),
 });
 
-export type IP = z.infer<typeof IPSchema>;
+export type ip = z.infer<typeof ipSchema>;
+
+export interface ipRow extends ip {
+  ID: number;
+}

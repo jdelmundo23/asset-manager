@@ -1,11 +1,6 @@
 import {
-  Column,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -16,69 +11,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useContext, useState } from "react";
-import AssetContext from "@/context/AssetContext";
+import { useContext } from "react";
 import { getColumns } from "./Columns";
-import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from "lucide-react";
-import { AssetRow } from "@shared/schemas";
-import { FilterBox } from "./Filtering";
-
-const SortArrow = ({ column }: { column: Column<AssetRow, unknown> }) => {
-  let arrow: JSX.Element = <></>;
-  switch (column.getIsSorted()) {
-    case false:
-      arrow = (
-        <ArrowUpDown
-          className={`h-4 w-4 cursor-pointer rounded-sm opacity-0 hover:bg-zinc-700 group-hover:opacity-100`}
-          onClick={() => column.toggleSorting(false)}
-        />
-      );
-      break;
-    case "asc":
-      arrow = (
-        <ArrowUp
-          className={`h-4 w-4 cursor-pointer rounded-sm hover:bg-zinc-700`}
-          onClick={() => column.toggleSorting(true)}
-        />
-      );
-      break;
-    case "desc":
-      arrow = (
-        <ArrowDown
-          className={`h-4 w-4 cursor-pointer rounded-sm hover:bg-zinc-700`}
-          onClick={() => column.toggleSorting(false)}
-        />
-      );
-      break;
-  }
-  return arrow;
-};
+import IPContext from "@/context/IPContext";
 
 export function DataTable() {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-
-  const contextData = useContext(AssetContext);
-  const data = contextData.assets;
-  const columns = getColumns(
-    contextData.locations,
-    contextData.departments,
-    contextData.types,
-    contextData.models,
-    contextData.users
-  );
+  const contextData = useContext(IPContext);
+  const data = contextData.IPs;
+  const columns = getColumns();
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-    },
   });
 
   return (
@@ -102,19 +46,6 @@ export function DataTable() {
                                 header.column.columnDef.header,
                                 header.getContext()
                               )}
-                          <div className="flex flex-1 justify-between">
-                            {header.column.columnDef.meta?.type && (
-                              <FilterBox
-                                type={header.column.columnDef.meta?.type}
-                                column={header.column}
-                              >
-                                <Filter
-                                  className={`h-4 w-4 cursor-pointer rounded-sm ${header.column.getIsFiltered() ? "" : "opacity-0"} hover:bg-zinc-700 group-hover:opacity-100`}
-                                />
-                              </FilterBox>
-                            )}
-                            <SortArrow column={header.column} />
-                          </div>
                         </div>
                       </div>
                     </TableHead>

@@ -17,6 +17,7 @@ import apiRouter from "./routes/api/middleware";
 import presetRouter from "./routes/api/presets";
 import assetRouter from "./routes/api/assets";
 import usersRouter from "./routes/api/users";
+import ipsRouter from "./routes/api/ips";
 
 const corsOptions = {
   origin: "http://localhost:3000",
@@ -48,6 +49,7 @@ app.use("/api", apiRouter);
 app.use("/api/presets", presetRouter);
 app.use("/api/assets", assetRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/ips", ipsRouter);
 app.get("/", function (req, res) {
   res.json("API for inventory management");
 });
