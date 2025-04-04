@@ -16,7 +16,7 @@ import Protected from "./routes/protected/Protected";
 import Admin from "./routes/Admin";
 import Presets from "./routes/modules/presets/Page";
 import Assets, { loader as assetLoader } from "./routes/modules/assets/Page";
-import IPs, { loader as ipLoader } from "./routes/modules/ips/Page";
+import Network, { loader as ipLoader } from "./routes/modules/network/Page";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,7 +36,11 @@ const router = createBrowserRouter(
           element={<Assets />}
           loader={assetLoader}
         ></Route>
-        <Route path="admin/ips" element={<IPs />} loader={ipLoader}></Route>
+        <Route
+          path="admin/network"
+          element={<Network />}
+          loader={ipLoader}
+        ></Route>
       </Route>
     </Route>
   )

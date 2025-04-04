@@ -23,9 +23,9 @@ const cards = [
     description: "Manage inventory presets",
   },
   {
-    link: "/admin/ips",
-    title: "IP Addresses",
-    description: "View and manage IP addresses",
+    link: "/admin/network",
+    title: "Network",
+    description: "View and manage network IPs",
   },
 ];
 

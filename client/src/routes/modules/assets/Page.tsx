@@ -6,6 +6,8 @@ import AssetContext from "@/context/AssetContext";
 import { assetSchema } from "@shared/schemas";
 import { z } from "zod";
 
+import TableToolbar from "@/components/TableToolbar";
+
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -42,7 +44,9 @@ function Page() {
   return (
     <div className="dark container mx-auto flex flex-col gap-2 py-10">
       <AssetContext.Provider value={{ ...data, fetcher }}>
-        <AddAsset />
+        <TableToolbar tableTitle="Assets">
+          <AddAsset />
+        </TableToolbar>
         <DataTable />
       </AssetContext.Provider>
     </div>

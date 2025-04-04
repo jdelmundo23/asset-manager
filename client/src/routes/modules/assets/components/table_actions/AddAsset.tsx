@@ -11,22 +11,20 @@ import { X } from "lucide-react";
 function AddAsset() {
   const [open, setOpen] = useState(false);
   return (
-    <div className="flex flex-row-reverse">
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogTrigger>
-          <Button variant={"secondary"}>Add Asset</Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent className="dark max-h-screen overflow-y-auto sm:max-w-2xl">
-          <div
-            className="absolute right-4 top-4 cursor-pointer text-white"
-            onClick={() => setOpen(false)}
-          >
-            <X className="text-muted-foreground h-6 w-6" />
-          </div>
-          <AssetForm mode="add" closeDialog={() => setOpen(false)} />
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger>
+        <Button variant={"secondary"}>Add Asset</Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="dark max-h-screen overflow-y-auto sm:max-w-2xl">
+        <div
+          className="absolute right-4 top-4 cursor-pointer text-white"
+          onClick={() => setOpen(false)}
+        >
+          <X className="text-muted-foreground h-6 w-6" />
+        </div>
+        <AssetForm mode="add" closeDialog={() => setOpen(false)} />
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 

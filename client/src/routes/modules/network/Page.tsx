@@ -4,6 +4,8 @@ import IPContext from "@/context/IPContext";
 import { ipSchema } from "@shared/schemas";
 import { z } from "zod";
 import { DataTable } from "./components/DataTable";
+import { Button } from "@/components/ui/button";
+import TableToolbar from "@/components/TableToolbar";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -30,6 +32,9 @@ function Page() {
   return (
     <div className="dark container mx-auto flex w-1/2 flex-col gap-2 py-10">
       <IPContext.Provider value={{ ...data }}>
+        <TableToolbar tableTitle="Network">
+          <Button variant={"secondary"}>Add IP</Button>
+        </TableToolbar>
         <DataTable />
       </IPContext.Provider>
     </div>
