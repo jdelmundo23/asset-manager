@@ -6,7 +6,7 @@ import pluginReact from "eslint-plugin-react";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
 
 export default defineConfig([
-  globalIgnores(["server/dist/*", "client/src/components/ui"]),
+  globalIgnores(["server/dist/*", "client/src/components/shadcn-ui"]),
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     plugins: { js },

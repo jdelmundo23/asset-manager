@@ -3,7 +3,7 @@ import { useContext } from "react";
 import DeletePreset from "./DeletePreset";
 import EditPreset from "./EditPreset";
 import MissingAlert from "./MissingAlert";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/shadcn-ui/card";
 import { Preset } from "@shared/schemas";
 
 interface RowProps {

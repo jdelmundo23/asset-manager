@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/shadcn-ui/alert-dialog";
 import PresetContext from "@/context/PresetContext";
 import axios from "axios";
 import { Trash2 } from "lucide-react";

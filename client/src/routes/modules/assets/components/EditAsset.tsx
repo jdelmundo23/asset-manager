@@ -2,7 +2,7 @@ import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/shadcn-ui/alert-dialog";
 import AssetForm from "./AssetForm";
 import { X } from "lucide-react";
 import { AssetRow } from "@shared/schemas";

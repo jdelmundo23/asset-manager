@@ -8,9 +8,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+} from "@/components/shadcn-ui/form";
+import { Input } from "@/components/shadcn-ui/input";
+import { Button } from "@/components/shadcn-ui/button";
 import {
   Command,
   CommandEmpty,
@@ -18,14 +18,14 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command";
+} from "@/components/shadcn-ui/command";
 import axios from "axios";
 import { useContext, useState } from "react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/shadcn-ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PresetContext from "@/context/PresetContext";

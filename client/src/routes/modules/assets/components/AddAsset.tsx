@@ -2,8 +2,8 @@ import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
+} from "@/components/shadcn-ui/alert-dialog";
+import { Button } from "@/components/shadcn-ui/button";
 import AssetForm from "./AssetForm";
 import { useState } from "react";
 import { X } from "lucide-react";

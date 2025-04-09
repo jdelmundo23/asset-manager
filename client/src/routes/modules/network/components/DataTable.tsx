@@ -10,7 +10,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/shadcn-ui/table";
 import { useContext } from "react";
 import { getColumns } from "./Columns";
 import IPContext from "@/context/IPContext";

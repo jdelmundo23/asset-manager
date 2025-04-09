@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/shadcn-ui/button";
 import {
   Form,
   FormControl,
@@ -8,14 +8,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/shadcn-ui/form";
+import { Input } from "@/components/shadcn-ui/input";
 import { LoaderCircle } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import AssetContext from "@/context/AssetContext";
 import { useContext, useEffect } from "react";
 import { Asset, AssetRow, assetSchema } from "@shared/schemas";
-import FormCombobox from "./FormCombobox";
+import FormCombobox from "@/components/FormCombobox";
 import { handleAssetAction } from "./Actions";
 import CalendarPopover from "@/components/CalendarPopover";
 

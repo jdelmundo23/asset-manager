@@ -3,7 +3,7 @@ import { AssetRow, Preset, User } from "@shared/schemas";
 
 import { MoreHorizontal } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,12 +11,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from "@/components/shadcn-ui/dropdown-menu";
 
-import { handleAssetAction } from "../table_actions/Actions";
+import { handleAssetAction } from "@/routes/modules/assets/components/Actions";
 import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
-import EditAsset from "../table_actions/EditAsset";
+import EditAsset from "@/routes/modules/assets/components/EditAsset";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";

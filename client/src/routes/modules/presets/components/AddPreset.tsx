@@ -4,8 +4,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Card } from "@/components/ui/card";
+} from "@/components/shadcn-ui/alert-dialog";
+import { Card } from "@/components/shadcn-ui/card";
 import { Plus } from "lucide-react";
 import PresetForm from "./PresetForm";
 import { useContext, useState } from "react";

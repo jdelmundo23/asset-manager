@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/shadcn-ui/input";
 import {
   MultiSelector,
   MultiSelectorContent,
@@ -6,13 +6,13 @@ import {
   MultiSelectorItem,
   MultiSelectorList,
   MultiSelectorTrigger,
-} from "@/components/ui/multi-select";
-import { Button } from "@/components/ui/button";
+} from "@/components/shadcn-ui/multi-select";
+import { Button } from "@/components/shadcn-ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+} from "@/components/shadcn-ui/popover";
 import { AssetRow } from "@shared/schemas";
 import { Column } from "@tanstack/react-table";
 import { X } from "lucide-react";

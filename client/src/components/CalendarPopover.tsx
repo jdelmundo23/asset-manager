@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
-import { FormControl } from "./ui/form";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Button } from "./shadcn-ui/button";
+import { FormControl } from "./shadcn-ui/form";
+import { Popover, PopoverContent, PopoverTrigger } from "./shadcn-ui/popover";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "./ui/calendar";
+import { Calendar } from "./shadcn-ui/calendar";
 import { format } from "date-fns";
 import { useState } from "react";
 

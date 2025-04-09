@@ -5,8 +5,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/components/shadcn-ui/form";
+import { Input } from "@/components/shadcn-ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IP, ipSchema } from "@shared/schemas";
 import { useForm } from "react-hook-form";
@@ -17,13 +17,13 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
+} from "@/components/shadcn-ui/sheet";
+import { Button } from "@/components/shadcn-ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronsUpDown } from "lucide-react";
 import IpContext from "@/context/IPContext";
 import { useContext, useState } from "react";
-import { DataTable } from "../../assets/components/table_display/DataTable";
+import { DataTable } from "../../assets/table/DataTable";
 import { RowSelectionState } from "@tanstack/react-table";
 
 export default function IPForm() {

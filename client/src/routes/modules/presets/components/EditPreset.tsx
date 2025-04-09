@@ -4,7 +4,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from "@/components/shadcn-ui/alert-dialog";
 import { Pencil } from "lucide-react";
 import PresetForm from "./PresetForm";
 import { useContext, useState } from "react";

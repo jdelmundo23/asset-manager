@@ -3,7 +3,7 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from "@/components/shadcn-ui/tooltip";
 import { TriangleAlert } from "lucide-react";
 interface MissingAlertProps {
   message: string;

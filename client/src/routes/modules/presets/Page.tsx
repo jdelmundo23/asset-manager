@@ -1,10 +1,15 @@
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/shadcn-ui/separator";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/shadcn-ui/tabs";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/shadcn-ui/card";
 import AddPreset from "./components/AddPreset";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/shadcn-ui/scroll-area";
 import axios from "axios";
 import PresetContext from "@/context/PresetContext";
 import Row from "./components/Row";

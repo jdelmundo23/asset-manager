@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/components/shadcn-ui/table";
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import { getColumns } from "./Columns";
