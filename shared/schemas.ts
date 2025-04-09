@@ -73,8 +73,8 @@ export const ipSchema = z.object({
   assetName: z.string().min(2).max(100).nullish(),
 });
 
-export type ip = z.infer<typeof ipSchema>;
+export type IP = z.infer<typeof ipSchema>;
 
-export interface ipRow extends ip {
+export interface IPRow extends IP {
   ID: number;
 }

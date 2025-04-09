@@ -5,8 +5,10 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
+  RowSelectionState,
   SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -16,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useContext, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import { getColumns } from "./Columns";
 import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from "lucide-react";
@@ -54,18 +56,46 @@ const SortArrow = ({ column }: { column: Column<AssetRow, unknown> }) => {
   return arrow;
 };
 
-export function DataTable() {
+interface DataTableProps {
+  assets: AssetRow[];
+  detailed: boolean;
+  selectedRow?: RowSelectionState;
+  onRowSelect?: Dispatch<SetStateAction<RowSelectionState>>;
+}
+
+export function DataTable({
+  assets,
+  detailed,
+  selectedRow,
+  onRowSelect,
+}: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const rowSelection = selectedRow ?? {};
 
   const contextData = useContext(AssetContext);
-  const data = contextData.assets;
+  const data = assets;
   const columns = getColumns(
     contextData.locations,
     contextData.departments,
     contextData.types,
     contextData.models,
     contextData.users
+  );
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    detailed
+      ? {}
+      : {
+          modelID: false,
+          typeID: false,
+          departmentID: false,
+          locationID: false,
+          assignedTo: false,
+          purchaseDate: false,
+          warrantyExp: false,
+          cost: false,
+          actions: false,
+        }
   );
   const table = useReactTable({
     data,
@@ -75,9 +105,15 @@ export function DataTable() {
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: onRowSelect,
+    enableMultiRowSelection: false,
+    getRowId: (row) => row.ID.toString(),
     state: {
       sorting,
       columnFilters,
+      columnVisibility,
+      rowSelection,
     },
   });
 
@@ -130,6 +166,9 @@ export function DataTable() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className="border-b-2 border-zinc-100"
+                  onClick={() => {
+                    row.toggleSelected(true);
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

@@ -1,11 +1,13 @@
 import { createContext } from "react";
-import { ipRow } from "@shared/schemas";
-interface IpContextType {
-  ips: ipRow[];
+import { AssetRow, IPRow } from "@shared/schemas";
+interface IPContextType {
+  ips: IPRow[];
+  assets: AssetRow[];
 }
 
-const IpContext = createContext<IpContextType>({
+const IPContext = createContext<IPContextType>({
   ips: [],
+  assets: [],
 });
 
-export default IpContext;
+export default IPContext;

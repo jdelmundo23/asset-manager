@@ -71,11 +71,11 @@ const dateFilterFn = (
 };
 
 export const getColumns = (
-  locations: Preset[],
-  departments: Preset[],
-  types: Preset[],
-  models: Preset[],
-  users: User[]
+  locations: Preset[] = [],
+  departments: Preset[] = [],
+  types: Preset[] = [],
+  models: Preset[] = [],
+  users: User[] = []
 ): ColumnDef<AssetRow>[] => {
   return [
     {

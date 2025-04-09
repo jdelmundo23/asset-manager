@@ -47,7 +47,7 @@ function Page() {
         <TableToolbar tableTitle="Assets">
           <AddAsset />
         </TableToolbar>
-        <DataTable />
+        <DataTable assets={data.assets} detailed={true} />
       </AssetContext.Provider>
     </div>
   );

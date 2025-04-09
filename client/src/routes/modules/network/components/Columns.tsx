@@ -1,4 +1,4 @@
-import { ipRow } from "@shared/schemas";
+import { IPRow } from "@shared/schemas";
 import { ColumnDef } from "@tanstack/react-table";
 import {
   DropdownMenu,
@@ -11,7 +11,7 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const getColumns = (): ColumnDef<ipRow>[] => {
+export const getColumns = (): ColumnDef<IPRow>[] => {
   return [
     {
       accessorKey: "ipAddress",
@@ -26,8 +26,11 @@ export const getColumns = (): ColumnDef<ipRow>[] => {
       header: "MAC Address",
     },
     {
-      accessorKey: "assetName",
-      header: "Asset Name",
+      accessorKey: "assetID",
+      header: "Asset",
+      cell: ({ row }) => {
+        return row.original.assetName;
+      },
     },
     {
       id: "actions",

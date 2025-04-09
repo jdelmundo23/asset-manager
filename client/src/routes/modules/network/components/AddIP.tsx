@@ -4,16 +4,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import AssetForm from "./AssetForm";
 import { useState } from "react";
 import { X } from "lucide-react";
+import IPForm from "./IPForm";
 
-export default function AddAsset() {
+export default function AddIP() {
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger>
-        <Button variant={"secondary"}>Add Asset</Button>
+        <Button variant={"secondary"}>Add IP</Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="dark max-h-screen overflow-y-auto sm:max-w-2xl">
         <div
@@ -22,7 +22,7 @@ export default function AddAsset() {
         >
           <X className="text-muted-foreground h-6 w-6" />
         </div>
-        <AssetForm mode="add" closeDialog={() => setOpen(false)} />
+        <IPForm />
       </AlertDialogContent>
     </AlertDialog>
   );
