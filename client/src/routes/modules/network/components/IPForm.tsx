@@ -8,7 +8,7 @@ import {
 } from "@/components/shadcn-ui/form";
 import { Input } from "@/components/shadcn-ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IP, ipSchema } from "@shared/schemas";
+import { IP, IPRow, ipSchema } from "@shared/schemas";
 import { useForm } from "react-hook-form";
 import {
   Sheet,
@@ -20,22 +20,71 @@ import {
 } from "@/components/shadcn-ui/sheet";
 import { Button } from "@/components/shadcn-ui/button";
 import { cn } from "@/lib/utils";
-import { ChevronsUpDown } from "lucide-react";
+import { ChevronsUpDown, LoaderCircle } from "lucide-react";
 import IpContext from "@/context/IPContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { DataTable } from "../../assets/table/DataTable";
 import { RowSelectionState } from "@tanstack/react-table";
+import { handleAction } from "../../assets/components/Actions";
+import axios from "axios";
 
-export default function IPForm() {
-  const { assets } = useContext(IpContext);
+interface BaseProps {
+  closeDialog: () => void;
+}
+
+interface AddModeProps extends BaseProps {
+  mode: "add";
+  ip?: never;
+}
+
+interface EditModeProps extends BaseProps {
+  mode: "edit";
+  ip: IPRow;
+}
+
+type IPFormProps = AddModeProps | EditModeProps;
+
+export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
+  const { assets, fetcher } = useContext(IpContext);
   const form = useForm<IP>({
     resolver: zodResolver(ipSchema),
   });
 
+  useEffect(() => {
+    if (form.formState.isSubmitSuccessful) {
+      closeDialog();
+    }
+  }, [form.formState.isSubmitSuccessful]);
+
+  async function onSubmit(values: IP) {
+    try {
+      const result = await axios.get(`/api/ips/check?ip=${values.ipAddress}`);
+
+      const exists = result.data;
+
+      if (exists) {
+        form.setError("ipAddress", { message: "IP already exists" });
+      } else {
+        if (mode === "add") {
+          handleAction("ip", "add", values, fetcher);
+        } else {
+          handleAction("ip", "edit", values, fetcher);
+        }
+      }
+    } catch (error) {
+      console.error(
+        `Check existing IP failed: Error: `,
+        axios.isAxiosError(error)
+          ? (error.response?.data?.error ?? error.message)
+          : error
+      );
+    }
+  }
+
   return (
     <Form {...form}>
       <form
-        onSubmit={(e) => e.preventDefault()}
+        onSubmit={form.handleSubmit(onSubmit)}
         className="mx-auto space-y-3 py-1 text-white"
       >
         <FormField
@@ -73,7 +122,11 @@ export default function IPForm() {
             <FormItem>
               <FormLabel>MAC Address</FormLabel>
               <FormControl>
-                <Input placeholder="ex: 192.168.1.1" type="text" {...field} />
+                <Input
+                  placeholder="ex: 00-1A-2B-3C-4D-5E"
+                  type="text"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -101,6 +154,7 @@ export default function IPForm() {
                   >
                     <SheetTrigger>
                       <Button
+                        type="button"
                         variant="outline"
                         role="sheet"
                         className={cn(
@@ -112,7 +166,7 @@ export default function IPForm() {
                           ? assets.find((row) => {
                               return row.ID === field.value;
                             })?.name
-                          : "Add Asset"}
+                          : "Select Asset"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
                     </SheetTrigger>
@@ -151,10 +205,27 @@ export default function IPForm() {
           }}
         />
         <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
-          <Button variant="outline" className="text-white">
+          {form.formState.isSubmitting ? (
+            <div className="flex items-center">
+              <LoaderCircle
+                className="aspect-square animate-spin"
+                color="gray"
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+          <Button
+            type="button"
+            onClick={() => {
+              closeDialog();
+            }}
+            variant="outline"
+            className="text-white"
+          >
             Cancel
           </Button>
-          <Button>Add</Button>
+          <Button type="submit">Add</Button>
         </div>
       </form>
     </Form>

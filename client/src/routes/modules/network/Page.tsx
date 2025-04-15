@@ -34,7 +34,7 @@ function Page() {
 
   return (
     <div className="dark container mx-auto flex w-1/2 flex-col gap-2 py-10">
-      <IPContext.Provider value={{ ...data }}>
+      <IPContext.Provider value={{ ...data, fetcher }}>
         <TableToolbar tableTitle="Network">
           <AddIP />
         </TableToolbar>

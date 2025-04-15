@@ -53,8 +53,6 @@ export const ipSchema = z.object({
   ID: z.number().optional(),
   ipAddress: z
     .union([z.string().ip(), z.literal("")])
-    .optional()
-    .nullable()
     .transform((value) => value ?? ""),
   name: z.string().min(2).max(100),
   macAddress: z

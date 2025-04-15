@@ -22,7 +22,7 @@ export default function AddIP() {
         >
           <X className="text-muted-foreground h-6 w-6" />
         </div>
-        <IPForm />
+        <IPForm mode="add" closeDialog={() => setOpen(false)} />
       </AlertDialogContent>
     </AlertDialog>
   );

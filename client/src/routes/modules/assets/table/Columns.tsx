@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 
-import { handleAssetAction } from "@/routes/modules/assets/components/Actions";
+import { handleAction } from "@/routes/modules/assets/components/Actions";
 import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import EditAsset from "@/routes/modules/assets/components/EditAsset";
@@ -267,7 +267,7 @@ export const getColumns = (
               <DropdownMenuItem
                 className="text-red-600"
                 onClick={() =>
-                  handleAssetAction("delete", row.original, fetcher)
+                  handleAction("asset", "delete", row.original, fetcher)
                 }
               >
                 Delete Asset

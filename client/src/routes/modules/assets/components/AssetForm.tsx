@@ -16,7 +16,7 @@ import AssetContext from "@/context/AssetContext";
 import { useContext, useEffect } from "react";
 import { Asset, AssetRow, assetSchema } from "@shared/schemas";
 import FormCombobox from "@/components/FormCombobox";
-import { handleAssetAction } from "./Actions";
+import { handleAction } from "./Actions";
 import CalendarPopover from "@/components/CalendarPopover";
 
 interface BaseProps {
@@ -56,9 +56,9 @@ export default function AssetForm({
 
   async function onSubmit(values: Asset) {
     if (mode === "add") {
-      handleAssetAction("add", values, fetcher);
+      handleAction("asset", "add", values, fetcher);
     } else {
-      handleAssetAction("edit", values, fetcher);
+      handleAction("asset", "edit", values, fetcher);
     }
   }
 
@@ -337,10 +337,10 @@ export default function AssetForm({
             <></>
           )}
           <Button
+            type="button"
             variant="outline"
             className="text-white"
-            onClick={(e) => {
-              e.preventDefault();
+            onClick={() => {
               closeDialog();
             }}
           >
