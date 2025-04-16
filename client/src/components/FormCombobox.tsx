@@ -23,6 +23,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { Asset } from "@shared/schemas";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 interface FormComboboxProps<
   T extends keyof Asset,
@@ -51,6 +52,8 @@ function FormCombobox<
   L extends keyof C,
 >(props: FormComboboxProps<T, C, V, L>) {
   const { items, valueKey, labelKey } = props.choices;
+
+  const [open, setOpen] = useState<boolean>(false);
   return (
     <FormField
       control={props.form.control}
@@ -58,7 +61,7 @@ function FormCombobox<
       render={({ field }) => (
         <FormItem className="flex flex-col">
           <FormLabel>{props.options.fieldLabel}</FormLabel>
-          <Popover modal={true}>
+          <Popover modal={true} open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
@@ -97,6 +100,10 @@ function FormCombobox<
                             props.options.field,
                             choice
                           );
+
+                          if (field.value !== choice[valueKey]) {
+                            setTimeout(() => setOpen(false), 75);
+                          }
                         }}
                       >
                         <Check

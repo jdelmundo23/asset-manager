@@ -13,10 +13,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 
-import { handleAction } from "@/routes/modules/assets/components/Actions";
 import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import EditAsset from "@/routes/modules/assets/components/EditAsset";
+import DeleteAsset from "../components/DeleteAsset";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";
@@ -241,7 +241,8 @@ export const getColumns = (
 
         const { fetcher } = useContext(AssetContext);
 
-        const [alertOpen, setAlertOpen] = useState(false);
+        const [editOpen, setEditOpen] = useState(false);
+        const [deleteOpen, setDeleteOpen] = useState(false);
 
         return (
           <DropdownMenu>
@@ -261,25 +262,29 @@ export const getColumns = (
                 Copy Identifier
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setAlertOpen(true)}>
+              <DropdownMenuItem onClick={() => setEditOpen(true)}>
                 Edit Asset
               </DropdownMenuItem>
               <DropdownMenuItem
+                onClick={() => setDeleteOpen(true)}
                 className="text-red-600"
-                onClick={() =>
-                  handleAction("asset", "delete", row.original, fetcher)
-                }
               >
                 Delete Asset
               </DropdownMenuItem>
             </DropdownMenuContent>
 
             <EditAsset
-              open={alertOpen}
-              setOpen={setAlertOpen}
+              open={editOpen}
+              setOpen={setEditOpen}
               asset={{
-                ...row.original,
+                ...asset,
               }}
+            />
+            <DeleteAsset
+              open={deleteOpen}
+              setOpen={setDeleteOpen}
+              row={asset}
+              fetcher={fetcher}
             />
           </DropdownMenu>
         );

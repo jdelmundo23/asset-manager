@@ -66,6 +66,25 @@ router.post("/", async function (req, res) {
   }
 });
 
+router.delete("/:ipID", async function (req, res) {
+  const { ipID } = req.params;
+
+  if (!ipID) {
+    res.status(400).json({ error: "Asset ID is required" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+    const query = `DELETE FROM IPAddresses WHERE ID = @ID`;
+    await pool.request().input("ID", sql.Int, ipID).query(query);
+    res.status(200).json({ message: "IP deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete IP" });
+  }
+});
+
 router.get("/check", async (req, res) => {
   const parse = z.string().ip().safeParse(req.query.ip);
 

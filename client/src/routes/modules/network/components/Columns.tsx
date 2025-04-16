@@ -10,6 +10,9 @@ import {
 } from "@/components/shadcn-ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/shadcn-ui/button";
+import { useContext, useState } from "react";
+import IPContext from "@/context/IPContext";
+import DeleteIP from "./DeleteIP";
 
 export const getColumns = (): ColumnDef<IPRow>[] => {
   return [
@@ -35,6 +38,13 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
     {
       id: "actions",
       cell: ({ row }) => {
+        const ip = row.original;
+
+        const { fetcher } = useContext(IPContext);
+
+        const [editOpen, setEditOpen] = useState(false);
+        const [deleteOpen, setDeleteOpen] = useState(false);
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -45,13 +55,30 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="dark">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>Copy Identifier</DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  navigator.clipboard.writeText(ip.ipAddress.toString())
+                }
+              >
+                Copy IP
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => {}}>Edit IP</DropdownMenuItem>
-              <DropdownMenuItem className="text-red-600" onClick={() => {}}>
+              <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                Edit IP
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => setDeleteOpen(true)}
+                className="text-red-600"
+              >
                 Delete IP
               </DropdownMenuItem>
             </DropdownMenuContent>
+            <DeleteIP
+              open={deleteOpen}
+              setOpen={setDeleteOpen}
+              row={ip}
+              fetcher={fetcher}
+            />
           </DropdownMenu>
         );
       },
