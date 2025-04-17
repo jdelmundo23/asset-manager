@@ -52,7 +52,7 @@ const checkExistingPreset: RequestHandler = async (
   next
 ) => {
   if (!req.body) {
-    next();
+    return next();
   }
 
   const { name, oldName } = req.body;

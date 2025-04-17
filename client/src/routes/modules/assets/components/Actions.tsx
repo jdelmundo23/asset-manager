@@ -43,7 +43,7 @@ export const handleAction = async (
   actionType: ActionType,
   values: Asset | AssetRow | IP | IPRow,
   fetcher: FetcherWithComponents<any> | undefined
-) => {
+): Promise<void> => {
   if ((actionType === "edit" || actionType === "delete") && !("ID" in values)) {
     throw new Error(`Cannot ${actionType} ${endpointType}: Missing ID.`);
   }
@@ -96,5 +96,6 @@ export const handleAction = async (
         id: loadingToast,
       }
     );
+    throw error;
   }
 };

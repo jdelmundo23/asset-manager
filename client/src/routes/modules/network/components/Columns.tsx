@@ -13,6 +13,7 @@ import { Button } from "@/components/shadcn-ui/button";
 import { useContext, useState } from "react";
 import IPContext from "@/context/IPContext";
 import DeleteIP from "./DeleteIP";
+import EditIP from "./EditIP";
 
 export const getColumns = (): ColumnDef<IPRow>[] => {
   return [
@@ -73,6 +74,7 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
                 Delete IP
               </DropdownMenuItem>
             </DropdownMenuContent>
+            <EditIP open={editOpen} setOpen={setEditOpen} ip={ip} />
             <DeleteIP
               open={deleteOpen}
               setOpen={setDeleteOpen}

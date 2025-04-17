@@ -48,6 +48,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
   const { assets, fetcher } = useContext(IpContext);
   const form = useForm<IP>({
     resolver: zodResolver(ipSchema),
+    ...(mode === "edit" && ip ? { defaultValues: ip } : {}),
   });
 
   useEffect(() => {
@@ -58,26 +59,17 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
 
   async function onSubmit(values: IP) {
     try {
-      const result = await axios.get(`/api/ips/check?ip=${values.ipAddress}`);
-
-      const exists = result.data;
-
-      if (exists) {
-        form.setError("ipAddress", { message: "IP already exists" });
+      if (mode === "add") {
+        await handleAction("ip", "add", values, fetcher);
       } else {
-        if (mode === "add") {
-          handleAction("ip", "add", values, fetcher);
-        } else {
-          handleAction("ip", "edit", values, fetcher);
-        }
+        await handleAction("ip", "edit", values, fetcher);
       }
     } catch (error) {
-      console.error(
-        `Check existing IP failed: Error: `,
-        axios.isAxiosError(error)
+      form.setError("ipAddress", {
+        message: axios.isAxiosError(error)
           ? (error.response?.data?.error ?? error.message)
-          : error
-      );
+          : error,
+      });
     }
   }
 
@@ -225,7 +217,15 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
           >
             Cancel
           </Button>
-          <Button type="submit">Add</Button>
+          <Button
+            type="submit"
+            disabled={
+              mode === "edit" &&
+              JSON.stringify(ip) === JSON.stringify(form.getValues())
+            }
+          >
+            {mode === "add" ? "Add" : "Edit"}
+          </Button>
         </div>
       </form>
     </Form>
