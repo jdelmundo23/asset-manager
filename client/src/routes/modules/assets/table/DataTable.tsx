@@ -139,7 +139,7 @@ export function DataTable({
                                 header.getContext()
                               )}
                           <div className="flex flex-1 justify-between">
-                            {header.column.columnDef.meta?.type && (
+                            {header.column.columnDef.meta?.type ? (
                               <FilterBox
                                 type={header.column.columnDef.meta?.type}
                                 column={header.column}
@@ -148,8 +148,14 @@ export function DataTable({
                                   className={`h-4 w-4 cursor-pointer rounded-sm ${header.column.getIsFiltered() ? "" : "opacity-0"} hover:bg-zinc-700 group-hover:opacity-100`}
                                 />
                               </FilterBox>
+                            ) : (
+                              <div></div>
                             )}
-                            <SortArrow column={header.column} />
+                            {header.column.getCanSort() ? (
+                              <SortArrow column={header.column} />
+                            ) : (
+                              <div></div>
+                            )}
                           </div>
                         </div>
                       </div>

@@ -13,13 +13,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/shadcn-ui/popover";
-import { AssetRow } from "@shared/schemas";
+import { AssetRow, IPRow } from "@shared/schemas";
 import { Column } from "@tanstack/react-table";
 import { X } from "lucide-react";
 import { useState } from "react";
 import CalendarPopover from "@/components/CalendarPopover";
 
-const TextFilter = ({ column }: { column: Column<AssetRow, unknown> }) => {
+const TextFilter = ({
+  column,
+}: {
+  column: Column<AssetRow, unknown> | Column<IPRow, unknown>;
+}) => {
   return (
     <>
       <Input
@@ -37,7 +41,11 @@ const TextFilter = ({ column }: { column: Column<AssetRow, unknown> }) => {
   );
 };
 
-const SelectFilter = ({ column }: { column: Column<AssetRow, unknown> }) => {
+const SelectFilter = ({
+  column,
+}: {
+  column: Column<AssetRow, unknown> | Column<IPRow, unknown>;
+}) => {
   return (
     <MultiSelector
       values={(column.getFilterValue() as string[]) ?? []}
@@ -70,7 +78,11 @@ const SelectFilter = ({ column }: { column: Column<AssetRow, unknown> }) => {
   );
 };
 
-const DateFilter = ({ column }: { column: Column<AssetRow, unknown> }) => {
+const DateFilter = ({
+  column,
+}: {
+  column: Column<AssetRow, unknown> | Column<IPRow, unknown>;
+}) => {
   const current = column.getFilterValue() as [
     Date | undefined,
     Date | undefined,
@@ -133,7 +145,7 @@ export const FilterBox = ({
   children,
 }: {
   type: "text" | "select" | "date";
-  column: Column<AssetRow, unknown>;
+  column: Column<AssetRow, unknown> | Column<IPRow, unknown>;
   children: React.ReactNode;
 }) => {
   let filterElement: JSX.Element = <></>;

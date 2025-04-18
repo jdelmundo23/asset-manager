@@ -20,14 +20,19 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
     {
       accessorKey: "ipAddress",
       header: "IP Address",
+      meta: { type: "text" },
     },
     {
       accessorKey: "name",
       header: "Name",
+      sortingFn: "text",
+      meta: { type: "text" },
     },
     {
       accessorKey: "macAddress",
       header: "MAC Address",
+      sortingFn: "text",
+      meta: { type: "text" },
     },
     {
       accessorKey: "assetID",
@@ -35,6 +40,17 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
       cell: ({ row }) => {
         return row.original.assetName;
       },
+      sortingFn: (rowA, rowB) => {
+        return (rowA.original.assetName ?? "").localeCompare(
+          rowB.original.assetName ?? ""
+        );
+      },
+      filterFn: (row, columnId, filterValue) => {
+        return (row.original.assetName ?? "")
+          .toLowerCase()
+          .includes(filterValue.toLowerCase());
+      },
+      meta: { type: "text" },
     },
     {
       id: "actions",

@@ -24,12 +24,12 @@ const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
 
 const compareNames = (
   array: Preset[] | User[],
-  ID1: number | string,
-  ID2: number | string
+  ID1: number | string | null,
+  ID2: number | string | null
 ) => {
-  const nameA = getNameFromID(array, ID1);
-  const nameB = getNameFromID(array, ID2);
-  return nameA.localeCompare(nameB);
+  const nameA = ID1 != null ? getNameFromID(array, ID1) : "";
+  const nameB = ID2 != null ? getNameFromID(array, ID2) : "";
+  return nameA.toLowerCase().localeCompare(nameB.toLowerCase());
 };
 
 const selectFilterFn = (
@@ -81,11 +81,13 @@ export const getColumns = (
     {
       accessorKey: "name",
       header: "Name",
+      sortingFn: "text",
       meta: { type: "text" },
     },
     {
       accessorKey: "identifier",
       header: "Identifier",
+      sortingFn: "text",
       meta: { type: "text" },
     },
     {
