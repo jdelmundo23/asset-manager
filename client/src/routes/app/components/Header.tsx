@@ -1,7 +1,14 @@
 import { useContext } from "react";
 import { Link } from "react-router";
 import AuthContext from "../../../context/AuthContext";
-import { Button } from "@/components/shadcn-ui/button";
+import { buttonVariants } from "@/components/shadcn-ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/shadcn-ui/dropdown-menu";
+import { LogOut } from "lucide-react";
 
 interface HeaderProps {
   sidebarActive: boolean;
@@ -18,22 +25,30 @@ const Header = ({ sidebarActive }: HeaderProps) => {
           Logo
         </Link>
       </div>
-      <Button>
-        {user.authenticated ? (
-          <button
-            onClick={() => {
-              window.location.href = "http://localhost:5000/auth/signout";
-            }}
-            className="flex h-full items-center"
+
+      {user.authenticated ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className={buttonVariants({ variant: "default" })}
           >
             {user.name}
-          </button>
-        ) : (
-          <Link to="/signin" className="flex h-full items-center">
-            Sign In
-          </Link>
-        )}
-      </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="dark">
+            <DropdownMenuItem
+              onSelect={() => {
+                window.location.href = "http://localhost:5000/auth/signout";
+              }}
+            >
+              <LogOut />
+              Log Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Link to="/signin" className={buttonVariants({ variant: "default" })}>
+          Sign In
+        </Link>
+      )}
     </div>
   );
 };
