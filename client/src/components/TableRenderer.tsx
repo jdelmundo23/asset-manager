@@ -1,15 +1,4 @@
-import {
-  Column,
-  ColumnFiltersState,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getSortedRowModel,
-  RowSelectionState,
-  SortingState,
-  useReactTable,
-  VisibilityState,
-} from "@tanstack/react-table";
+import { Column, Table as DataTable, flexRender } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -17,15 +6,11 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/shadcn-ui/table";
-import { Dispatch, SetStateAction, useContext, useState } from "react";
-import AssetContext from "@/context/AssetContext";
-import { getColumns } from "./Columns";
+} from "./shadcn-ui/table";
+import { FilterBox } from "@/components/Filtering";
 import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from "lucide-react";
-import { AssetRow } from "@shared/schemas";
-import { FilterBox } from "./Filtering";
 
-const SortArrow = ({ column }: { column: Column<AssetRow, unknown> }) => {
+const SortArrow = <T,>({ column }: { column: Column<T, unknown> }) => {
   let arrow: JSX.Element = <></>;
   switch (column.getIsSorted()) {
     case false:
@@ -56,67 +41,15 @@ const SortArrow = ({ column }: { column: Column<AssetRow, unknown> }) => {
   return arrow;
 };
 
-interface DataTableProps {
-  assets: AssetRow[];
-  detailed: boolean;
-  selectedRow?: RowSelectionState;
-  onRowSelect?: Dispatch<SetStateAction<RowSelectionState>>;
+interface TableRendererProps<T> {
+  table: DataTable<T>;
+  columnLength: number;
 }
 
-export function DataTable({
-  assets,
-  detailed,
-  selectedRow,
-  onRowSelect,
-}: DataTableProps) {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const rowSelection = selectedRow ?? {};
-
-  const contextData = useContext(AssetContext);
-  const data = assets;
-  const columns = getColumns(
-    contextData.locations,
-    contextData.departments,
-    contextData.types,
-    contextData.models,
-    contextData.users
-  );
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    detailed
-      ? {}
-      : {
-          modelID: false,
-          typeID: false,
-          departmentID: false,
-          locationID: false,
-          assignedTo: false,
-          purchaseDate: false,
-          warrantyExp: false,
-          cost: false,
-          actions: false,
-        }
-  );
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: onRowSelect,
-    enableMultiRowSelection: false,
-    getRowId: (row) => row.ID.toString(),
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  });
-
+export default function TableRenderer<T>({
+  table,
+  columnLength,
+}: TableRendererProps<T>) {
   return (
     <>
       <div className="overflow-hidden rounded-md bg-white">
@@ -193,10 +126,7 @@ export function DataTable({
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columnLength} className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>

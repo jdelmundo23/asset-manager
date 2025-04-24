@@ -1,0 +1,74 @@
+import {
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  RowSelectionState,
+  SortingState,
+  useReactTable,
+  VisibilityState,
+} from "@tanstack/react-table";
+import { Dispatch, SetStateAction, useContext, useState } from "react";
+import AssetContext from "@/context/AssetContext";
+import { getColumns } from "./AssetColumns";
+import { AssetRow } from "@shared/schemas";
+import TableRenderer from "@/components/TableRenderer";
+
+interface DataTableProps {
+  assets: AssetRow[];
+  hideColumns?: string[];
+  selectedRow?: RowSelectionState;
+  onRowSelect?: Dispatch<SetStateAction<RowSelectionState>>;
+}
+
+export function DataTable({
+  assets,
+  hideColumns = [],
+  selectedRow,
+  onRowSelect,
+}: DataTableProps) {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const rowSelection = selectedRow ?? {};
+
+  type Key = (typeof hideColumns)[number];
+  const result: Record<Key, boolean> = {} as Record<Key, boolean>;
+  for (const key of hideColumns) {
+    result[key] = false;
+  }
+
+  const [columnVisibility, setColumnVisibility] =
+    useState<VisibilityState>(result);
+
+  const data = assets;
+  const contextData = useContext(AssetContext);
+  const columns = getColumns(
+    contextData.locations,
+    contextData.departments,
+    contextData.types,
+    contextData.models,
+    contextData.users
+  );
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onColumnFiltersChange: setColumnFilters,
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: onRowSelect,
+    enableMultiRowSelection: false,
+    getRowId: (row) => row.ID.toString(),
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  });
+
+  return <TableRenderer table={table} columnLength={columns.length} />;
+}

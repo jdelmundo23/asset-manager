@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/shadcn-ui/alert-dialog";
-import { handleAction } from "../../assets/components/Actions";
+import { handleAction } from "@/components/Actions";
 import { IPRow } from "@shared/schemas";
 import { FetcherWithComponents } from "react-router";
 

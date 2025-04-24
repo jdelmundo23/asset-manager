@@ -3,7 +3,7 @@ import axios from "axios";
 import IPContext from "@/context/IPContext";
 import { assetSchema, ipSchema } from "@shared/schemas";
 import { z } from "zod";
-import { DataTable } from "./components/DataTable";
+import { DataTable } from "./table/NetworkTable";
 import TableToolbar from "@/components/TableToolbar";
 import AddIP from "./components/AddIP";
 
@@ -38,7 +38,7 @@ function Page() {
         <TableToolbar tableTitle="Network">
           <AddIP />
         </TableToolbar>
-        <DataTable />
+        <DataTable ips={data.ips} />
       </IPContext.Provider>
     </div>
   );

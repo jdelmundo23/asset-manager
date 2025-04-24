@@ -1,5 +1,5 @@
 import { useFetcher, useLoaderData } from "react-router";
-import { DataTable } from "./table/DataTable";
+import { DataTable } from "./table/AssetTable";
 import axios from "axios";
 import AddAsset from "./components/AddAsset";
 import AssetContext from "@/context/AssetContext";
@@ -47,7 +47,7 @@ function Page() {
         <TableToolbar tableTitle="Assets">
           <AddAsset />
         </TableToolbar>
-        <DataTable assets={data.assets} detailed={true} />
+        <DataTable assets={data.assets} />
       </AssetContext.Provider>
     </div>
   );

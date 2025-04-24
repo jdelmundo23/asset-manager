@@ -23,9 +23,9 @@ import { cn } from "@/lib/utils";
 import { ChevronsUpDown, LoaderCircle } from "lucide-react";
 import IpContext from "@/context/IPContext";
 import { useContext, useEffect, useState } from "react";
-import { DataTable } from "../../assets/table/DataTable";
+import { DataTable } from "../../assets/table/AssetTable";
 import { RowSelectionState } from "@tanstack/react-table";
-import { handleAction } from "../../assets/components/Actions";
+import { handleAction } from "@/components/Actions";
 import axios from "axios";
 
 interface BaseProps {
@@ -168,7 +168,17 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
                       </SheetHeader>
                       <DataTable
                         assets={assets}
-                        detailed={false}
+                        hideColumns={[
+                          "modelID",
+                          "typeID",
+                          "locationID",
+                          "departmentID",
+                          "assignedTo",
+                          "purchaseDate",
+                          "warrantyExp",
+                          "cost",
+                          "actions",
+                        ]}
                         selectedRow={selectedRow}
                         onRowSelect={setSelectedRow}
                       />

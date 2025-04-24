@@ -73,11 +73,13 @@ function FormCombobox<
                     props.className
                   )}
                 >
-                  {field.value
-                    ? items.find(
-                        (choice) => choice[valueKey] === field.value
-                      )?.[labelKey]
-                    : `Select ${props.options.msgLabel}`}
+                  <p className="truncate">
+                    {field.value
+                      ? items.find(
+                          (choice) => choice[valueKey] === field.value
+                        )?.[labelKey]
+                      : `Select ${props.options.msgLabel}`}
+                  </p>
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </FormControl>

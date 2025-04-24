@@ -12,8 +12,8 @@ import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/shadcn-ui/button";
 import { useContext, useState } from "react";
 import IPContext from "@/context/IPContext";
-import DeleteIP from "./DeleteIP";
-import EditIP from "./EditIP";
+import DeleteIP from "../components/DeleteIP";
+import EditIP from "../components/EditIP";
 
 export const getColumns = (): ColumnDef<IPRow>[] => {
   return [
