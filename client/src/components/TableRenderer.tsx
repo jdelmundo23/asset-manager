@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "./shadcn-ui/table";
-import { FilterBox } from "@/components/Filtering";
+import { FilterBox } from "@/components/Filters";
 import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from "lucide-react";
 
 const SortArrow = <T,>({ column }: { column: Column<T, unknown> }) => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./routes/layout/App";
+import App from "./routes/app/App";
 import reportWebVitals from "./reportWebVitals";
 import {
   createBrowserRouter,
@@ -12,7 +12,7 @@ import {
 import ErrorPage from "./ErrorPage";
 import Signin from "./routes/Signin";
 import Protected from "./routes/Protected";
-import Menu from "./routes/Menu";
+import Menu from "./routes/app/components/Menu";
 import Presets from "./routes/modules/presets/Page";
 import Assets, { loader as assetLoader } from "./routes/modules/assets/Page";
 import Network, { loader as ipLoader } from "./routes/modules/network/Page";
