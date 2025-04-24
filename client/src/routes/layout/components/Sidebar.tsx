@@ -11,8 +11,17 @@ function Sidebar({ active }: SidebarProps) {
     >
       <div className="mx-3 mt-28 flex w-full flex-col items-center">
         <ul className="flex w-full flex-col gap-y-3">
-          <Link to="/admin">
-            <li className="nav-item">Admin</li>
+          <Link to="/app/assets">
+            <li className="nav-item">Assets</li>
+          </Link>
+          <Link to="/app/phones">
+            <li className="nav-item">Phones</li>
+          </Link>
+          <Link to="/app/presets">
+            <li className="nav-item">Presets</li>
+          </Link>
+          <Link to="/app/network">
+            <li className="nav-item">Network</li>
           </Link>
         </ul>
       </div>

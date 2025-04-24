@@ -1,5 +1,5 @@
 import { createContext } from "react";
-interface AuthContextType {
+export interface AuthContextType {
   authenticated: boolean;
   upn?: string;
   name?: string;

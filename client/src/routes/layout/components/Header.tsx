@@ -20,9 +20,14 @@ const Header = ({ sidebarActive }: HeaderProps) => {
       </div>
       <Button>
         {user.authenticated ? (
-          <Link to="/dashboard" className="flex h-full items-center">
+          <button
+            onClick={() => {
+              window.location.href = "http://localhost:5000/auth/signout";
+            }}
+            className="flex h-full items-center"
+          >
             {user.name}
-          </Link>
+          </button>
         ) : (
           <Link to="/signin" className="flex h-full items-center">
             Sign In

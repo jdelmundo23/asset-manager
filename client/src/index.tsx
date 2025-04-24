@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App, { loader as appAuthloader } from "./routes/layout/App";
+import App from "./routes/layout/App";
 import reportWebVitals from "./reportWebVitals";
 import {
   createBrowserRouter,
@@ -11,47 +11,71 @@ import {
 } from "react-router";
 import ErrorPage from "./ErrorPage";
 import Signin from "./routes/Signin";
-import Dashboard from "./routes/Dashboard";
-import Protected from "./routes/protected/Protected";
-import Admin from "./routes/Admin";
+import Protected from "./routes/Protected";
+import Menu from "./routes/Menu";
 import Presets from "./routes/modules/presets/Page";
 import Assets, { loader as assetLoader } from "./routes/modules/assets/Page";
 import Network, { loader as ipLoader } from "./routes/modules/network/Page";
+import axios from "axios";
+import AuthContext, { AuthContextType } from "./context/AuthContext";
+import RedirectRoot from "./routes/RedirectRoot";
+
+axios.defaults.withCredentials = true;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <Route
-      path="/"
-      element={<App />}
-      errorElement={<ErrorPage />}
-      loader={appAuthloader}
-    >
+    <>
+      <Route
+        path="/"
+        element={<RedirectRoot />}
+        errorElement={<ErrorPage />}
+      ></Route>
       <Route path="signin" element={<Signin />}></Route>
       <Route element={<Protected />}>
-        <Route path="dashboard" element={<Dashboard />}></Route>
-        <Route path="admin" element={<Admin />}></Route>
-        <Route path="admin/presets" element={<Presets />}></Route>
-        <Route
-          path="admin/assets"
-          element={<Assets />}
-          loader={assetLoader}
-        ></Route>
-        <Route
-          path="admin/network"
-          element={<Network />}
-          loader={ipLoader}
-        ></Route>
+        <Route path="app" element={<App />}>
+          <Route index element={<Menu />}></Route>
+          <Route path="presets" element={<Presets />}></Route>
+          <Route
+            path="assets"
+            element={<Assets />}
+            loader={assetLoader}
+          ></Route>
+          <Route path="network" element={<Network />} loader={ipLoader}></Route>
+        </Route>
       </Route>
-    </Route>
+    </>
   )
 );
+
+const Root = () => {
+  const [authInfo, setAuthInfo] = useState<AuthContextType>({
+    authenticated: false,
+  });
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/auth/user`);
+        setAuthInfo(response.data);
+      } catch {
+        console.error("Not authenticated");
+      }
+    })();
+  }, []);
+
+  return (
+    <AuthContext.Provider value={authInfo}>
+      <RouterProvider router={router} />
+    </AuthContext.Provider>
+  );
+};
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <Root />
   </React.StrictMode>
 );
 

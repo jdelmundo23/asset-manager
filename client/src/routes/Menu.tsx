@@ -8,28 +8,28 @@ import { Link } from "react-router";
 
 const cards = [
   {
-    link: "/admin/assets",
+    link: "/app/assets",
     title: "Assets",
     description: "View and manage all assets",
   },
   {
-    link: "/admin/Phones",
+    link: "/app/Phones",
     title: "Phones",
     description: "View and manage phones",
   },
   {
-    link: "/admin/presets",
+    link: "/app/presets",
     title: "Presets",
     description: "Manage inventory presets",
   },
   {
-    link: "/admin/network",
+    link: "/app/network",
     title: "Network",
     description: "View and manage network IPs",
   },
 ];
 
-function Admin() {
+export default function Menu() {
   return (
     <div className="mt-24 flex w-full justify-center">
       <div className="grid w-3/5 grid-cols-2 gap-6">
@@ -47,5 +47,3 @@ function Admin() {
     </div>
   );
 }
-
-export default Admin;

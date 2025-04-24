@@ -9,7 +9,7 @@ router.get(
   authProvider.login({
     scopes: ["User.Read"],
     redirectUri: REDIRECT_URI as string,
-    successRedirect: "http://localhost:3000/dashboard",
+    successRedirect: "http://localhost:3000/",
   })
 );
 

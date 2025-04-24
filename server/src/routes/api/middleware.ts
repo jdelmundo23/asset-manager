@@ -16,7 +16,7 @@ router.use(
   authProvider.acquireToken({
     scopes: ["User.Read", "GroupMember.Read.All", "Directory.Read.All"],
     redirectUri: REDIRECT_URI as string,
-    successRedirect: "http://localhost:3000/dashboard",
+    successRedirect: "http://localhost:3000/",
   })
 );
 router.use(checkAuthenticated);

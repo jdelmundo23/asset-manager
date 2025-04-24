@@ -16,7 +16,7 @@ export default function TableToolbar({
     <div className="flex items-center justify-between">
       <div className="flex items-center">
         <ChevronLeft
-          onClick={() => navigate("/admin")}
+          onClick={() => navigate("/app")}
           className="cursor-pointer transition-all duration-150 hover:scale-125"
         />
         <h1 className="text-2xl font-medium">{tableTitle}</h1>
