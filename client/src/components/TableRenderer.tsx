@@ -64,7 +64,7 @@ export default function TableRenderer<T>({
                       className="group relative px-0 first:pl-0.5 last:w-0 last:pr-0.5"
                     >
                       <div className="relative rounded-sm px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-black hover:text-white group-last:pointer-events-none">
-                        <div className="flex items-center gap-x-0.5">
+                        <div className="flex items-center gap-x-0.5 whitespace-nowrap">
                           {header.isPlaceholder
                             ? null
                             : flexRender(

@@ -3,6 +3,7 @@ import { Outlet } from "react-router";
 import Sidebar from "./components/Sidebar";
 import Main from "./components/Main";
 import { Toaster } from "sonner";
+import { AlignJustify } from "lucide-react";
 
 function App() {
   const [sidebarActive, setSideBarActive] = useState<boolean>(true);
@@ -15,8 +16,8 @@ function App() {
         <Outlet />
       </Main>
       <div className="absolute flex h-14 w-14 items-center justify-center">
-        <button
-          className={`h-6 w-6 border border-white`}
+        <AlignJustify
+          className={`h-6 w-6 ${sidebarActive ? "text-white" : ""} cursor-pointer transition-all duration-500`}
           onClick={() => setSideBarActive(!sidebarActive)}
         />
       </div>

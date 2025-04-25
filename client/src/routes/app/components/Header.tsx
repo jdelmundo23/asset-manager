@@ -19,7 +19,7 @@ const Header = ({ sidebarActive }: HeaderProps) => {
     <div className="flex h-14 w-full items-center justify-between px-3">
       <div className="flex">
         <div
-          className={`${sidebarActive ? "w-0" : "w-9"} transition-[width] duration-500 ease-in-out`}
+          className={`${sidebarActive ? "" : "md:w-9"} w-9 transition-[width] duration-500 ease-in-out md:w-0`}
         ></div>
         <Link to="/" className="flex h-full items-center">
           Logo
