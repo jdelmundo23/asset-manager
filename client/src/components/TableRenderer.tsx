@@ -16,7 +16,7 @@ const SortArrow = <T,>({ column }: { column: Column<T, unknown> }) => {
     case false:
       arrow = (
         <ArrowUpDown
-          className={`h-4 w-4 cursor-pointer rounded-sm opacity-0 hover:bg-zinc-700 group-hover:opacity-100`}
+          className={`hover:bg-muted h-4 w-4 cursor-pointer rounded-sm opacity-0 group-hover:opacity-100`}
           onClick={() => column.toggleSorting(false)}
         />
       );
@@ -24,7 +24,7 @@ const SortArrow = <T,>({ column }: { column: Column<T, unknown> }) => {
     case "asc":
       arrow = (
         <ArrowUp
-          className={`h-4 w-4 cursor-pointer rounded-sm hover:bg-zinc-700`}
+          className={`hover:bg-muted h-4 w-4 cursor-pointer rounded-sm`}
           onClick={() => column.toggleSorting(true)}
         />
       );
@@ -32,7 +32,7 @@ const SortArrow = <T,>({ column }: { column: Column<T, unknown> }) => {
     case "desc":
       arrow = (
         <ArrowDown
-          className={`h-4 w-4 cursor-pointer rounded-sm hover:bg-zinc-700`}
+          className={`hover:bg-muted h-4 w-4 cursor-pointer rounded-sm`}
           onClick={() => column.toggleSorting(false)}
         />
       );
@@ -54,7 +54,7 @@ export default function TableRenderer<T>({
     <>
       <div className="overflow-hidden rounded-md bg-white">
         <Table className="">
-          <TableHeader className="bg-zinc-800">
+          <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
@@ -78,7 +78,7 @@ export default function TableRenderer<T>({
                                 column={header.column}
                               >
                                 <Filter
-                                  className={`h-4 w-4 cursor-pointer rounded-sm ${header.column.getIsFiltered() ? "" : "opacity-0"} hover:bg-zinc-700 group-hover:opacity-100`}
+                                  className={`h-4 w-4 cursor-pointer rounded-sm ${header.column.getIsFiltered() ? "" : "opacity-0"} hover:bg-muted group-hover:opacity-100`}
                                 />
                               </FilterBox>
                             ) : (

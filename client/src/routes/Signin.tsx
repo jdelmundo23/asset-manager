@@ -16,7 +16,7 @@ function Signin() {
 
   return (
     <div className="flex h-full w-full items-center justify-center">
-      <Card className="dark flex h-[125px] flex-col items-center justify-between p-4">
+      <Card className="bg-muted dark flex h-[125px] flex-col items-center justify-between p-4">
         <h1 className="text-2xl font-semibold">Asset and Network Tracker</h1>
         <Button className="w-full" onClick={signIn}>
           Sign in with Microsoft

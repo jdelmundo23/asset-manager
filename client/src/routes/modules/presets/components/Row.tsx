@@ -21,7 +21,7 @@ function Row({ row }: RowProps) {
 
   return (
     <div>
-      <Card className="border-zinc-700 bg-zinc-100 px-2 py-1 font-semibold text-black">
+      <Card className="bg-foreground border-muted px-2 py-1 font-semibold text-black">
         <div className="group flex items-center justify-between">
           <p
             title={row.name}

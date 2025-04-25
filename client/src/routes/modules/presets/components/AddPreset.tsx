@@ -18,7 +18,7 @@ function AddPreset() {
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger>
         <button className="w-full">
-          <Card className="flex justify-center border-zinc-700 bg-zinc-800 px-2 py-1 transition-colors duration-150 ease-out hover:border-zinc-300">
+          <Card className="bg-muted border-background flex justify-center px-2 py-1 transition-colors duration-150 ease-out hover:border-zinc-300">
             <Plus />
           </Card>
         </button>

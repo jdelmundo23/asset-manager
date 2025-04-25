@@ -28,7 +28,7 @@ const TextFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
       />
       {column.getFilterValue() && (
         <X
-          className="absolute inset-y-2 right-1 cursor-pointer rounded-sm text-zinc-300 hover:bg-zinc-700"
+          className="hover:bg-muted text-muted-foreground absolute inset-y-2 right-1 cursor-pointer rounded-sm"
           onClick={() => column.setFilterValue("")}
         />
       )}
