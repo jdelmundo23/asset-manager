@@ -42,7 +42,7 @@ function Page() {
   const data = fetcher.data || useLoaderData();
 
   return (
-    <div className="dark container mx-auto flex flex-col gap-2 py-10">
+    <div className="dark container mx-auto flex w-11/12 flex-col gap-2 py-10">
       <AssetContext.Provider value={{ ...data, fetcher }}>
         <TableToolbar tableTitle="Assets">
           <AddAsset />

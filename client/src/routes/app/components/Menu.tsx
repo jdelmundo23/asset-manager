@@ -1,45 +1,40 @@
 import {
   Card,
+  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/shadcn-ui/card";
-import { Link } from "react-router";
-
-const cards = [
-  {
-    link: "/app/assets",
-    title: "Assets",
-    description: "View and manage all assets",
-  },
-  {
-    link: "/app/Phones",
-    title: "Phones",
-    description: "View and manage phones",
-  },
-  {
-    link: "/app/presets",
-    title: "Presets",
-    description: "Manage inventory presets",
-  },
-  {
-    link: "/app/network",
-    title: "Network",
-    description: "View and manage network IPs",
-  },
-];
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigation } from "react-router";
+import { modules } from "@/lib/modules";
 
 export default function Menu() {
+  const navigation = useNavigation();
+  const [menuClicked, setMenuClicked] = useState<boolean>(false);
   return (
     <div className="mt-24 flex w-full justify-center">
-      <div className="grid w-3/5 grid-cols-2 gap-6">
-        {cards.map((card) => (
-          <Link key={card.link} to={card.link}>
-            <Card className="dark w-full transition-all duration-100 hover:scale-[101%] hover:brightness-125">
+      <div className="grid w-5/6 gap-6 sm:w-3/5 md:w-4/5 md:grid-cols-2 lg:w-3/5">
+        {modules.map((module) => (
+          <Link key={module.link} to={module.link}>
+            <Card
+              className="bg-muted stretch dark flex h-full w-full justify-between transition-all duration-100 hover:scale-[101%] hover:brightness-125"
+              onClick={() => setMenuClicked(true)}
+            >
               <CardHeader>
-                <CardTitle>{card.title}</CardTitle>
-                <CardDescription>{card.description}</CardDescription>
+                <CardTitle>{module.title}</CardTitle>
+                <CardDescription>{module.description}</CardDescription>
               </CardHeader>
+              <CardContent className="flex items-center justify-center px-3 pt-6 lg:px-6">
+                {navigation.location?.pathname === module.link &&
+                  menuClicked && (
+                    <Loader2
+                      className="flex animate-spin transition-all [transform-origin:center]"
+                      color="gray"
+                    />
+                  )}
+              </CardContent>
             </Card>
           </Link>
         ))}

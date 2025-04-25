@@ -2,12 +2,14 @@ import { useState } from "react";
 import { Outlet } from "react-router";
 import Sidebar from "./components/Sidebar";
 import Main from "./components/Main";
+import { Toaster } from "sonner";
 
 function App() {
   const [sidebarActive, setSideBarActive] = useState<boolean>(true);
 
   return (
     <div className="flex h-full w-full">
+      <Toaster richColors />
       <Sidebar active={sidebarActive} />
       <Main sidebarActive={sidebarActive}>
         <Outlet />

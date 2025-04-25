@@ -29,7 +29,7 @@ const Header = ({ sidebarActive }: HeaderProps) => {
       {user.authenticated ? (
         <DropdownMenu>
           <DropdownMenuTrigger
-            className={buttonVariants({ variant: "default" })}
+            className={buttonVariants({ variant: "secondary" })}
           >
             {user.name}
           </DropdownMenuTrigger>

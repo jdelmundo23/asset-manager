@@ -63,7 +63,7 @@ export const handleAction = async (
     }
     try {
       await fetcher?.load(
-        `/admin/${endpointType === "asset" ? "assets" : "network"}`
+        `/app/${endpointType === "asset" ? "assets" : "network"}`
       );
 
       const toastType = actionType === "add" ? toast.success : toast.info;

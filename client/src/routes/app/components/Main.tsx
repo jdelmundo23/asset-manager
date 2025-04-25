@@ -7,7 +7,11 @@ interface MainProps {
 
 function Main({ sidebarActive, children }: MainProps) {
   return (
-    <main className={`flex h-full max-w-full flex-1 flex-col items-center`}>
+    <main
+      className={`flex h-full max-w-full flex-1 flex-col items-center transition-all duration-300 ${
+        sidebarActive ? "w-[calc(100%-250px)]" : "w-full"
+      }`}
+    >
       <Header sidebarActive={sidebarActive} />
       <div className={"h-full w-full"}>{children}</div>
     </main>
