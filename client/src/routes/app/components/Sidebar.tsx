@@ -5,6 +5,7 @@ import { modules } from "@/lib/modules";
 
 interface SidebarProps {
   active: boolean;
+  setSidebarActive: (value: boolean) => void;
 }
 
 function Sidebar({ active }: SidebarProps) {
@@ -17,7 +18,7 @@ function Sidebar({ active }: SidebarProps) {
   }, [navigation.location]);
   return (
     <nav
-      className={`${active ? "w-[250px] border" : "w-0 border-0"} box-border hidden shrink-0 overflow-hidden border-zinc-600 bg-black text-white transition-[width,padding,border-width] duration-500 ease-in-out md:flex`}
+      className={`${active ? "w-[250px] border" : "w-0 border-0"} absolute z-50 box-border flex h-full shrink-0 overflow-hidden border-zinc-600 bg-black text-white transition-[width,padding,border-width] duration-500 ease-in-out md:static`}
     >
       <div className="mx-3 mt-28 flex w-full flex-col items-center">
         <ul className="flex w-full flex-col gap-y-3">

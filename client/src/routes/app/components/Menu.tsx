@@ -14,7 +14,7 @@ export default function Menu() {
   const navigation = useNavigation();
   const [menuClicked, setMenuClicked] = useState<boolean>(false);
   return (
-    <div className="mt-24 flex w-full justify-center">
+    <div className="animate-fade-in-up mt-24 flex w-full justify-center">
       <div className="grid w-5/6 gap-6 sm:w-3/5 md:w-4/5 md:grid-cols-2 lg:w-3/5">
         {modules.map((module) => (
           <Link key={module.link} to={module.link}>
