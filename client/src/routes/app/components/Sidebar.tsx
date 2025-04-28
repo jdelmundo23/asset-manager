@@ -1,7 +1,9 @@
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigation } from "react-router";
 import { modules } from "@/lib/modules";
+import AuthContext from "@/context/AuthContext";
+import UserBadge from "@/components/UserBadge";
 
 interface SidebarProps {
   active: boolean;
@@ -9,6 +11,7 @@ interface SidebarProps {
 }
 
 function Sidebar({ active }: SidebarProps) {
+  const user = useContext(AuthContext);
   const navigation = useNavigation();
   const [sidebarClicked, setSidebarClicked] = useState<boolean>(false);
   useEffect(() => {
@@ -18,9 +21,9 @@ function Sidebar({ active }: SidebarProps) {
   }, [navigation.location]);
   return (
     <nav
-      className={`${active ? "w-[250px] border" : "w-0 border-0"} absolute z-50 box-border flex h-full shrink-0 overflow-hidden border-zinc-600 bg-black text-white transition-[width,padding,border-width] duration-500 ease-in-out md:static`}
+      className={`${active ? "w-[250px] border" : "w-0 border-0"} fixed z-50 box-border h-full overflow-hidden border-zinc-600 bg-black text-white transition-[width,padding,border-width] duration-500 ease-in-out md:static`}
     >
-      <div className="mx-3 mt-28 flex w-full flex-col items-center">
+      <div className="flex h-full flex-col justify-between px-3 pb-3 pt-44">
         <ul className="flex w-full flex-col gap-y-3">
           {modules.map((module) => (
             <Link key={module.link} to={module.link}>
@@ -43,6 +46,11 @@ function Sidebar({ active }: SidebarProps) {
             </Link>
           ))}
         </ul>
+        <UserBadge
+          authenticated={user.authenticated}
+          name={user.name}
+          className={`w-56 overflow-hidden md:hidden`}
+        />
       </div>
     </nav>
   );
