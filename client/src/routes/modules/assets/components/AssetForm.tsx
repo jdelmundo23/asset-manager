@@ -249,9 +249,26 @@ export default function AssetForm({
                 <FormItem className="flex flex-col">
                   <FormLabel className="flex items-baseline justify-between">
                     <p>Purchase Date</p>
+                    {field.value ? (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          form.setValue(field.name, null, {
+                            shouldDirty: true,
+                          });
+                        }}
+                      >
+                        <p className="text-[0.55rem] font-light underline opacity-50">
+                          Clear date
+                        </p>
+                      </button>
+                    ) : (
+                      ""
+                    )}
                   </FormLabel>
                   <CalendarPopover
-                    value={field.value}
+                    value={field.value === null ? undefined : field.value}
                     onChange={field.onChange}
                     placeHolder="Pick a date"
                     width={240}

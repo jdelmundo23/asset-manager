@@ -19,8 +19,8 @@ export const assetSchema = z
     modelID: z.number().nullable(),
     locationID: z.number().nullable(),
     departmentID: z.number().nullable(),
-    assignedTo: z.string(),
-    purchaseDate: z.coerce.date(),
+    assignedTo: z.string().nullish(),
+    purchaseDate: z.coerce.date().nullish(),
     warrantyExp: z.coerce.date().nullish(),
     cost: z
       .union([
@@ -33,7 +33,9 @@ export const assetSchema = z
   .refine(
     (data) => {
       if (data.warrantyExp) {
-        return data.purchaseDate < data.warrantyExp;
+        return (
+          data.purchaseDate != null && data.purchaseDate < data.warrantyExp
+        );
       }
       return true;
     },
