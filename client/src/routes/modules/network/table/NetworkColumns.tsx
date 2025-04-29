@@ -14,9 +14,32 @@ import { useContext, useState } from "react";
 import IPContext from "@/context/IPContext";
 import DeleteIP from "../components/DeleteIP";
 import EditIP from "../components/EditIP";
+import { Checkbox } from "@/components/shadcn-ui/checkbox";
 
 export const getColumns = (): ColumnDef<IPRow>[] => {
   return [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          className="h-4 w-4"
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          className="border-muted-foreground h-4 w-4"
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "ipAddress",
       header: "IP Address",

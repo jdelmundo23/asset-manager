@@ -18,6 +18,7 @@ interface DataTableProps {
   hideColumns?: string[];
   selectedRow?: RowSelectionState;
   onRowSelect?: Dispatch<SetStateAction<RowSelectionState>>;
+  animated?: boolean;
 }
 
 export function DataTable({
@@ -25,6 +26,7 @@ export function DataTable({
   hideColumns = [],
   selectedRow,
   onRowSelect,
+  animated,
 }: DataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -51,7 +53,7 @@ export function DataTable({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: onRowSelect,
-    enableMultiRowSelection: false,
+    enableMultiRowSelection: true,
     getRowId: (row) => row.ID.toString(),
     state: {
       sorting,
@@ -61,5 +63,11 @@ export function DataTable({
     },
   });
 
-  return <TableRenderer table={table} columnLength={columns.length} />;
+  return (
+    <TableRenderer
+      table={table}
+      columnLength={columns.length}
+      animated={animated}
+    />
+  );
 }

@@ -7,6 +7,8 @@ import { assetSchema } from "@shared/schemas";
 import { z } from "zod";
 
 import TableToolbar from "@/components/TableToolbar";
+import { useState } from "react";
+import { RowSelectionState } from "@tanstack/react-table";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -40,6 +42,7 @@ export async function loader() {
 function Page() {
   const fetcher = useFetcher();
   const data = fetcher.data || useLoaderData();
+  const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   return (
     <div className="dark container mx-auto flex w-11/12 flex-col gap-2 py-10">
@@ -47,7 +50,12 @@ function Page() {
         <TableToolbar tableTitle="Assets">
           <AddAsset />
         </TableToolbar>
-        <DataTable assets={data.assets} />
+        <DataTable
+          assets={data.assets}
+          selectedRow={selectedRows}
+          onRowSelect={setSelectedRows}
+          animated={true}
+        />
       </AssetContext.Provider>
     </div>
   );

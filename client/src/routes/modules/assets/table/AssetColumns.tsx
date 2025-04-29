@@ -17,6 +17,7 @@ import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import EditAsset from "@/routes/modules/assets/components/EditAsset";
 import DeleteAsset from "../components/DeleteAsset";
+import { Checkbox } from "@/components/shadcn-ui/checkbox";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";
@@ -24,8 +25,8 @@ const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
 
 const compareNames = (
   array: Preset[] | User[],
-  ID1: number | string | null,
-  ID2: number | string | null
+  ID1: number | string | null | undefined,
+  ID2: number | string | null | undefined
 ) => {
   const nameA = ID1 != null ? getNameFromID(array, ID1) : "";
   const nameB = ID2 != null ? getNameFromID(array, ID2) : "";
@@ -78,6 +79,28 @@ export const getColumns = (
   users: User[] = []
 ): ColumnDef<AssetRow>[] => {
   return [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          className="h-4 w-4"
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          className="border-muted-foreground h-4 w-4"
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: "name",
       header: "Name",

@@ -6,6 +6,8 @@ import { z } from "zod";
 import { DataTable } from "./table/NetworkTable";
 import TableToolbar from "@/components/TableToolbar";
 import AddIP from "./components/AddIP";
+import { useState } from "react";
+import { RowSelectionState } from "@tanstack/react-table";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -31,6 +33,7 @@ export async function loader() {
 function Page() {
   const fetcher = useFetcher();
   const data = fetcher.data || useLoaderData();
+  const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   return (
     <div className="dark container mx-auto flex w-1/2 flex-col gap-2 py-10">
@@ -38,7 +41,11 @@ function Page() {
         <TableToolbar tableTitle="Network">
           <AddIP />
         </TableToolbar>
-        <DataTable ips={data.ips} />
+        <DataTable
+          ips={data.ips}
+          selectedRow={selectedRows}
+          onRowSelect={setSelectedRows}
+        />
       </IPContext.Provider>
     </div>
   );

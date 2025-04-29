@@ -169,6 +169,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
                       <DataTable
                         assets={assets}
                         hideColumns={[
+                          "select",
                           "modelID",
                           "typeID",
                           "locationID",
@@ -181,6 +182,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
                         ]}
                         selectedRow={selectedRow}
                         onRowSelect={setSelectedRow}
+                        singleSelect={true}
                       />
                       <div className="flex justify-end space-x-2">
                         <SheetClose asChild>

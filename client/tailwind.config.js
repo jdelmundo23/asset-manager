@@ -4,8 +4,9 @@ export const content = ["./src/**/*.tsx"];
 export const theme = {
   extend: {
     animation: {
-      "fade-in": "fadeIn 0.2s ease-in-out forwards",
-      "fade-in-up": "fade-in-up 0.5s ease-out forwards",
+      "fade-in": "fadeIn 0.4s ease-in-out forwards",
+      "fade-in-up": "fade-in-up 0.4s ease-out forwards",
+      "fade-in-up-scale": "fade-in-up-scale 0.4s ease-out forwards",
     },
     keyframes: {
       fadeIn: {
@@ -15,11 +16,21 @@ export const theme = {
       "fade-in-up": {
         "0%": {
           opacity: "0",
-          transform: "translateY(10px)",
+          transform: "translateY(12px)",
         },
         "100%": {
           opacity: "1",
           transform: "translateY(0)",
+        },
+      },
+      "fade-in-up-scale": {
+        "0%": {
+          opacity: "0",
+          transform: "translateY(8px) scale(0.97)",
+        },
+        "100%": {
+          opacity: "1",
+          transform: "translateY(0) scale(1)",
         },
       },
     },

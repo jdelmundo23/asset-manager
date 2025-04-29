@@ -44,15 +44,21 @@ const SortArrow = <T,>({ column }: { column: Column<T, unknown> }) => {
 interface TableRendererProps<T> {
   table: DataTable<T>;
   columnLength: number;
+  singleSelect?: boolean;
+  animated?: boolean;
 }
 
 export default function TableRenderer<T>({
   table,
   columnLength,
+  singleSelect,
+  animated,
 }: TableRendererProps<T>) {
   return (
     <>
-      <div className="overflow-hidden rounded-md bg-white">
+      <div
+        className={`${animated ? "animate-fade-in-up" : ""} overflow-hidden rounded-md bg-white`}
+      >
         <Table className="">
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
@@ -105,9 +111,9 @@ export default function TableRenderer<T>({
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className="border-b-2 border-zinc-100"
-                  onClick={() => {
-                    row.toggleSelected(true);
-                  }}
+                  onClick={
+                    singleSelect ? () => row.toggleSelected(true) : undefined
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -134,6 +140,12 @@ export default function TableRenderer<T>({
           </TableBody>
         </Table>
       </div>
+      {table.getFilteredSelectedRowModel().rows.length > 0 && !singleSelect && (
+        <div className="text-muted-foreground flex-1 text-sm">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+      )}
     </>
   );
 }

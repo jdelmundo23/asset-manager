@@ -14,12 +14,12 @@ export default function Menu() {
   const navigation = useNavigation();
   const [menuClicked, setMenuClicked] = useState<boolean>(false);
   return (
-    <div className="animate-fade-in-up mt-24 flex w-full justify-center">
+    <div className="mt-24 flex w-full justify-center">
       <div className="grid w-5/6 gap-6 sm:w-3/5 md:w-4/5 md:grid-cols-2 lg:w-3/5">
         {modules.map((module) => (
           <Link key={module.link} to={module.link}>
             <Card
-              className="bg-muted stretch dark flex h-full w-full justify-between transition-all duration-100 hover:scale-[101%] hover:brightness-125"
+              className="animate-fade-in-up-scale bg-muted stretch dark flex h-full w-full origin-center justify-between transition-all hover:brightness-125"
               onClick={() => setMenuClicked(true)}
             >
               <CardHeader>
