@@ -157,4 +157,55 @@ router.delete("/:assetID", async function (req, res) {
   }
 });
 
+router.post("/duplicate", async function (req, res) {
+  const result = assetSchema.safeParse(req.body);
+
+  if (!result.success) {
+    res.status(400).json({ error: result.error.format() });
+    return;
+  }
+  const asset: Asset = result.data;
+
+  if (!asset.ID) {
+    res.status(400).json({ error: "Missing ID of asset to duplicate" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+    const result = await pool
+      .request()
+      .input("id", sql.Int, asset.ID)
+      .query(`SELECT * FROM Assets WHERE ID = @id`);
+
+    if (result.recordset.length === 0) {
+      res.status(404).json({ error: "Asset not found" });
+      return;
+    }
+
+    const originalAsset = result.recordset[0];
+
+    await pool
+      .request()
+      .input("name", sql.VarChar(100), `${originalAsset.name} - Copy`)
+      .input("identifier", sql.VarChar(100), null)
+      .input("locationID", sql.Int, originalAsset.locationID)
+      .input("departmentID", sql.Int, originalAsset.departmentID)
+      .input("modelID", sql.Int, originalAsset.modelID)
+      .input("assignedTo", sql.VarChar(75), originalAsset.assignedTo)
+      .input("purchaseDate", sql.DateTime, originalAsset.purchaseDate)
+      .input("warrantyExp", sql.DateTime, originalAsset.warrantyExp)
+      .input("cost", sql.Decimal(6, 2), originalAsset.cost)
+      .input("note", sql.NVarChar(255), originalAsset.note).query(`
+      INSERT INTO Assets (name, identifier, locationID, departmentID, modelID, assignedTo, purchaseDate, warrantyExp, cost, note)
+      VALUES (@name, @identifier, @locationID, @departmentID, @modelID, @assignedTo, @purchaseDate, @warrantyExp, @cost, @note)
+    `);
+
+    res.status(200).json({ message: "Asset duplicated successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to duplicate asset" });
+  }
+});
+
 export default router;

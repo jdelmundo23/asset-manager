@@ -18,6 +18,7 @@ import AssetContext from "@/context/AssetContext";
 import EditAsset from "@/routes/modules/assets/components/EditAsset";
 import DeleteAsset from "../components/DeleteAsset";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
+import DuplicateAsset from "../components/DuplicateAsset";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";
@@ -267,6 +268,7 @@ export const getColumns = (
         const { fetcher } = useContext(AssetContext);
 
         const [editOpen, setEditOpen] = useState(false);
+        const [duplicateOpen, setDuplicateOpen] = useState(false);
         const [deleteOpen, setDeleteOpen] = useState(false);
 
         return (
@@ -279,16 +281,12 @@ export const getColumns = (
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="dark">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() =>
-                  navigator.clipboard.writeText(asset.identifier.toString())
-                }
-              >
-                Copy Identifier
-              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setEditOpen(true)}>
                 Edit Asset
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setDuplicateOpen(true)}>
+                Duplicate Asset
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setDeleteOpen(true)}
@@ -308,6 +306,12 @@ export const getColumns = (
             <DeleteAsset
               open={deleteOpen}
               setOpen={setDeleteOpen}
+              row={asset}
+              fetcher={fetcher}
+            />
+            <DuplicateAsset
+              open={duplicateOpen}
+              setOpen={setDuplicateOpen}
               row={asset}
               fetcher={fetcher}
             />

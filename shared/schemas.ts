@@ -14,7 +14,7 @@ export const assetSchema = z
   .object({
     ID: z.number().optional(),
     name: z.string().min(2).max(100),
-    identifier: z.string().min(2).max(100),
+    identifier: z.string().min(2).max(100).nullable(),
     typeID: z.number().nullable(),
     modelID: z.number().nullable(),
     locationID: z.number().nullable(),

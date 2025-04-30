@@ -3,7 +3,7 @@ import axios from "axios";
 import { Asset, AssetRow, IP, IPRow } from "@shared/schemas";
 import { FetcherWithComponents } from "react-router";
 
-type ActionType = "add" | "edit" | "delete";
+type ActionType = "add" | "edit" | "delete" | "duplicate";
 
 type EndpointType = "asset" | "ip";
 
@@ -36,6 +36,12 @@ const actions: Record<ActionType, Action> = {
     ing: "Deleting",
     ed: "Deleted",
   },
+  duplicate: {
+    method: "post",
+    url: (endpoint) => `/api/${endpoint}s/duplicate`,
+    ing: "Duplicating",
+    ed: "Duplicated",
+  },
 } as const;
 
 export const handleAction = async (
@@ -44,7 +50,12 @@ export const handleAction = async (
   values: Asset | AssetRow | IP | IPRow,
   fetcher: FetcherWithComponents<any> | undefined
 ): Promise<void> => {
-  if ((actionType === "edit" || actionType === "delete") && !("ID" in values)) {
+  if (
+    (actionType === "edit" ||
+      actionType === "delete" ||
+      actionType === "duplicate") &&
+    !("ID" in values)
+  ) {
     throw new Error(`Cannot ${actionType} ${endpointType}: Missing ID.`);
   }
 
