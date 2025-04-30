@@ -45,6 +45,7 @@ function Page() {
           ips={data.ips}
           selectedRow={selectedRows}
           onRowSelect={setSelectedRows}
+          animated={true}
         />
       </IPContext.Provider>
     </div>

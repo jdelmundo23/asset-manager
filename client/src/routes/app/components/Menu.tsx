@@ -29,12 +29,14 @@ export default function Menu() {
               <CardContent className="flex items-center justify-center px-3 pt-6 lg:px-6">
                 <div className="h-5 w-5">
                   {navigation.location?.pathname === module.link &&
-                    menuClicked && (
-                      <Loader2
-                        className="flex animate-spin transition-all [transform-origin:center]"
-                        color="gray"
-                      />
-                    )}
+                  menuClicked ? (
+                    <Loader2
+                      className="flex animate-spin transition-all [transform-origin:center]"
+                      color="gray"
+                    />
+                  ) : (
+                    <module.icon />
+                  )}
                 </div>
               </CardContent>
             </Card>
