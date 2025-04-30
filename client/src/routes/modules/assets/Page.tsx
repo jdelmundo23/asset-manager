@@ -1,7 +1,7 @@
 import { useFetcher, useLoaderData } from "react-router";
 import { DataTable } from "./table/AssetTable";
 import axios from "axios";
-import AddAsset from "./components/AddAsset";
+import { AddAsset } from "./components/ActionDialogs";
 import AssetContext from "@/context/AssetContext";
 import { assetSchema } from "@shared/schemas";
 import { z } from "zod";

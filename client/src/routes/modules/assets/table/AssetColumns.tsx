@@ -15,10 +15,12 @@ import {
 
 import { useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
-import EditAsset from "@/routes/modules/assets/components/EditAsset";
-import DeleteAsset from "../components/DeleteAsset";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
-import DuplicateAsset from "../components/DuplicateAsset";
+import {
+  DuplicateAsset,
+  EditAsset,
+  DeleteAsset,
+} from "../components/ActionDialogs";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";
