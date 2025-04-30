@@ -99,6 +99,7 @@ export default function AssetForm({
                   placeholder="ex: Serial Number / Product Tag"
                   type="text"
                   {...field}
+                  value={field.value ?? ""}
                 />
               </FormControl>
 
