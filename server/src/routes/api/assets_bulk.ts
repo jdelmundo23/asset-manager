@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/delete", async function (req, res) {
   const { ids } = req.body;
 
-  if (ids.length === 0) {
+  if (ids.length < 1 || !ids) {
     res.status(400).json({ error: "No IDs provided" });
     return;
   }
@@ -37,7 +37,7 @@ router.post("/delete", async function (req, res) {
 router.post("/duplicate", async function (req, res) {
   const { ids } = req.body;
 
-  if (ids.length === 0) {
+  if (ids.length < 1 || !ids) {
     res.status(400).json({ error: "No IDs provided" });
     return;
   }

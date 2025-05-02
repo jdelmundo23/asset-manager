@@ -25,7 +25,11 @@ export default function BulkActionDropdown({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={cn(buttonVariants({ variant: "secondary" }), "gap-0 pl-3")}
+        disabled={Object.keys(selectedRows).length === 0}
+        className={cn(
+          buttonVariants({ variant: "secondary" }),
+          "gap-0 pl-3 transition-all"
+        )}
       >
         <ChevronsUpDown />
         Bulk Actions

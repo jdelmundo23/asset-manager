@@ -48,8 +48,6 @@ export const handleBulkAction = async (
 ) => {
   const action = actions[actionType];
 
-  console.log(ids);
-
   const loadingToast = showLoadingToast(`${action.ing} ${endpointType}s`);
   try {
     await axios[action.method](action.url(endpointType), { ids });
