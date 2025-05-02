@@ -8,13 +8,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/shadcn-ui/alert-dialog";
-import { handleAction } from "@/components/Actions";
+import { handleAction } from "@/lib/Actions";
 import { AssetRow } from "@shared/schemas";
-import { FetcherWithComponents } from "react-router";
 import { Button } from "@/components/shadcn-ui/button";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import AssetForm from "./AssetForm";
 import { X } from "lucide-react";
+import AssetContext from "@/context/AssetContext";
 
 interface GenericDialogProps {
   open: boolean;
@@ -101,10 +101,10 @@ interface DeleteAssetProps {
   open: boolean;
   setOpen: (val: boolean) => void;
   row: AssetRow;
-  fetcher: FetcherWithComponents<any> | undefined;
 }
 
-export function DeleteAsset({ open, setOpen, row, fetcher }: DeleteAssetProps) {
+export function DeleteAsset({ open, setOpen, row }: DeleteAssetProps) {
+  const { fetcher } = useContext(AssetContext);
   return (
     <GenericDialog
       open={open}
@@ -128,15 +128,10 @@ interface DuplicateAssetProps {
   open: boolean;
   setOpen: (val: boolean) => void;
   row: AssetRow;
-  fetcher: FetcherWithComponents<any> | undefined;
 }
 
-export function DuplicateAsset({
-  open,
-  setOpen,
-  row,
-  fetcher,
-}: DuplicateAssetProps) {
+export function DuplicateAsset({ open, setOpen, row }: DuplicateAssetProps) {
+  const { fetcher } = useContext(AssetContext);
   return (
     <GenericDialog
       open={open}

@@ -16,6 +16,7 @@ import authRouter from "./routes/auth";
 import apiRouter from "./routes/api/middleware";
 import presetRouter from "./routes/api/presets";
 import assetRouter from "./routes/api/assets";
+import assetBulkRouter from "./routes/api/assets_bulk";
 import usersRouter from "./routes/api/users";
 import ipsRouter from "./routes/api/ips";
 
@@ -48,6 +49,7 @@ app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 app.use("/api/presets", presetRouter);
 app.use("/api/assets", assetRouter);
+app.use("/api/assets/bulk", assetBulkRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/ips", ipsRouter);
 app.get("/", function (req, res) {

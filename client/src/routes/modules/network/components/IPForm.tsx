@@ -25,7 +25,7 @@ import IpContext from "@/context/IPContext";
 import { useContext, useEffect, useState } from "react";
 import { DataTable } from "../../assets/table/AssetTable";
 import { RowSelectionState } from "@tanstack/react-table";
-import { handleAction } from "@/components/Actions";
+import { handleAction } from "@/lib/Actions";
 import axios from "axios";
 
 interface BaseProps {

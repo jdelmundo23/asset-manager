@@ -267,8 +267,6 @@ export const getColumns = (
       cell: ({ row }) => {
         const asset = row.original;
 
-        const { fetcher } = useContext(AssetContext);
-
         const [editOpen, setEditOpen] = useState(false);
         const [duplicateOpen, setDuplicateOpen] = useState(false);
         const [deleteOpen, setDeleteOpen] = useState(false);
@@ -303,13 +301,11 @@ export const getColumns = (
               open={deleteOpen}
               setOpen={setDeleteOpen}
               row={asset}
-              fetcher={fetcher}
             />
             <DuplicateAsset
               open={duplicateOpen}
               setOpen={setDuplicateOpen}
               row={asset}
-              fetcher={fetcher}
             />
           </DropdownMenu>
         );

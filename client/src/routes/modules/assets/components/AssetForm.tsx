@@ -16,7 +16,7 @@ import AssetContext from "@/context/AssetContext";
 import { useContext, useEffect } from "react";
 import { Asset, AssetRow, assetSchema } from "@shared/schemas";
 import FormCombobox from "@/components/FormCombobox";
-import { handleAction } from "@/components/Actions";
+import { handleAction } from "@/lib/Actions";
 import CalendarPopover from "@/components/CalendarPopover";
 
 interface BaseProps {

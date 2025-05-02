@@ -1,7 +1,13 @@
-import { toast } from "sonner";
 import axios from "axios";
 import { Asset, AssetRow, IP, IPRow } from "@shared/schemas";
 import { FetcherWithComponents } from "react-router";
+import {
+  showErrorToast,
+  showInfoToast,
+  showListUpdateErrorToast,
+  showLoadingToast,
+  showSuccessToast,
+} from "@/lib/toasts";
 
 type ActionType = "add" | "edit" | "delete" | "duplicate";
 
@@ -61,36 +67,27 @@ export const handleAction = async (
 
   const action = actions[actionType];
 
-  const loadingToast = toast.loading(
-    <div>
-      {action.ing} {endpointType}: <b>{values.name}</b>
-    </div>
+  const loadingToast = showLoadingToast(
+    `${action.ing} ${endpointType}`,
+    values.name
   );
+
   try {
     if ("ipAddress" in values) {
       await axios[action.method](action.url(endpointType, values), values);
     } else {
       await axios[action.method](action.url(endpointType, values), values);
     }
+
     try {
       await fetcher?.load(
         `/app/${endpointType === "asset" ? "assets" : "network"}`
       );
 
-      const toastType = actionType === "add" ? toast.success : toast.info;
-
-      toastType(
-        <div>
-          {action.ed} {endpointType}: <b>{values.name}</b>
-        </div>,
-        {
-          id: loadingToast,
-        }
-      );
+      const toastType = actionType === "add" ? showSuccessToast : showInfoToast;
+      toastType(loadingToast, `${action.ed} ${endpointType}`, values.name);
     } catch {
-      toast.error(<div>Failed to update list</div>, {
-        id: loadingToast,
-      });
+      showListUpdateErrorToast(loadingToast);
     }
   } catch (error) {
     console.error(
@@ -99,13 +96,10 @@ export const handleAction = async (
         ? (error.response?.data?.error ?? error.message)
         : error
     );
-    toast.error(
-      <div>
-        Failed to {actionType} {endpointType}: <b>{values.name}</b>
-      </div>,
-      {
-        id: loadingToast,
-      }
+    showErrorToast(
+      loadingToast,
+      `Failed to ${actionType} ${endpointType}`,
+      values.name
     );
     throw error;
   }
