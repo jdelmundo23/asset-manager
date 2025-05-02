@@ -35,7 +35,9 @@ export default function BulkActionDropdown({
           <Pencil />
           Edit
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => handleBulkAction("asset", "duplicate", ids, fetcher)}
+        >
           <Copy />
           Duplicate
         </DropdownMenuItem>
