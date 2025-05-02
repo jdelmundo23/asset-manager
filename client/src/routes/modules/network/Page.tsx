@@ -8,6 +8,7 @@ import TableToolbar from "@/components/TableToolbar";
 import AddIP from "./components/AddIP";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
+import BulkActionDropdown from "@/components/BulkActionDropdown";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -39,7 +40,15 @@ function Page() {
     <div className="dark container mx-auto flex w-1/2 flex-col gap-2 py-10">
       <IPContext.Provider value={{ ...data, fetcher }}>
         <TableToolbar tableTitle="Network">
-          <AddIP />
+          <div className="flex gap-x-1">
+            <BulkActionDropdown
+              entity={"ip"}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              deleting
+            />
+            <AddIP />
+          </div>
         </TableToolbar>
         <DataTable
           ips={data.ips}

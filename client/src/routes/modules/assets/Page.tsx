@@ -9,7 +9,7 @@ import { z } from "zod";
 import TableToolbar from "@/components/TableToolbar";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
-import BulkActionDropdown from "./components/BulkActionDropdown";
+import BulkActionDropdown from "../../../components/BulkActionDropdown";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -50,7 +50,13 @@ function Page() {
       <AssetContext.Provider value={{ ...data, fetcher }}>
         <TableToolbar tableTitle="Assets">
           <div className="flex gap-x-1">
-            <BulkActionDropdown selectedRows={selectedRows} />
+            <BulkActionDropdown
+              entity={"asset"}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              deleting
+              duplicating
+            />
             <AddAsset />
           </div>
         </TableToolbar>

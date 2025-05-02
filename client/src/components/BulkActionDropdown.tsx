@@ -7,19 +7,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import AssetContext from "@/context/AssetContext";
+import IPContext from "@/context/IPContext";
 import { cn } from "@/lib/utils";
 import { RowSelectionState } from "@tanstack/react-table";
 import { ChevronsUpDown, Copy, Pencil, Trash2 } from "lucide-react";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 interface BulkActionDropdownProps {
+  entity: "asset" | "ip";
+  editing?: boolean;
+  duplicating?: boolean;
+  deleting?: boolean;
   selectedRows: RowSelectionState;
+  setSelectedRows: React.Dispatch<React.SetStateAction<RowSelectionState>>;
 }
 
 export default function BulkActionDropdown({
+  entity,
+  editing,
+  duplicating,
+  deleting,
   selectedRows,
+  setSelectedRows,
 }: BulkActionDropdownProps) {
-  const { fetcher } = useContext(AssetContext);
+  const { fetcher } =
+    entity === "asset" ? useContext(AssetContext) : useContext(IPContext);
   const ids = Object.keys(selectedRows).filter((key) => selectedRows[key]);
 
   return (
@@ -35,23 +47,32 @@ export default function BulkActionDropdown({
         Bulk Actions
       </DropdownMenuTrigger>
       <DropdownMenuContent className="dark w-[--radix-dropdown-menu-trigger-width]">
-        <DropdownMenuItem>
-          <Pencil />
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          onClick={() => handleBulkAction("asset", "duplicate", ids, fetcher)}
-        >
-          <Copy />
-          Duplicate
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          className="text-red-600"
-          onClick={() => handleBulkAction("asset", "delete", ids, fetcher)}
-        >
-          <Trash2 />
-          Delete
-        </DropdownMenuItem>
+        {editing && (
+          <DropdownMenuItem>
+            <Pencil />
+            Edit
+          </DropdownMenuItem>
+        )}
+        {duplicating && (
+          <DropdownMenuItem
+            onClick={() => handleBulkAction(entity, "duplicate", ids, fetcher)}
+          >
+            <Copy />
+            Duplicate
+          </DropdownMenuItem>
+        )}
+        {deleting && (
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => {
+              handleBulkAction(entity, "delete", ids, fetcher);
+              setSelectedRows({});
+            }}
+          >
+            <Trash2 />
+            Delete
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
