@@ -11,7 +11,7 @@ import IPContext from "@/context/IPContext";
 import { cn } from "@/lib/utils";
 import { RowSelectionState } from "@tanstack/react-table";
 import { ChevronsUpDown, Copy, Pencil, Trash2 } from "lucide-react";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 
 interface BulkActionDropdownProps {
   entity: "asset" | "ip";

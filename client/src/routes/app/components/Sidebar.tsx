@@ -1,6 +1,6 @@
 import { Loader2 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { Link, useNavigation } from "react-router";
+import { Link, useNavigation, useLocation } from "react-router";
 import { modules } from "@/lib/modules";
 import AuthContext from "@/context/AuthContext";
 import UserBadge from "@/components/UserBadge";
@@ -13,6 +13,7 @@ interface SidebarProps {
 function Sidebar({ active }: SidebarProps) {
   const user = useContext(AuthContext);
   const navigation = useNavigation();
+  const location = useLocation();
   const [sidebarClicked, setSidebarClicked] = useState<boolean>(false);
   useEffect(() => {
     if (navigation.state !== "loading") {
@@ -28,7 +29,7 @@ function Sidebar({ active }: SidebarProps) {
           {modules.map((module) => (
             <Link key={module.link} to={module.link}>
               <li
-                className="nav-item flex items-center justify-between"
+                className={`nav-item flex items-center justify-between ${location.pathname === module.link ? "hover:bg-foreground bg-white text-black" : ""}`}
                 onClick={() => setSidebarClicked(true)}
               >
                 <div className="flex items-center gap-2">
