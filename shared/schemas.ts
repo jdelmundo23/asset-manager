@@ -53,9 +53,7 @@ export interface AssetRow extends Asset {
 
 export const ipSchema = z.object({
   ID: z.number().optional(),
-  ipAddress: z
-    .union([z.string().ip(), z.literal("")])
-    .transform((value) => value ?? ""),
+  ipAddress: z.string().ip(),
   name: z.string().min(2).max(100),
   macAddress: z
     .union([

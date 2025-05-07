@@ -43,7 +43,7 @@ export default function CalendarPopover({
       <PopoverTrigger asChild>
         {useFormControl ? <FormControl>{trigger}</FormControl> : trigger}
       </PopoverTrigger>
-      <PopoverContent className="dark w-auto p-0" align="start">
+      <PopoverContent className="dark w-auto p-0" align="center">
         <Calendar
           mode="single"
           selected={value}

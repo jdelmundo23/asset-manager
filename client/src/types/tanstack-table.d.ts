@@ -5,5 +5,7 @@ declare module "@tanstack/react-table" {
   interface ColumnMeta<> {
     type: "text" | "select" | "date";
     options?: Preset[] | User[];
+    canEdit?: boolean;
+    editTable?: "assets" | "network";
   }
 }

@@ -9,6 +9,8 @@ import {
 } from "./shadcn-ui/table";
 import { FilterBox } from "@/components/Filters";
 import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from "lucide-react";
+import { ZodObject, ZodRawShape } from "zod";
+import { EditCell } from "./EditCell";
 
 const SortArrow = <T,>({ column }: { column: Column<T, unknown> }) => {
   let arrow: JSX.Element = <></>;
@@ -46,6 +48,7 @@ interface TableRendererProps<T> {
   columnLength: number;
   singleSelect?: boolean;
   animated?: boolean;
+  schema?: ZodObject<ZodRawShape>;
 }
 
 export default function TableRenderer<T>({
@@ -53,6 +56,7 @@ export default function TableRenderer<T>({
   columnLength,
   singleSelect,
   animated,
+  schema,
 }: TableRendererProps<T>) {
   return (
     <>
@@ -118,14 +122,26 @@ export default function TableRenderer<T>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className="group px-0 first:pl-0.5 last:py-0"
+                      className="group px-0 transition-colors duration-100 first:pl-0.5 last:py-0 hover:bg-slate-400/30"
                     >
-                      <p className="px-2 group-last:px-1">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
+                      <div className="flex items-center justify-between gap-x-2 px-2">
+                        <p className="min-w-0 flex-1 break-words group-last:px-1">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </p>
+                        {schema &&
+                        cell.column.columnDef.meta?.canEdit !== false ? (
+                          <EditCell
+                            column={cell.column}
+                            currentValue={cell.getValue()}
+                            schema={schema}
+                          />
+                        ) : (
+                          <div className="h-4 w-4"></div>
                         )}
-                      </p>
+                      </div>
                     </TableCell>
                   ))}
                 </TableRow>

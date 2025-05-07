@@ -18,6 +18,41 @@ import { X } from "lucide-react";
 import { useState } from "react";
 import CalendarPopover from "@/components/CalendarPopover";
 
+export const FilterBox = <T,>({
+  type,
+  column,
+  children,
+}: {
+  type: "text" | "select" | "date";
+  column: Column<T, unknown>;
+  children: React.ReactNode;
+}) => {
+  let filterElement: JSX.Element = <></>;
+
+  switch (type) {
+    case "text":
+      filterElement = <TextFilter column={column} />;
+      break;
+    case "select":
+      filterElement = <SelectFilter column={column} />;
+      break;
+    case "date":
+      filterElement = <DateFilter column={column} />;
+      break;
+  }
+  return (
+    <Popover>
+      <PopoverTrigger>{children}</PopoverTrigger>
+      <PopoverContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="dark rounded-xl p-0"
+      >
+        {filterElement}
+      </PopoverContent>
+    </Popover>
+  );
+};
+
 const TextFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
   return (
     <>
@@ -123,40 +158,5 @@ const DateFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
         </Button>
       </div>
     </div>
-  );
-};
-
-export const FilterBox = <T,>({
-  type,
-  column,
-  children,
-}: {
-  type: "text" | "select" | "date";
-  column: Column<T, unknown>;
-  children: React.ReactNode;
-}) => {
-  let filterElement: JSX.Element = <></>;
-
-  switch (type) {
-    case "text":
-      filterElement = <TextFilter column={column} />;
-      break;
-    case "select":
-      filterElement = <SelectFilter column={column} />;
-      break;
-    case "date":
-      filterElement = <DateFilter column={column} />;
-      break;
-  }
-  return (
-    <Popover>
-      <PopoverTrigger>{children}</PopoverTrigger>
-      <PopoverContent
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        className="dark rounded-xl p-0"
-      >
-        {filterElement}
-      </PopoverContent>
-    </Popover>
   );
 };

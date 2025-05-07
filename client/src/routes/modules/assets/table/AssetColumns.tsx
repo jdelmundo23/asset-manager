@@ -13,8 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 
-import { useContext, useState } from "react";
-import AssetContext from "@/context/AssetContext";
+import { useState } from "react";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
 import {
   DuplicateAsset,
@@ -150,7 +149,7 @@ export const getColumns = (
       filterFn: (row, columnId, filterValue) => {
         return selectFilterFn(row.getValue(columnId), filterValue, types);
       },
-      meta: { type: "select", options: types },
+      meta: { type: "select", options: types, canEdit: false },
     },
     {
       accessorKey: "locationID",

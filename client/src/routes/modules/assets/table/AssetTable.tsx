@@ -11,7 +11,7 @@ import {
 import { Dispatch, SetStateAction, useContext, useState } from "react";
 import AssetContext from "@/context/AssetContext";
 import { getColumns } from "./AssetColumns";
-import { AssetRow } from "@shared/schemas";
+import { AssetRow, assetSchema } from "@shared/schemas";
 import TableRenderer from "@/components/TableRenderer";
 
 interface DataTableProps {
@@ -80,6 +80,7 @@ export function DataTable({
       columnLength={columns.length}
       singleSelect={singleSelect}
       animated={animated}
+      schema={assetSchema.innerType()}
     />
   );
 }

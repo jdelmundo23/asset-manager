@@ -10,23 +10,16 @@ import { Input } from "@/components/shadcn-ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IP, IPRow, ipSchema } from "@shared/schemas";
 import { useForm } from "react-hook-form";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/shadcn-ui/sheet";
+
 import { Button } from "@/components/shadcn-ui/button";
-import { cn } from "@/lib/utils";
-import { ChevronsUpDown, LoaderCircle } from "lucide-react";
+
+import { LoaderCircle } from "lucide-react";
 import IpContext from "@/context/IPContext";
 import { useContext, useEffect, useState } from "react";
-import { DataTable } from "../../assets/table/AssetTable";
 import { RowSelectionState } from "@tanstack/react-table";
 import { handleAction } from "@/lib/Actions";
 import axios from "axios";
+import { AssetTableSheet } from "@/components/TableSheets";
 
 interface BaseProps {
   closeDialog: () => void;
@@ -45,7 +38,7 @@ interface EditModeProps extends BaseProps {
 type IPFormProps = AddModeProps | EditModeProps;
 
 export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
-  const { assets, fetcher } = useContext(IpContext);
+  const { fetcher } = useContext(IpContext);
   const form = useForm<IP>({
     resolver: zodResolver(ipSchema),
     ...(mode === "edit" && ip ? { defaultValues: ip } : {}),
@@ -136,72 +129,14 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
               <FormItem className="flex flex-col space-y-2">
                 <FormLabel>Asset</FormLabel>
                 <FormControl>
-                  <Sheet
-                    onOpenChange={(open) =>
-                      setTimeout(
-                        () => setSelectedRow({ [field.value ?? -1]: true }),
-                        open ? 0 : 500
-                      )
+                  <AssetTableSheet
+                    value={field.value}
+                    selectedRow={selectedRow}
+                    setSelectedRow={setSelectedRow}
+                    onConfirm={() =>
+                      field.onChange(parseInt(Object.keys(selectedRow)[0]))
                     }
-                  >
-                    <SheetTrigger>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        role="sheet"
-                        className={cn(
-                          "w-full justify-between",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value
-                          ? assets.find((row) => {
-                              return row.ID === field.value;
-                            })?.name
-                          : "Select Asset"}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </SheetTrigger>
-                    <SheetContent className="dark space-y-3">
-                      <SheetHeader>
-                        <SheetTitle>Select an asset</SheetTitle>
-                      </SheetHeader>
-                      <DataTable
-                        assets={assets}
-                        hideColumns={[
-                          "select",
-                          "modelID",
-                          "typeID",
-                          "locationID",
-                          "departmentID",
-                          "assignedTo",
-                          "purchaseDate",
-                          "warrantyExp",
-                          "cost",
-                          "actions",
-                        ]}
-                        selectedRow={selectedRow}
-                        onRowSelect={setSelectedRow}
-                        singleSelect={true}
-                      />
-                      <div className="flex justify-end space-x-2">
-                        <SheetClose asChild>
-                          <Button variant="secondary">Cancel</Button>
-                        </SheetClose>
-                        <SheetClose asChild>
-                          <Button
-                            onClick={() =>
-                              field.onChange(
-                                parseInt(Object.keys(selectedRow)[0])
-                              )
-                            }
-                          >
-                            Select
-                          </Button>
-                        </SheetClose>
-                      </div>
-                    </SheetContent>
-                  </Sheet>
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

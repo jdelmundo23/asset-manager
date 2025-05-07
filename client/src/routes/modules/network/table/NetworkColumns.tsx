@@ -73,7 +73,7 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
           .toLowerCase()
           .includes(filterValue.toLowerCase());
       },
-      meta: { type: "text" },
+      meta: { type: "text", editTable: "assets" },
     },
     {
       id: "actions",
