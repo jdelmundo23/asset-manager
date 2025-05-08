@@ -1,5 +1,5 @@
 import express from "express";
-import { getPool } from "../../sql";
+import { getPool } from "../../../sql";
 import sql from "mssql";
 const router = express.Router();
 

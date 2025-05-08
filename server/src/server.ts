@@ -15,11 +15,11 @@ import { getPool } from "./sql";
 import authRouter from "./routes/auth";
 import apiRouter from "./routes/api/middleware";
 import presetRouter from "./routes/api/presets";
-import assetRouter from "./routes/api/assets";
-import assetBulkRouter from "./routes/api/assets_bulk";
-import ipBulkRouter from "./routes/api/ips_bulk";
+import assetRouter from "./routes/api/assets/assets";
+import assetBulkRouter from "./routes/api/assets/assets_bulk";
+import ipBulkRouter from "./routes/api/network/ips_bulk";
 import usersRouter from "./routes/api/users";
-import ipsRouter from "./routes/api/ips";
+import ipsRouter from "./routes/api/network/ips";
 
 const corsOptions = {
   origin: "http://localhost:3000",

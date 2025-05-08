@@ -144,7 +144,7 @@ const TextEditor = <T,>({
           {field.value !== currentValue && (
             <Button className="h-8">Confirm Edit</Button>
           )}
-          <FormMessage />
+          <FormMessage className="text-center" />
         </FormItem>
       )}
     />

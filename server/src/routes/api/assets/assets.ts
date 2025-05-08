@@ -1,8 +1,35 @@
 import express from "express";
-import { getPool } from "../../sql";
+import { getPool } from "../../../sql";
 import { Asset, assetSchema } from "@shared/schemas";
 import sql from "mssql";
 import { z } from "zod";
+
+const inputs = (asset: Asset) => [
+  { name: "ID", type: sql.Int, value: asset.ID },
+  { name: "name", type: sql.VarChar(100), value: asset.name },
+  { name: "identifier", type: sql.VarChar(100), value: asset.identifier },
+  { name: "locationID", type: sql.Int, value: asset.locationID },
+  { name: "departmentID", type: sql.Int, value: asset.departmentID },
+  { name: "modelID", type: sql.Int, value: asset.modelID },
+  { name: "assignedTo", type: sql.VarChar(75), value: asset.assignedTo },
+  { name: "purchaseDate", type: sql.DateTime, value: asset.purchaseDate },
+  { name: "warrantyExp", type: sql.DateTime, value: asset.warrantyExp },
+  { name: "cost", type: sql.Decimal(6, 2), value: asset.cost },
+];
+
+const appendInputs = (
+  request: sql.Request,
+  asset: Asset,
+  exclusions: string[] = []
+) => {
+  for (const input of inputs(asset)) {
+    if (!exclusions.includes(input.name)) {
+      request.input(input.name, input.type, input.value);
+    }
+  }
+  return request;
+};
+
 const router = express.Router();
 
 router.get("/all", async function (req, res) {
@@ -39,26 +66,18 @@ router.get("/all", async function (req, res) {
 
 router.post("/", async function (req, res) {
   const result = assetSchema.safeParse(req.body);
-
   if (!result.success) {
     res.status(400).json({ error: result.error.format() });
     return;
   }
-
   const asset: Asset = result.data;
+
   try {
     const pool = await getPool();
-    await pool
-      .request()
-      .input("name", sql.VarChar(100), asset.name)
-      .input("identifier", sql.VarChar(100), asset.identifier)
-      .input("locationID", sql.Int, asset.locationID)
-      .input("departmentID", sql.Int, asset.departmentID)
-      .input("modelID", sql.Int, asset.modelID)
-      .input("assignedTo", sql.VarChar(75), asset.assignedTo)
-      .input("purchaseDate", sql.DateTime, asset.purchaseDate)
-      .input("warrantyExp", sql.DateTime, asset.warrantyExp)
-      .input("cost", sql.Decimal(6, 2), asset.cost).query(`
+    const request = pool.request();
+
+    const appendedRequest = appendInputs(request, asset);
+    await appendedRequest.query(`
     INSERT INTO Assets (
       name, 
       identifier, 
@@ -91,7 +110,6 @@ router.post("/", async function (req, res) {
 
 router.put("/", async function (req, res) {
   const result = assetSchema.safeParse(req.body);
-
   if (!result.success) {
     res.status(400).json({ error: result.error.format() });
     return;
@@ -105,18 +123,10 @@ router.put("/", async function (req, res) {
 
   try {
     const pool = await getPool();
-    await pool
-      .request()
-      .input("ID", sql.Int, asset.ID)
-      .input("name", sql.VarChar(100), asset.name)
-      .input("identifier", sql.VarChar(100), asset.identifier)
-      .input("locationID", sql.Int, asset.locationID)
-      .input("departmentID", sql.Int, asset.departmentID)
-      .input("modelID", sql.Int, asset.modelID)
-      .input("assignedTo", sql.VarChar(75), asset.assignedTo)
-      .input("purchaseDate", sql.DateTime, asset.purchaseDate)
-      .input("warrantyExp", sql.DateTime, asset.warrantyExp)
-      .input("cost", sql.Decimal(6, 2), asset.cost).query(`
+    const request = pool.request();
+
+    const appendedRequest = appendInputs(request, asset);
+    await appendedRequest.query(`
     UPDATE Assets
     SET 
       name = @name,
@@ -159,7 +169,6 @@ router.delete("/:assetID", async function (req, res) {
 
 router.post("/duplicate", async function (req, res) {
   const result = assetSchema.safeParse(req.body);
-
   if (!result.success) {
     res.status(400).json({ error: result.error.format() });
     return;
@@ -175,8 +184,8 @@ router.post("/duplicate", async function (req, res) {
     const pool = await getPool();
     const result = await pool
       .request()
-      .input("id", sql.Int, asset.ID)
-      .query(`SELECT * FROM Assets WHERE ID = @id`);
+      .input("ID", sql.Int, asset.ID)
+      .query(`SELECT * FROM Assets WHERE ID = @ID`);
 
     if (result.recordset.length === 0) {
       res.status(404).json({ error: "Asset not found" });
@@ -185,20 +194,17 @@ router.post("/duplicate", async function (req, res) {
 
     const originalAsset = result.recordset[0];
 
-    await pool
-      .request()
+    const request = pool.request();
+    const appendedRequest = appendInputs(request, originalAsset, [
+      "name",
+      "identifier",
+    ]);
+
+    await appendedRequest
       .input("name", sql.VarChar(100), `${originalAsset.name} - Copy`)
-      .input("identifier", sql.VarChar(100), null)
-      .input("locationID", sql.Int, originalAsset.locationID)
-      .input("departmentID", sql.Int, originalAsset.departmentID)
-      .input("modelID", sql.Int, originalAsset.modelID)
-      .input("assignedTo", sql.VarChar(75), originalAsset.assignedTo)
-      .input("purchaseDate", sql.DateTime, originalAsset.purchaseDate)
-      .input("warrantyExp", sql.DateTime, originalAsset.warrantyExp)
-      .input("cost", sql.Decimal(6, 2), originalAsset.cost)
-      .input("note", sql.NVarChar(255), originalAsset.note).query(`
-      INSERT INTO Assets (name, identifier, locationID, departmentID, modelID, assignedTo, purchaseDate, warrantyExp, cost, note)
-      VALUES (@name, @identifier, @locationID, @departmentID, @modelID, @assignedTo, @purchaseDate, @warrantyExp, @cost, @note)
+      .input("identifier", sql.VarChar(100), null).query(`
+      INSERT INTO Assets (name, identifier, locationID, departmentID, modelID, assignedTo, purchaseDate, warrantyExp, cost)
+      VALUES (@name, @identifier, @locationID, @departmentID, @modelID, @assignedTo, @purchaseDate, @warrantyExp, @cost)
     `);
 
     res.status(200).json({ message: "Asset duplicated successfully." });

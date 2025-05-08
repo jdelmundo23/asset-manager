@@ -1,5 +1,5 @@
 import express, { RequestHandler } from "express";
-import { getPool } from "../../sql";
+import { getPool } from "../../../sql";
 import sql from "mssql";
 import { IP, ipSchema } from "@shared/schemas";
 import { z } from "zod";
