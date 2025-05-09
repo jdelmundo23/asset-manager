@@ -1,31 +1,49 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import { getPool } from "../../../sql";
 import sql from "mssql";
-const router = express.Router();
 
-router.post("/delete", async function (req, res) {
+const appendPlaceholderInputs = (request: sql.Request, ids: number[]) => {
+  const placeholders: string = ids
+    .map((_: number, i: number) => `@id${i}`)
+    .join(", ");
+
+  ids.forEach((id: number, i: number) => {
+    request.input(`id${i}`, sql.Int, id);
+  });
+
+  return { request, placeholders };
+};
+
+const checkIds: RequestHandler = async (req, res, next) => {
   const { ids } = req.body;
 
   if (ids.length < 1 || !ids) {
     res.status(400).json({ error: "No IDs provided" });
     return;
   }
+
+  next();
+};
+
+const router = express.Router();
+
+router.use(checkIds);
+
+router.post("/delete", async function (req, res) {
+  const { ids } = req.body;
+
   try {
     const pool = await getPool();
 
-    const request = pool.request();
-    const placeholders: string = ids
-      .map((_: string, i: number) => `@id${i}`)
-      .join(", ");
+    const { request, placeholders } = appendPlaceholderInputs(
+      pool.request(),
+      ids
+    );
 
-    ids.forEach((id: string, i: number) => {
-      request.input(`id${i}`, sql.Int, id);
-    });
-    const query = `
+    await request.query(`
       DELETE FROM Assets
       WHERE ID IN (${placeholders})
-    `;
-    await request.query(query);
+    `);
 
     res.json({ message: "Assets deleted successfully", deleted: ids.length });
   } catch (err) {
@@ -37,30 +55,20 @@ router.post("/delete", async function (req, res) {
 router.post("/duplicate", async function (req, res) {
   const { ids } = req.body;
 
-  if (ids.length < 1 || !ids) {
-    res.status(400).json({ error: "No IDs provided" });
-    return;
-  }
-
   try {
     const pool = await getPool();
 
-    const selectRequest = pool.request();
-    const placeholders: string = ids
-      .map((_: string, i: number) => `@id${i}`)
-      .join(", ");
+    const { request: selectRequest, placeholders } = appendPlaceholderInputs(
+      pool.request(),
+      ids
+    );
 
-    ids.forEach((id: string, i: number) => {
-      selectRequest.input(`id${i}`, sql.Int, id);
-    });
-
-    const selectQuery = `
+    const result = await selectRequest.query(`
     SELECT name, identifier, locationID, departmentID, modelID,
            assignedTo, purchaseDate, warrantyExp, cost, note
     FROM Assets
     WHERE ID IN (${placeholders})
-  `;
-    const result = await selectRequest.query(selectQuery);
+  `);
     const rows = result.recordset;
 
     const insertRequest = pool.request();

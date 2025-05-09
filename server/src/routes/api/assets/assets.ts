@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import { getPool } from "../../../sql";
 import { Asset, assetSchema } from "@shared/schemas";
 import sql from "mssql";
@@ -30,7 +30,25 @@ const appendInputs = (
   return request;
 };
 
+const validateAssetInput: RequestHandler = async (req, res, next) => {
+  if (req.method !== "POST" && req.method !== "PUT") {
+    return next();
+  }
+  const result = assetSchema.safeParse(req.body);
+
+  if (!result.success) {
+    res.status(400).json({ error: result.error.format() });
+    return;
+  }
+
+  req.body = result.data;
+
+  next();
+};
+
 const router = express.Router();
+
+router.use(validateAssetInput);
 
 router.get("/all", async function (req, res) {
   try {
@@ -65,18 +83,12 @@ router.get("/all", async function (req, res) {
 });
 
 router.post("/", async function (req, res) {
-  const result = assetSchema.safeParse(req.body);
-  if (!result.success) {
-    res.status(400).json({ error: result.error.format() });
-    return;
-  }
-  const asset: Asset = result.data;
+  const asset: Asset = req.body;
 
   try {
     const pool = await getPool();
-    const request = pool.request();
 
-    const appendedRequest = appendInputs(request, asset);
+    const appendedRequest = appendInputs(pool.request(), asset);
     await appendedRequest.query(`
     INSERT INTO Assets (
       name, 
@@ -109,23 +121,17 @@ router.post("/", async function (req, res) {
 });
 
 router.put("/", async function (req, res) {
-  const result = assetSchema.safeParse(req.body);
-  if (!result.success) {
-    res.status(400).json({ error: result.error.format() });
-    return;
-  }
-  const asset: Asset = result.data;
+  const asset: Asset = req.body;
 
   if (!asset.ID) {
-    res.status(400).json({ error: "Missing ID of asset to edit" });
+    res.status(400).json({ error: "Asset ID is required" });
     return;
   }
 
   try {
     const pool = await getPool();
-    const request = pool.request();
 
-    const appendedRequest = appendInputs(request, asset);
+    const appendedRequest = appendInputs(pool.request(), asset);
     await appendedRequest.query(`
     UPDATE Assets
     SET 
@@ -168,12 +174,7 @@ router.delete("/:assetID", async function (req, res) {
 });
 
 router.post("/duplicate", async function (req, res) {
-  const result = assetSchema.safeParse(req.body);
-  if (!result.success) {
-    res.status(400).json({ error: result.error.format() });
-    return;
-  }
-  const asset: Asset = result.data;
+  const asset: Asset = req.body;
 
   if (!asset.ID) {
     res.status(400).json({ error: "Missing ID of asset to duplicate" });
@@ -182,11 +183,11 @@ router.post("/duplicate", async function (req, res) {
 
   try {
     const pool = await getPool();
+
     const result = await pool
       .request()
       .input("ID", sql.Int, asset.ID)
       .query(`SELECT * FROM Assets WHERE ID = @ID`);
-
     if (result.recordset.length === 0) {
       res.status(404).json({ error: "Asset not found" });
       return;
@@ -194,8 +195,7 @@ router.post("/duplicate", async function (req, res) {
 
     const originalAsset = result.recordset[0];
 
-    const request = pool.request();
-    const appendedRequest = appendInputs(request, originalAsset, [
+    const appendedRequest = appendInputs(pool.request(), originalAsset, [
       "name",
       "identifier",
     ]);
