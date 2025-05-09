@@ -51,7 +51,7 @@ function Page() {
           </div>
         </TableToolbar>
         <DataTable
-          ips={data.ips}
+          ips={data?.ips ?? []}
           selectedRow={selectedRows}
           onRowSelect={setSelectedRows}
           animated={true}

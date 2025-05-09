@@ -61,7 +61,7 @@ function Page() {
           </div>
         </TableToolbar>
         <DataTable
-          assets={data.assets}
+          assets={data?.assets ?? []}
           selectedRow={selectedRows}
           onRowSelect={setSelectedRows}
           animated={true}
