@@ -4,19 +4,40 @@ import sql from "mssql";
 import { IP, ipSchema } from "@shared/schemas";
 import { z } from "zod";
 
+const inputs = (ip: IP) => [
+  { name: "ID", type: sql.Int, value: ip.ID },
+  { name: "ipAddress", type: sql.VarChar(15), value: ip.ipAddress },
+  { name: "name", type: sql.VarChar(100), value: ip.name },
+  { name: "macAddress", type: sql.VarChar(24), value: ip.macAddress },
+  { name: "assetID", type: sql.Int, value: ip.assetID },
+];
+
+const appendInputs = (
+  request: sql.Request,
+  ip: IP,
+  exclusions: string[] = []
+) => {
+  for (const input of inputs(ip)) {
+    if (!exclusions.includes(input.name)) {
+      request.input(input.name, input.type, input.value);
+    }
+  }
+  return request;
+};
+
 const checkExistingIP: RequestHandler = async (req, res, next) => {
   if (req.method !== "POST" && req.method !== "PUT") {
     return next();
   }
 
-  const result = ipSchema.safeParse(req.body);
+  const parse = ipSchema.safeParse(req.body);
 
-  if (!result.success) {
-    res.status(400).json({ error: result.error.format() });
+  if (!parse.success) {
+    res.status(400).json({ error: parse.error.format() });
     return;
   }
 
-  const ip: IP = result.data;
+  const ip: IP = parse.data;
 
   try {
     const pool = await getPool();
@@ -31,6 +52,8 @@ const checkExistingIP: RequestHandler = async (req, res, next) => {
       res.status(400).json({ error: "IP already exists" });
       return;
     }
+    req.body = parse.data;
+
     next();
   } catch (err) {
     console.error(err);
@@ -67,14 +90,12 @@ router.get("/all", async function (req, res) {
 
 router.post("/", async function (req, res) {
   const ip: IP = req.body;
+
   try {
     const pool = await getPool();
-    await pool
-      .request()
-      .input("ipAddress", sql.VarChar(15), ip.ipAddress)
-      .input("name", sql.VarChar(100), ip.name)
-      .input("macAddress", sql.VarChar(24), ip.macAddress)
-      .input("assetID", sql.Int, ip.assetID).query(`
+
+    const appendedRequest = appendInputs(pool.request(), ip);
+    await appendedRequest.query(`
     INSERT INTO IPAddresses (
       ipAddress,
       name,
@@ -105,13 +126,9 @@ router.put("/", async function (req, res) {
 
   try {
     const pool = await getPool();
-    await pool
-      .request()
-      .input("ID", sql.Int, ip.ID)
-      .input("ipAddress", sql.VarChar(15), ip.ipAddress)
-      .input("name", sql.VarChar(100), ip.name)
-      .input("macAddress", sql.VarChar(24), ip.macAddress)
-      .input("assetID", sql.Int, ip.assetID).query(`
+
+    const appendedRequest = appendInputs(pool.request(), ip);
+    await appendedRequest.query(`
     UPDATE IpAddresses
     SET 
       ipAddress = @ipAddress,
@@ -138,8 +155,10 @@ router.delete("/:ipID", async function (req, res) {
 
   try {
     const pool = await getPool();
-    const query = `DELETE FROM IPAddresses WHERE ID = @ID`;
-    await pool.request().input("ID", sql.Int, ipID).query(query);
+    await pool
+      .request()
+      .input("ID", sql.Int, ipID)
+      .query(`DELETE FROM IPAddresses WHERE ID = @ID`);
     res.status(200).json({ message: "IP deleted successfully" });
   } catch (err) {
     console.error(err);
