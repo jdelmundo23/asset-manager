@@ -10,6 +10,7 @@ import TableToolbar from "@/components/TableToolbar";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "../../../components/BulkActionDropdown";
+import { toast } from "sonner";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -36,7 +37,7 @@ export async function loader() {
       users: usersRes.data ?? [],
     };
   } catch {
-    console.error("Not authenticated");
+    toast.error("Unable to load data. Please try again later.");
   }
 }
 
@@ -61,7 +62,7 @@ function Page() {
           </div>
         </TableToolbar>
         <DataTable
-          assets={data?.assets ?? []}
+          assets={data?.assets}
           selectedRow={selectedRows}
           onRowSelect={setSelectedRows}
           animated={true}

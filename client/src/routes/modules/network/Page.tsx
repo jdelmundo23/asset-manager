@@ -9,6 +9,7 @@ import AddIP from "./components/AddIP";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "@/components/BulkActionDropdown";
+import { toast } from "sonner";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -27,7 +28,7 @@ export async function loader() {
       assets: parsedAssets,
     };
   } catch {
-    console.error("Not authenticated");
+    toast.error("Unable to load data. Please try again later.");
   }
 }
 

@@ -92,7 +92,7 @@ function FormCombobox<
                 <CommandList>
                   <CommandEmpty>{`No ${props.options.msgLabel} found.`}</CommandEmpty>
                   <CommandGroup>
-                    {items.map((choice) => (
+                    {items?.map((choice) => (
                       <CommandItem
                         value={choice[labelKey]}
                         key={choice[valueKey]}

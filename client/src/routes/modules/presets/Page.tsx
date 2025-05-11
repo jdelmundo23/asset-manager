@@ -13,6 +13,7 @@ import { ScrollArea } from "@/components/shadcn-ui/scroll-area";
 import axios from "axios";
 import PresetContext from "@/context/PresetContext";
 import Row from "./components/Row";
+import { toast } from "sonner";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -49,8 +50,8 @@ function Page() {
         } else {
           setTypeData([]);
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
+      } catch {
+        toast.error("Unable to load data. Please try again later.");
       } finally {
         setIsLoading(false);
       }

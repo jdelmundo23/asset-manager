@@ -15,7 +15,7 @@ import { AssetRow, assetSchema } from "@shared/schemas";
 import TableRenderer from "@/components/TableRenderer";
 
 interface DataTableProps {
-  assets: AssetRow[];
+  assets: AssetRow[] | undefined;
   hideColumns?: string[];
   selectedRow?: RowSelectionState;
   onRowSelect?: Dispatch<SetStateAction<RowSelectionState>>;
@@ -24,7 +24,7 @@ interface DataTableProps {
 }
 
 export function DataTable({
-  assets,
+  assets = [],
   hideColumns = [],
   selectedRow,
   onRowSelect,
