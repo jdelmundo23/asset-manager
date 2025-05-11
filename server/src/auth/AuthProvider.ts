@@ -6,6 +6,8 @@ import { msalConfig } from "../authConfig";
 import { Request, Response, NextFunction } from "express";
 import axios from "axios";
 
+const devMode = process.env.DEV_MODE === "true";
+
 interface AuthOptions {
   scopes: string[];
   redirectUri: string;
@@ -25,6 +27,24 @@ class AuthProvider {
   constructor(msalConfig: Configuration) {
     this.msalConfig = msalConfig;
     this.cryptoProvider = new msal.CryptoProvider();
+
+    if (
+      !this.msalConfig.auth.clientSecret ||
+      !this.msalConfig.auth.authority ||
+      !this.msalConfig.auth.clientId
+    ) {
+      if (devMode) {
+        console.warn(
+          "Warning: One or more required MSAL configuration values. Bypassing with development mode..."
+        );
+      } else {
+        console.error(
+          "Error: One or more required MSAL configuration values. Ensure all required MSAL related environment variables are set."
+        );
+
+        process.exit(1);
+      }
+    }
   }
 
   login(options: AuthOptions) {

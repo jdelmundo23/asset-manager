@@ -2,11 +2,19 @@ import express from "express";
 import axios from "axios";
 import { GRAPH_ENDPOINT } from "../../authConfig";
 import { User } from "@microsoft/microsoft-graph-types";
+import { mockUserData } from "../../../tests/mockdata/mockusers";
+const devMode = process.env.DEV_MODE === "true";
+
 const router = express.Router();
 
 const group_id = process.env.ENTRA_USER_GROUP_ID;
 
 router.get("/all", async function (req, res) {
+  if (devMode) {
+    res.json(mockUserData);
+    return;
+  }
+
   const options = {
     headers: {
       Authorization: `Bearer ${req.session.accessToken}`,
