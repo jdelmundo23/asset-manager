@@ -46,6 +46,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 app.use("/api/presets", presetRouter);

@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Outlet } from "react-router";
 import Sidebar from "./components/Sidebar";
 import Main from "./components/Main";
-import { Toaster } from "sonner";
 import { AlignJustify } from "lucide-react";
 import Background from "./components/Background";
 
@@ -19,7 +18,6 @@ function App() {
 
   return (
     <div className="relative flex h-full w-full">
-      <Toaster richColors />
       <Sidebar active={sidebarActive} setSidebarActive={changeSidebarState} />
       <Main sidebarActive={sidebarActive}>
         <Outlet />

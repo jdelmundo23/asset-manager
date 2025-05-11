@@ -19,6 +19,7 @@ import Network, { loader as ipLoader } from "./routes/modules/network/Page";
 import axios from "axios";
 import AuthContext, { AuthContextType } from "./context/AuthContext";
 import RedirectRoot from "./routes/RedirectRoot";
+import { Toaster } from "sonner";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -75,6 +76,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+    <Toaster richColors />
     <Root />
   </React.StrictMode>
 );
