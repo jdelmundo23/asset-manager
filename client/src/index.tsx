@@ -20,6 +20,7 @@ import axios from "axios";
 import AuthContext, { AuthContextType } from "./context/AuthContext";
 import RedirectRoot from "./routes/RedirectRoot";
 import { Toaster } from "sonner";
+import PlaceholderRoute from "./routes/Placeholder";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -36,6 +37,7 @@ const router = createBrowserRouter(
       <Route element={<Protected />}>
         <Route path="app" element={<App />}>
           <Route index element={<Menu />}></Route>
+          <Route path="phones" element={<PlaceholderRoute />} />
           <Route path="presets" element={<Presets />}></Route>
           <Route
             path="assets"
