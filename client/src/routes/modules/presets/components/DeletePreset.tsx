@@ -10,6 +10,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/shadcn-ui/alert-dialog";
 import PresetContext from "@/context/PresetContext";
+import { handleError } from "@/lib/handleError";
 import axios from "axios";
 import { Trash2 } from "lucide-react";
 import { useContext } from "react";
@@ -29,7 +30,7 @@ function DeletePreset({ presetName }: DeletePresetProps) {
       console.log("Preset delete successfully", response.data);
       reloadData();
     } catch (error) {
-      console.error("Delete failed", error);
+      handleError(error);
     }
   }
   return (

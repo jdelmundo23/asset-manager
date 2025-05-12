@@ -30,6 +30,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import PresetContext from "@/context/PresetContext";
 import { Preset } from "@shared/schemas";
+import { handleError } from "@/lib/handleError";
 
 interface PresetFormProps {
   operation: "add" | "edit";
@@ -119,12 +120,8 @@ export default function PresetForm({
       closeDialog();
       reloadData();
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const errorMsg: string = error.response?.data.error;
-        setMsg(errorMsg);
-      } else {
-        console.error("Failed submission. Unexpected error:", error);
-      }
+      const errorMsg = handleError(error);
+      setMsg(errorMsg);
     }
   }
 

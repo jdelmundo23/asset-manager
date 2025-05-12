@@ -10,7 +10,7 @@ import TableToolbar from "@/components/TableToolbar";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "../../../components/BulkActionDropdown";
-import { toast } from "sonner";
+import { handleError } from "@/lib/handleError";
 
 axios.defaults.withCredentials = true;
 const apiUrl = import.meta.env.VITE_API_URL;
@@ -36,8 +36,8 @@ export async function loader() {
       models: modelRes.data ?? [],
       users: usersRes.data ?? [],
     };
-  } catch {
-    toast.error("Unable to load data. Please try again later.");
+  } catch (error) {
+    handleError(error);
   }
 }
 

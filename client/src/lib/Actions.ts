@@ -2,12 +2,12 @@ import axios from "axios";
 import { Asset, AssetRow, IP, IPRow } from "@shared/schemas";
 import { FetcherWithComponents } from "react-router";
 import {
-  showErrorToast,
   showInfoToast,
   showListUpdateErrorToast,
   showLoadingToast,
   showSuccessToast,
 } from "@/lib/toasts";
+import { handleError } from "./handleError";
 
 type ActionType = "add" | "edit" | "delete" | "duplicate";
 
@@ -90,17 +90,8 @@ export const handleAction = async (
       showListUpdateErrorToast(loadingToast);
     }
   } catch (error) {
-    console.error(
-      `${action.ing} ${endpointType} failed: Error: `,
-      axios.isAxiosError(error)
-        ? (error.response?.data?.error ?? error.message)
-        : error
-    );
-    showErrorToast(
-      loadingToast,
-      `Failed to ${actionType} ${endpointType}`,
-      values.name
-    );
+    handleError(error, loadingToast);
+
     throw error;
   }
 };

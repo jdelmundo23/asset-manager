@@ -4,8 +4,8 @@ import { Navigate } from "react-router";
 import { Card } from "@/components/shadcn-ui/card";
 import { Button } from "@/components/shadcn-ui/button";
 import axios from "axios";
-import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
+import { handleError } from "@/lib/handleError";
 
 function Signin() {
   const [redirecting, setRedirecting] = useState<boolean>(false);
@@ -20,13 +20,9 @@ function Signin() {
 
       if (response.status === 200 && response.data.status === "ok") {
         window.location.href = "http://localhost:5000/auth/signin";
-      } else {
-        toast.error("Server responded unexpectedly. Please try again later.");
-        setRedirecting(false);
       }
     } catch (error) {
-      console.error(error);
-      toast.error("Unable to reach the server. Please try again later.");
+      handleError(error);
       setRedirecting(false);
     }
   };

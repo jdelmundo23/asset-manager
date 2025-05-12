@@ -1,5 +1,4 @@
 import {
-  showErrorToast,
   showInfoToast,
   showListUpdateErrorToast,
   showLoadingToast,
@@ -7,6 +6,7 @@ import {
 } from "@/lib/toasts";
 import axios from "axios";
 import { FetcherWithComponents } from "react-router";
+import { handleError } from "./handleError";
 
 type ActionType = "duplicate" | "edit" | "delete";
 
@@ -64,13 +64,8 @@ export const handleBulkAction = async (
       showListUpdateErrorToast(loadingToast);
     }
   } catch (error) {
-    console.error(
-      `Bulk operation failed: Error: `,
-      axios.isAxiosError(error)
-        ? (error.response?.data?.error ?? error.message)
-        : error
-    );
-    showErrorToast(loadingToast, `Failed to ${actionType} ${endpointType}s`);
+    handleError(error, loadingToast);
+
     throw error;
   }
 };

@@ -17,7 +17,7 @@ if (!devMode) {
 
   router.use((req, res, next) => {
     if (!req.session.account) {
-      res.status(403).json({ message: "Access denied" });
+      res.status(401).json({ message: "Unauthorized" });
       return;
     }
     next();

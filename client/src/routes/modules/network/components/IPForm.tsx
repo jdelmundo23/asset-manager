@@ -59,9 +59,10 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
       }
     } catch (error) {
       form.setError("ipAddress", {
-        message: axios.isAxiosError(error)
-          ? (error.response?.data?.error ?? error.message)
-          : error,
+        message:
+          axios.isAxiosError(error) && error.status !== 500
+            ? "An error has occured"
+            : "",
       });
     }
   }
