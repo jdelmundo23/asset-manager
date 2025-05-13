@@ -1,11 +1,12 @@
 import { ReactNode } from "react";
 import Header from "./Header";
+import { useSidebar } from "@/context/SidebarContext";
 interface MainProps {
-  sidebarActive: boolean;
   children: ReactNode;
 }
 
-function Main({ sidebarActive, children }: MainProps) {
+function Main({ children }: MainProps) {
+  const { sidebarActive } = useSidebar();
   return (
     <main
       className={`flex h-full max-w-full flex-1 flex-col items-center transition-all duration-300 ${

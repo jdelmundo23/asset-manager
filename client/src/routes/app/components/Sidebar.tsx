@@ -4,14 +4,11 @@ import { Link, useNavigation, useLocation } from "react-router";
 import { modules } from "@/lib/modules";
 import AuthContext from "@/context/AuthContext";
 import UserBadge from "@/components/UserBadge";
+import { useSidebar } from "@/context/SidebarContext";
 
-interface SidebarProps {
-  active: boolean;
-  setSidebarActive: (value: boolean) => void;
-}
-
-function Sidebar({ active }: SidebarProps) {
+function Sidebar() {
   const user = useContext(AuthContext);
+  const { sidebarActive } = useSidebar();
   const navigation = useNavigation();
   const location = useLocation();
   const [sidebarClicked, setSidebarClicked] = useState<boolean>(false);
@@ -22,7 +19,7 @@ function Sidebar({ active }: SidebarProps) {
   }, [navigation.location]);
   return (
     <nav
-      className={`${active ? "w-[250px] border" : "w-0 border-0"} fixed z-50 box-border h-full overflow-hidden border-zinc-600 bg-black text-white transition-[width,padding,border-width] duration-500 ease-in-out md:static`}
+      className={`${sidebarActive ? "w-[250px] border" : "w-0 border-0"} fixed z-50 box-border h-full overflow-hidden border-zinc-600 bg-black text-white transition-[width,padding,border-width] duration-500 ease-in-out md:static`}
     >
       <div className="flex h-full flex-col justify-between px-3 pb-3 pt-44">
         <ul className="flex w-full flex-col gap-y-3">

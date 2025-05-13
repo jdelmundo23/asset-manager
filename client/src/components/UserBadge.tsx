@@ -24,7 +24,7 @@ const logOut = async () => {
     });
 
     if (response.status === 200 && response.data.status === "ok") {
-      window.location.href = "http://localhost:5000/auth/signin";
+      window.location.href = "http://localhost:5000/auth/signout";
     }
   } catch (error) {
     handleError(error);
