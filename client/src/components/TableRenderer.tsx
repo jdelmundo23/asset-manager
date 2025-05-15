@@ -136,6 +136,7 @@ export default function TableRenderer<T>({
                           <EditCell
                             column={cell.column}
                             currentValue={cell.getValue()}
+                            ID={row.id}
                             schema={schema}
                           />
                         ) : (

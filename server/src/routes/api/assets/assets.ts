@@ -2,20 +2,26 @@ import express, { RequestHandler } from "express";
 import { getPool } from "../../../sql";
 import { Asset, assetSchema } from "@shared/schemas";
 import sql from "mssql";
-import { z } from "zod";
+import { z, ZodObject, ZodRawShape } from "zod";
 
-const inputs = (asset: Asset) => [
-  { name: "ID", type: sql.Int, value: asset.ID },
-  { name: "name", type: sql.VarChar(100), value: asset.name },
-  { name: "identifier", type: sql.VarChar(100), value: asset.identifier },
-  { name: "locationID", type: sql.Int, value: asset.locationID },
-  { name: "departmentID", type: sql.Int, value: asset.departmentID },
-  { name: "modelID", type: sql.Int, value: asset.modelID },
-  { name: "assignedTo", type: sql.VarChar(75), value: asset.assignedTo },
-  { name: "purchaseDate", type: sql.DateTime, value: asset.purchaseDate },
-  { name: "warrantyExp", type: sql.DateTime, value: asset.warrantyExp },
-  { name: "cost", type: sql.Decimal(6, 2), value: asset.cost },
-];
+const inputDefinitions = [
+  { name: "ID", type: sql.Int },
+  { name: "name", type: sql.VarChar(100) },
+  { name: "identifier", type: sql.VarChar(100) },
+  { name: "locationID", type: sql.Int },
+  { name: "departmentID", type: sql.Int },
+  { name: "modelID", type: sql.Int },
+  { name: "assignedTo", type: sql.VarChar(75) },
+  { name: "purchaseDate", type: sql.DateTime },
+  { name: "warrantyExp", type: sql.DateTime },
+  { name: "cost", type: sql.Decimal(6, 2) },
+] as const;
+
+const inputs = (asset: Partial<Asset> = {}) =>
+  inputDefinitions.map((def) => ({
+    ...def,
+    value: asset[def.name as keyof Asset],
+  }));
 
 const appendInputs = (
   request: sql.Request,
@@ -31,17 +37,40 @@ const appendInputs = (
 };
 
 const validateAssetInput: RequestHandler = async (req, res, next) => {
-  if (req.method !== "POST" && req.method !== "PUT") {
+  if (!["POST", "PUT", "PATCH"].includes(req.method)) {
     return next();
   }
-  const result = assetSchema.safeParse(req.body);
 
-  if (!result.success) {
-    res.status(400).json({ error: result.error.format() });
-    return;
+  let result;
+
+  if (req.method === "PATCH") {
+    const shape = assetSchema.innerType() as ZodObject<ZodRawShape>;
+    const column = req.body.column;
+    const value = req.body.value;
+
+    const validColumns: string[] = shape.keyof().options as string[];
+    if (!validColumns.includes(column)) {
+      res.status(400).json({ error: "Invalid column" });
+      return;
+    }
+
+    const columnSchema = shape.pick({ [column]: true });
+    result = columnSchema.safeParse({ [column]: value });
+    if (!result.success) {
+      res.status(400).json({ error: result.error.format() });
+      return;
+    }
+
+    req.body = { ...result.data, column: column, ID: req.body.ID };
+  } else {
+    result = assetSchema.safeParse(req.body);
+    if (!result.success) {
+      res.status(400).json({ error: result.error.format() });
+      return;
+    }
+
+    req.body = result.data;
   }
-
-  req.body = result.data;
 
   next();
 };
@@ -211,6 +240,52 @@ router.post("/duplicate", async function (req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to duplicate asset" });
+  }
+});
+
+router.patch("/", async function (req, res) {
+  const assetID = req.body.ID;
+  const columnName = req.body.column;
+  const newValue = req.body[columnName];
+
+  if (!assetID) {
+    res.status(400).json({ error: "Asset ID is required" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+
+    const sqlType = inputDefinitions.find(
+      (def) => def.name === columnName
+    )?.type;
+
+    if (!sqlType) {
+      res.status(400).json({ error: "Type not found due to invalid column" });
+      return;
+    }
+
+    await pool
+      .request()
+      .input(columnName, sqlType, newValue)
+      .input("ID", sql.Int, assetID).query(`
+        UPDATE Assets 
+        SET ${columnName} = @${columnName} 
+        WHERE ID = @ID`);
+
+    res.status(200).json({ message: "Cell edited successfully!" });
+  } catch (error) {
+    console.log(error);
+    if (
+      error instanceof sql.RequestError &&
+      error.message.includes("WarrantyExp")
+    ) {
+      res
+        .status(500)
+        .json({ error: "Warranty expiration must be after purchase date." });
+    } else {
+      res.status(500).json({ error: "Failed to edit cell" });
+    }
   }
 });
 

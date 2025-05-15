@@ -14,7 +14,7 @@ import TableRenderer from "@/components/TableRenderer";
 import { IPRow, ipSchema } from "@shared/schemas";
 
 interface DataTableProps {
-  ips: IPRow[];
+  ips: IPRow[] | undefined;
   hideColumns?: string[];
   selectedRow?: RowSelectionState;
   onRowSelect?: Dispatch<SetStateAction<RowSelectionState>>;
@@ -22,7 +22,7 @@ interface DataTableProps {
 }
 
 export function DataTable({
-  ips,
+  ips = [],
   hideColumns = [],
   selectedRow,
   onRowSelect,

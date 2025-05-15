@@ -4,7 +4,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import { Check, ChevronsUpDown, Pencil, X } from "lucide-react";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Input } from "./shadcn-ui/input";
 import { Column, RowSelectionState } from "@tanstack/react-table";
 import { z, ZodObject, ZodRawShape } from "zod";
@@ -31,16 +31,27 @@ import {
 } from "./shadcn-ui/command";
 import CalendarPopover from "./CalendarPopover";
 import { AssetTableSheet } from "./TableSheets";
+import axios from "axios";
+import { handleError } from "@/lib/handleError";
+import {
+  showListUpdateErrorToast,
+  showLoadingToast,
+  showSuccessToast,
+} from "@/lib/toasts";
+import AssetContext from "@/context/AssetContext";
 
 export const EditCell = <T,>({
   column,
   currentValue,
+  ID,
   schema,
 }: {
   column: Column<T, unknown>;
   currentValue: unknown;
+  ID: number | string;
   schema: ZodObject<ZodRawShape>;
 }) => {
+  const { fetcher } = useContext(AssetContext);
   const [isOpen, setIsOpen] = useState(false);
 
   const cellOnlySchema = schema.pick({ [column.id]: true });
@@ -51,6 +62,10 @@ export const EditCell = <T,>({
     defaultValues: { [column.id]: currentValue },
   });
 
+  useEffect(() => {
+    form.reset({ [column.id]: currentValue });
+  }, [currentValue, column.id, form]);
+
   const handleOpenChange = (isOpen: boolean) => {
     setIsOpen(isOpen);
     if (isOpen) {
@@ -60,7 +75,25 @@ export const EditCell = <T,>({
 
   async function onSubmit(values: CellType) {
     if (values[column.id] !== currentValue) {
-      console.log(values[column.id]);
+      const loadingToast = showLoadingToast("Editing cell");
+
+      try {
+        await axios.patch("/api/assets", {
+          value: values[column.id],
+          column: column.id,
+          ID: ID,
+        });
+
+        setIsOpen(false);
+        try {
+          await fetcher?.load(`/app/assets`);
+          showSuccessToast(loadingToast, "Edited cell");
+        } catch {
+          showListUpdateErrorToast(loadingToast);
+        }
+      } catch (error) {
+        handleError(error, loadingToast);
+      }
     }
   }
 
