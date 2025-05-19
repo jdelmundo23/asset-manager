@@ -16,7 +16,7 @@ import Row from "./components/Row";
 import { handleError } from "@/lib/handleError";
 
 axios.defaults.withCredentials = true;
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface tableRow {
   ID: number;

@@ -23,7 +23,7 @@ import { Toaster } from "sonner";
 import PlaceholderRoute from "./routes/Placeholder";
 
 axios.defaults.withCredentials = true;
-const apiUrl = import.meta.env.VITE_API_URL;
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 const router = createBrowserRouter(
   createRoutesFromElements(

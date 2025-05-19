@@ -1,6 +1,8 @@
 import { Button } from "@/components/shadcn-ui/button";
 import { toast } from "sonner";
 
+const serverUrl = import.meta.env.VITE_BACKEND_URL;
+
 export const showLoadingToast = (msg: string, entity: string = "") => {
   return toast.loading(
     <div>
@@ -67,9 +69,7 @@ export const showSessionExpiredToast = (toastId: string | number) => {
         <Button
           variant="link"
           className="text-red-600"
-          onClick={() =>
-            (window.location.href = "http://localhost:5000/auth/signin")
-          }
+          onClick={() => (window.location.href = `${serverUrl}/auth/signin`)}
         >
           Sign In
         </Button>

@@ -4,18 +4,19 @@ import { REDIRECT_URI, POST_LOGOUT_REDIRECT_URI } from "../authConfig";
 import { mockAuthData } from "../../tests/mockdata/mockauth";
 
 const devMode = process.env.DEV_MODE === "true";
+const clientURL = process.env.CLIENT_ORIGIN ?? "http://localhost:3000/";
 
 const router = express.Router();
 
 router.get("/signin", (req, res, next) => {
   if (devMode) {
-    return res.redirect("http://localhost:3000/");
+    return res.redirect(clientURL);
   }
 
   return authProvider.login({
     scopes: ["User.Read"],
     redirectUri: REDIRECT_URI as string,
-    successRedirect: "http://localhost:3000/",
+    successRedirect: clientURL,
   })(req, res, next);
 });
 
@@ -41,7 +42,7 @@ router.get("/user", (req, res) => {
 
 router.get("/signout", (req, res) => {
   if (devMode) {
-    return res.redirect("http://localhost:3000/");
+    return res.redirect(clientURL);
   }
   return authProvider.logout(POST_LOGOUT_REDIRECT_URI as string)(req, res);
 });

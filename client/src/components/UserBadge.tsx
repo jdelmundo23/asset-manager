@@ -11,6 +11,8 @@ import { cn } from "@/lib/utils";
 import axios from "axios";
 import { handleError } from "@/lib/handleError";
 
+const serverUrl = import.meta.env.VITE_BACKEND_URL;
+
 interface UserBadgeProps {
   authenticated: boolean;
   name: string | undefined;
@@ -19,12 +21,12 @@ interface UserBadgeProps {
 
 const logOut = async () => {
   try {
-    const response = await axios.get("http://localhost:5000/health", {
+    const response = await axios.get(`${serverUrl}/health`, {
       timeout: 5000,
     });
 
     if (response.status === 200 && response.data.status === "ok") {
-      window.location.href = "http://localhost:5000/auth/signout";
+      window.location.href = `${serverUrl}/auth/signout`;
     }
   } catch (error) {
     handleError(error);

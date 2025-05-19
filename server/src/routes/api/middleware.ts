@@ -3,6 +3,7 @@ import authProvider from "../../auth/AuthProvider";
 import { REDIRECT_URI } from "../../authConfig";
 
 const devMode = process.env.DEV_MODE === "true";
+const clientURL = process.env.CLIENT_ORIGIN ?? "http://localhost:3000/";
 
 const router = express.Router();
 
@@ -11,7 +12,7 @@ if (!devMode) {
     authProvider.acquireToken({
       scopes: ["User.Read", "GroupMember.Read.All", "Directory.Read.All"],
       redirectUri: REDIRECT_URI as string,
-      successRedirect: "http://localhost:3000/",
+      successRedirect: clientURL,
     })
   );
 

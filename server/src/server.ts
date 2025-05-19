@@ -22,7 +22,7 @@ import usersRouter from "./routes/api/users";
 import ipsRouter from "./routes/api/network/ips";
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: process.env.CLIENT_ORIGIN,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
 };

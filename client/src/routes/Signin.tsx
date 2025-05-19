@@ -7,6 +7,8 @@ import axios from "axios";
 import { LoaderCircle } from "lucide-react";
 import { handleError } from "@/lib/handleError";
 
+const serverUrl = import.meta.env.VITE_BACKEND_URL;
+
 function Signin() {
   const [redirecting, setRedirecting] = useState<boolean>(false);
   const { authenticated } = useContext(AuthContext);
@@ -14,12 +16,12 @@ function Signin() {
   const signIn = async () => {
     setRedirecting(true);
     try {
-      const response = await axios.get("http://localhost:5000/health", {
+      const response = await axios.get(`${serverUrl}/health`, {
         timeout: 5000,
       });
 
       if (response.status === 200 && response.data.status === "ok") {
-        window.location.href = "http://localhost:5000/auth/signin";
+        window.location.href = `${serverUrl}/auth/signin`;
       }
     } catch (error) {
       handleError(error);
