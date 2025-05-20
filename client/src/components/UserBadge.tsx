@@ -8,8 +8,8 @@ import {
 import { Link } from "react-router";
 import { buttonVariants } from "./shadcn-ui/button";
 import { cn } from "@/lib/utils";
-import axios from "axios";
 import { handleError } from "@/lib/handleError";
+import axiosApi from "@/lib/axios";
 
 const serverUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -21,7 +21,7 @@ interface UserBadgeProps {
 
 const logOut = async () => {
   try {
-    const response = await axios.get(`${serverUrl}/health`, {
+    const response = await axiosApi.get(`/health`, {
       timeout: 5000,
     });
 

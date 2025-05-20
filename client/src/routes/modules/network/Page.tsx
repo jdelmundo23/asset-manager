@@ -1,5 +1,4 @@
 import { useFetcher, useLoaderData } from "react-router";
-import axios from "axios";
 import IPContext from "@/context/IPContext";
 import { assetSchema, ipSchema } from "@shared/schemas";
 import { z } from "zod";
@@ -10,15 +9,13 @@ import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "@/components/BulkActionDropdown";
 import { handleError } from "@/lib/handleError";
-
-axios.defaults.withCredentials = true;
-const apiUrl = import.meta.env.VITE_BACKEND_URL;
+import axiosApi from "@/lib/axios";
 
 export async function loader() {
   try {
     const [ipRes, assetRes] = await Promise.all([
-      axios.get(`${apiUrl}/api/ips/all`),
-      axios.get(`${apiUrl}/api/assets/all`),
+      axiosApi.get(`/api/ips/all`),
+      axiosApi.get(`/api/assets/all`),
     ]);
     const parsedIps = z.array(ipSchema).parse(ipRes.data ?? []);
     const parsedAssets = z.array(assetSchema).parse(assetRes.data ?? []);

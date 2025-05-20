@@ -10,8 +10,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/shadcn-ui/alert-dialog";
 import PresetContext from "@/context/PresetContext";
+import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
-import axios from "axios";
 import { Trash2 } from "lucide-react";
 import { useContext } from "react";
 
@@ -24,7 +24,7 @@ function DeletePreset({ presetName }: DeletePresetProps) {
 
   async function onConfirm() {
     try {
-      const response = await axios.delete(
+      const response = await axiosApi.delete(
         `/api/presets/${activePreset.tableName}/${presetName}`
       );
       console.log("Preset delete successfully", response.data);

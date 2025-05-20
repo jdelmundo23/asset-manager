@@ -10,13 +10,11 @@ import { useState } from "react";
 import { Card } from "@/components/shadcn-ui/card";
 import AddPreset from "./components/AddPreset";
 import { ScrollArea } from "@/components/shadcn-ui/scroll-area";
-import axios from "axios";
+
 import PresetContext from "@/context/PresetContext";
 import Row from "./components/Row";
 import { handleError } from "@/lib/handleError";
-
-axios.defaults.withCredentials = true;
-const apiUrl = import.meta.env.VITE_BACKEND_URL;
+import axiosApi from "@/lib/axios";
 
 interface tableRow {
   ID: number;
@@ -39,13 +37,11 @@ function Page() {
     if (table) {
       try {
         setIsLoading(true);
-        const result = await axios.get(
-          `${apiUrl}/api/presets/${table.tableName}`
-        );
+        const result = await axiosApi.get(`/api/presets/${table.tableName}`);
         setData(result.data);
 
         if (tabValue === "Models") {
-          const result = await axios.get(`${apiUrl}/api/presets/assettypes`);
+          const result = await axiosApi.get(`/api/presets/assettypes`);
           setTypeData(result.data);
         } else {
           setTypeData([]);

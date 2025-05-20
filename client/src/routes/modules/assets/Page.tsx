@@ -1,30 +1,26 @@
 import { useFetcher, useLoaderData } from "react-router";
 import { DataTable } from "./table/AssetTable";
-import axios from "axios";
 import { AddAsset } from "./components/ActionDialogs";
 import AssetContext from "@/context/AssetContext";
 import { assetSchema } from "@shared/schemas";
 import { z } from "zod";
-
 import TableToolbar from "@/components/TableToolbar";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "../../../components/BulkActionDropdown";
 import { handleError } from "@/lib/handleError";
-
-axios.defaults.withCredentials = true;
-const apiUrl = import.meta.env.VITE_BACKEND_URL;
+import axiosApi from "@/lib/axios";
 
 export async function loader() {
   try {
     const [assetRes, locRes, depRes, typeRes, modelRes, usersRes] =
       await Promise.all([
-        axios.get(`${apiUrl}/api/assets/all`),
-        axios.get(`${apiUrl}/api/presets/locations`),
-        axios.get(`${apiUrl}/api/presets/departments`),
-        axios.get(`${apiUrl}/api/presets/assettypes`),
-        axios.get(`${apiUrl}/api/presets/assetmodels`),
-        axios.get(`${apiUrl}/api/users/all`),
+        axiosApi.get(`/api/assets/all`),
+        axiosApi.get(`/api/presets/locations`),
+        axiosApi.get(`/api/presets/departments`),
+        axiosApi.get(`/api/presets/assettypes`),
+        axiosApi.get(`/api/presets/assetmodels`),
+        axiosApi.get(`/api/users/all`),
       ]);
     const parsedAssets = z.array(assetSchema).parse(assetRes.data ?? []);
 

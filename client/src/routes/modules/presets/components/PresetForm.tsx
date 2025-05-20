@@ -19,7 +19,6 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/shadcn-ui/command";
-import axios from "axios";
 import { useContext, useState } from "react";
 import {
   Popover,
@@ -31,6 +30,7 @@ import { cn } from "@/lib/utils";
 import PresetContext from "@/context/PresetContext";
 import { Preset } from "@shared/schemas";
 import { handleError } from "@/lib/handleError";
+import axiosApi from "@/lib/axios";
 
 interface PresetFormProps {
   operation: "add" | "edit";
@@ -58,7 +58,7 @@ async function handlePreset(
   const data = mode === "common" ? { name, oldName } : { name, type, oldName };
 
   console.log(data);
-  const response = await axios[method](url, data);
+  const response = await axiosApi[method](url, data);
   console.log(`Preset operation successful`, response.data);
 }
 

@@ -3,9 +3,9 @@ import AuthContext from "../context/AuthContext";
 import { Navigate } from "react-router";
 import { Card } from "@/components/shadcn-ui/card";
 import { Button } from "@/components/shadcn-ui/button";
-import axios from "axios";
 import { LoaderCircle } from "lucide-react";
 import { handleError } from "@/lib/handleError";
+import axiosApi from "@/lib/axios";
 
 const serverUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -16,7 +16,7 @@ function Signin() {
   const signIn = async () => {
     setRedirecting(true);
     try {
-      const response = await axios.get(`${serverUrl}/health`, {
+      const response = await axiosApi.get(`/health`, {
         timeout: 5000,
       });
 

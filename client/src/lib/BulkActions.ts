@@ -4,9 +4,9 @@ import {
   showLoadingToast,
   showSuccessToast,
 } from "@/lib/toasts";
-import axios from "axios";
 import { FetcherWithComponents } from "react-router";
 import { handleError } from "./handleError";
+import axiosApi from "./axios";
 
 type ActionType = "duplicate" | "edit" | "delete";
 
@@ -50,7 +50,7 @@ export const handleBulkAction = async (
 
   const loadingToast = showLoadingToast(`${action.ing} ${endpointType}s`);
   try {
-    await axios[action.method](action.url(endpointType), { ids });
+    await axiosApi[action.method](action.url(endpointType), { ids });
 
     try {
       await fetcher?.load(

@@ -16,14 +16,11 @@ import Menu from "./routes/app/components/Menu";
 import Presets from "./routes/modules/presets/Page";
 import Assets, { loader as assetLoader } from "./routes/modules/assets/Page";
 import Network, { loader as ipLoader } from "./routes/modules/network/Page";
-import axios from "axios";
 import AuthContext, { AuthContextType } from "./context/AuthContext";
 import RedirectRoot from "./routes/RedirectRoot";
 import { Toaster } from "sonner";
 import PlaceholderRoute from "./routes/Placeholder";
-
-axios.defaults.withCredentials = true;
-const apiUrl = import.meta.env.VITE_BACKEND_URL;
+import axiosApi from "./lib/axios";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -58,7 +55,7 @@ const Root = () => {
   useEffect(() => {
     (async () => {
       try {
-        const response = await axios.get(`${apiUrl}/auth/user`);
+        const response = await axiosApi.get(`/auth/user`);
         setAuthInfo(response.data);
       } catch {
         console.error("Not authenticated");

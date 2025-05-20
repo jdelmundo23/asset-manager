@@ -31,7 +31,6 @@ import {
 } from "./shadcn-ui/command";
 import CalendarPopover from "./CalendarPopover";
 import { AssetTableSheet } from "./TableSheets";
-import axios from "axios";
 import { handleError } from "@/lib/handleError";
 import {
   showListUpdateErrorToast,
@@ -39,6 +38,7 @@ import {
   showSuccessToast,
 } from "@/lib/toasts";
 import AssetContext from "@/context/AssetContext";
+import axiosApi from "@/lib/axios";
 
 export const EditCell = <T,>({
   column,
@@ -78,7 +78,7 @@ export const EditCell = <T,>({
       const loadingToast = showLoadingToast("Editing cell");
 
       try {
-        await axios.patch("/api/assets", {
+        await axiosApi.patch("/api/assets", {
           value: values[column.id],
           column: column.id,
           ID: ID,

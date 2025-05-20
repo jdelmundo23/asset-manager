@@ -1,4 +1,3 @@
-import axios from "axios";
 import { Asset, AssetRow, IP, IPRow } from "@shared/schemas";
 import { FetcherWithComponents } from "react-router";
 import {
@@ -8,6 +7,7 @@ import {
   showSuccessToast,
 } from "@/lib/toasts";
 import { handleError } from "./handleError";
+import axiosApi from "./axios";
 
 type ActionType = "add" | "edit" | "delete" | "duplicate";
 
@@ -74,9 +74,9 @@ export const handleAction = async (
 
   try {
     if ("ipAddress" in values) {
-      await axios[action.method](action.url(endpointType, values), values);
+      await axiosApi[action.method](action.url(endpointType, values), values);
     } else {
-      await axios[action.method](action.url(endpointType, values), values);
+      await axiosApi[action.method](action.url(endpointType, values), values);
     }
 
     try {
