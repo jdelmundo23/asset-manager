@@ -2,7 +2,6 @@ import axios from "axios";
 import { showErrorToast, showSessionExpiredToast } from "./toasts";
 
 export function handleError(error: unknown, loadingToastId?: string | number) {
-  console.log("error detecheted");
   const toastId = loadingToastId ?? "error";
   if (axios.isAxiosError(error)) {
     const status = error.response?.status;

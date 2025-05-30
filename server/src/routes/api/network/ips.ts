@@ -88,6 +88,39 @@ router.get("/all", async function (req, res) {
   }
 });
 
+router.get("/by-asset/:assetID", async function (req, res) {
+  const { assetID } = req.params;
+  if (!assetID) {
+    res.status(400).json({ error: "Asset ID is required" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+    const result = await pool
+      .request()
+      .input("assetID", sql.Int, assetID)
+      .query(`SELECT * FROM IpAddresses WHERE assetID = @assetID`);
+
+    if (result.recordset.length < 1) {
+      res.json([]);
+      return;
+    }
+
+    const parse = z.array(ipSchema).safeParse(result.recordset);
+
+    if (parse.error) {
+      console.error(parse.error);
+      res.status(500).json({ error: "Failed to parse database records" });
+      return;
+    }
+
+    res.json(parse.data);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to retrieve ip data:" + err });
+  }
+});
+
 router.post("/", async function (req, res) {
   const ip: IP = req.body;
 

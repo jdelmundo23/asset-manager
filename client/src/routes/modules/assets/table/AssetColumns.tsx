@@ -13,13 +13,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 
-import { useState } from "react";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
 import {
   DuplicateAsset,
   EditAsset,
   DeleteAsset,
 } from "../components/ActionDialogs";
+import { useState } from "react";
+import IPView from "@/components/IPView";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";
@@ -244,6 +245,14 @@ export const getColumns = (
         return dateFilterFn(row.getValue(columnId), filterValue);
       },
       meta: { type: "date" },
+    },
+    {
+      id: "ips",
+      header: "IPs",
+      cell: ({ row }) => (
+        <IPView assetID={row.original.ID} assetName={row.original.name} />
+      ),
+      meta: { canEdit: false },
     },
     {
       accessorKey: "cost",
