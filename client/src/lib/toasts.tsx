@@ -61,7 +61,7 @@ export const showListUpdateErrorToast = (toastId: string | number) => {
 export const showSessionExpiredToast = (toastId: string | number) => {
   toast.error(
     <div className="rounded-none border-r border-red-600">
-      Session expired, please sign in again.
+      Session expired or invalid, please sign in again.
     </div>,
     {
       id: toastId,

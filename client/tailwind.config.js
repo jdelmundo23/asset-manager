@@ -6,6 +6,7 @@ export const theme = {
     animation: {
       "fade-in": "fadeIn 0.4s ease-in-out forwards",
       "fade-in-up": "fade-in-up 0.4s ease-out forwards",
+      "fade-in-up-slight": "fade-in-up-slight 0.4s ease-in-out forwards",
       "fade-in-up-scale": "fade-in-up-scale 0.4s ease-out forwards",
     },
     keyframes: {
@@ -17,6 +18,16 @@ export const theme = {
         "0%": {
           opacity: "0",
           transform: "translateY(12px)",
+        },
+        "100%": {
+          opacity: "1",
+          transform: "translateY(0)",
+        },
+      },
+      "fade-in-up-slight": {
+        "0%": {
+          opacity: "0",
+          transform: "translateY(3px)",
         },
         "100%": {
           opacity: "1",

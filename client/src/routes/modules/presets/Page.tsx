@@ -5,7 +5,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/shadcn-ui/tabs";
-import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { Card } from "@/components/shadcn-ui/card";
 import AddPreset from "./components/AddPreset";
@@ -15,6 +14,7 @@ import PresetContext from "@/context/PresetContext";
 import Row from "./components/Row";
 import { handleError } from "@/lib/handleError";
 import axiosApi from "@/lib/axios";
+import { Skeleton } from "@/components/shadcn-ui/skeleton";
 
 interface tableRow {
   ID: number;
@@ -47,6 +47,7 @@ function Page() {
           setTypeData([]);
         }
       } catch (error) {
+        setData([]);
         handleError(error);
       } finally {
         setIsLoading(false);
@@ -56,7 +57,7 @@ function Page() {
 
   return (
     <div className="dark container mx-auto w-11/12 py-10 md:w-3/5">
-      <h4 className="text-xl font-medium leading-none">Presets</h4>
+      <h1 className="text-2xl font-medium">Presets</h1>
       <p className="text-muted-foreground">
         Manage the presets used for asset columns.
       </p>
@@ -95,23 +96,23 @@ function Page() {
           >
             <TabsContent value={preset.displayName}>
               <Card className="h-96">
-                {isLoading ? (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <LoaderCircle
-                      className="h-10 w-10 animate-spin"
-                      color="gray"
-                    />
-                  </div>
-                ) : (
-                  <ScrollArea className="h-full w-full rounded-md font-medium">
+                <ScrollArea className="h-full w-full rounded-md font-medium">
+                  {isLoading ? (
                     <div className="flex flex-col space-y-3 p-4">
+                      <Skeleton className="h-8 w-full rounded-xl" />
+                      <Skeleton className="h-8 w-full rounded-xl" />
+                      <Skeleton className="h-8 w-full rounded-xl" />
+                    </div>
+                  ) : (
+                    <div className="animate-fade-in flex flex-col space-y-3 p-4">
                       {data.map((row: tableRow) => (
                         <Row key={row.ID} row={row} />
                       ))}
+
                       <AddPreset />
                     </div>
-                  </ScrollArea>
-                )}
+                  )}
+                </ScrollArea>
               </Card>
             </TabsContent>
           </PresetContext.Provider>

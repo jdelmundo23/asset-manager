@@ -11,6 +11,7 @@ import { IPRow } from "@shared/schemas";
 import { useState, useEffect } from "react";
 import { Skeleton } from "./shadcn-ui/skeleton";
 import { TruncateHover } from "./TruncateHover";
+import { ScrollArea } from "./shadcn-ui/scroll-area";
 
 interface IPViewProps {
   assetID: number;
@@ -44,19 +45,19 @@ export default function IPView({ assetID, assetName }: IPViewProps) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger>
         <button className="whitespace-nowrap text-blue-600 underline">
-          View IPs
+          View
         </button>
       </DialogTrigger>
-      <DialogContent className="dark h-44 max-w-md text-white transition-all">
+      <DialogContent className="dark h-44 max-w-lg text-white transition-all">
         <DialogHeader>
           <DialogTitle>{assetName}</DialogTitle>
-          <div className="grid text-sm">
-            <div className="text-muted-foreground grid grid-cols-[1.25fr_1.5fr_1.75fr_0.5fr] gap-x-2 font-medium">
-              <p>IP</p>
-              <p>Name</p>
-              <p>MAC</p>
-              <p>Note</p>
-            </div>
+          <div className="text-muted-foreground grid grid-cols-[1.25fr_1.5fr_1.75fr_0.5fr] gap-x-2 text-sm font-medium">
+            <p>IP</p>
+            <p>Name</p>
+            <p>MAC</p>
+            <p>Note</p>
+          </div>
+          <ScrollArea className="grid h-20 text-sm">
             {loading ? (
               <div className="space-y-3 border-t pt-2">
                 {[1, 2, 3].map((i) => (
@@ -88,7 +89,7 @@ export default function IPView({ assetID, assetName }: IPViewProps) {
                 </div>
               ))
             )}
-          </div>
+          </ScrollArea>
         </DialogHeader>
       </DialogContent>
     </Dialog>

@@ -61,8 +61,8 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
       form.setError("ipAddress", {
         message:
           axios.isAxiosError(error) && error.status !== 500
-            ? "An error has occured"
-            : "",
+            ? error.response?.data?.error
+            : "An error has occurred",
       });
     }
   }
