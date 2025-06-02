@@ -38,7 +38,7 @@ function DeletePreset({ presetName }: DeletePresetProps) {
       <AlertDialogTrigger>
         <Trash2 className="h-4 w-4" />
       </AlertDialogTrigger>
-      <AlertDialogContent className="dark">
+      <AlertDialogContent className="">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white">
             Are you absolutely sure?

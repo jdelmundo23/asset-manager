@@ -43,7 +43,7 @@ function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   return (
-    <div className="dark container mx-auto flex w-11/12 flex-col gap-2 py-10">
+    <div className="container mx-auto flex w-11/12 flex-col gap-2 py-10">
       <AssetContext.Provider value={{ ...data, fetcher }}>
         <TableToolbar tableTitle="Assets">
           <div className="flex gap-x-1">

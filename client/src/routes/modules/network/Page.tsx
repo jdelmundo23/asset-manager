@@ -35,7 +35,7 @@ function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   return (
-    <div className="dark container mx-auto flex w-1/2 flex-col gap-2 py-10">
+    <div className="container mx-auto flex w-1/2 flex-col gap-2 py-10">
       <IPContext.Provider value={{ ...data, fetcher }}>
         <TableToolbar tableTitle="Network">
           <div className="flex gap-x-1">

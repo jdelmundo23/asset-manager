@@ -93,7 +93,7 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
                 <MoreHorizontal className="" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="dark">
+            <DropdownMenuContent align="end" className="">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() =>

@@ -15,7 +15,7 @@ interface EditIPProps {
 function EditIP({ open, setOpen, ip }: EditIPProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent className="dark max-h-screen overflow-y-auto sm:max-w-2xl">
+      <AlertDialogContent className="max-h-screen overflow-y-auto sm:max-w-2xl">
         <div
           className="absolute right-4 top-4 cursor-pointer text-white"
           onClick={() => setOpen(false)}

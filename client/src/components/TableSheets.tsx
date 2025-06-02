@@ -55,7 +55,7 @@ export function AssetTableSheet({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="dark space-y-3">
+      <SheetContent className="space-y-3">
         <SheetHeader>
           <SheetTitle>Select an asset</SheetTitle>
         </SheetHeader>

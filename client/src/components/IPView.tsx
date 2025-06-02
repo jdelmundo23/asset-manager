@@ -48,7 +48,7 @@ export default function IPView({ assetID, assetName }: IPViewProps) {
           View
         </button>
       </DialogTrigger>
-      <DialogContent className="dark h-44 max-w-lg text-white transition-all">
+      <DialogContent className="h-44 max-w-lg text-white transition-all">
         <DialogHeader>
           <DialogTitle>{assetName}</DialogTitle>
           <div className="text-muted-foreground grid grid-cols-[1.25fr_1.5fr_1.75fr_0.5fr] gap-x-2 text-sm font-medium">

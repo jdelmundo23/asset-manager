@@ -45,7 +45,7 @@ export const FilterBox = <T,>({
       <PopoverTrigger>{children}</PopoverTrigger>
       <PopoverContent
         onOpenAutoFocus={(e) => e.preventDefault()}
-        className="dark rounded-xl p-0"
+        className="rounded-xl p-0"
       >
         {filterElement}
       </PopoverContent>

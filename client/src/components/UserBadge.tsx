@@ -45,7 +45,7 @@ export default function UserBadge({
       >
         {name ?? "N/A"}
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="dark w-[--radix-dropdown-menu-trigger-width]">
+      <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
         <DropdownMenuItem onSelect={logOut}>
           <LogOut />
           Log Out

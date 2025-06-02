@@ -56,7 +56,7 @@ function Page() {
   };
 
   return (
-    <div className="dark container mx-auto w-11/12 py-10 md:w-3/5">
+    <div className="container mx-auto w-11/12 py-10 md:w-3/5">
       <h1 className="text-2xl font-medium">Presets</h1>
       <p className="text-muted-foreground">
         Manage the presets used for asset columns.
@@ -67,9 +67,13 @@ function Page() {
         className="w-full max-w-md"
         onValueChange={handleTabChange}
       >
-        <TabsList>
+        <TabsList className="w-full justify-between">
           {presets.map((preset) => (
-            <TabsTrigger key={preset.displayName} value={preset.displayName}>
+            <TabsTrigger
+              key={preset.displayName}
+              value={preset.displayName}
+              className="flex-1"
+            >
               {preset.displayName}
             </TabsTrigger>
           ))}

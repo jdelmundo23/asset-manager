@@ -177,7 +177,7 @@ export default function PresetForm({
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent className="w-[200px] p-0">
-                    <Command className="dark">
+                    <Command className="">
                       <CommandInput placeholder="Search asset type..." />
                       <CommandList>
                         <CommandEmpty>No asset type found.</CommandEmpty>

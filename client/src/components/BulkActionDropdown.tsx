@@ -46,7 +46,7 @@ export default function BulkActionDropdown({
         <ChevronsUpDown />
         Bulk Actions
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="dark w-[--radix-dropdown-menu-trigger-width]">
+      <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
         {editing && (
           <DropdownMenuItem>
             <Pencil />

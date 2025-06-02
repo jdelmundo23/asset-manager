@@ -23,7 +23,7 @@ function AddPreset() {
           </Card>
         </button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="dark sm:max-w-sm">
+      <AlertDialogContent className="sm:max-w-sm">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white">{`Add ${activePreset.displayName} Preset`}</AlertDialogTitle>
         </AlertDialogHeader>

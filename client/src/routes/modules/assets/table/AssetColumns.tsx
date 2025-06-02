@@ -287,7 +287,7 @@ export const getColumns = (
                 <MoreHorizontal className="" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="dark">
+            <DropdownMenuContent align="end" className="">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setEditOpen(true)}>

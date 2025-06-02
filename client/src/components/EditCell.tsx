@@ -224,7 +224,7 @@ const SelectEditor = <T,>({
                 </FormControl>
               </PopoverTrigger>
               <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                <Command className="dark">
+                <Command className="">
                   <CommandInput placeholder={`Search...`} />
                   <CommandList>
                     <CommandEmpty>{`No results found.`}</CommandEmpty>

@@ -23,7 +23,7 @@ function EditPreset({ presetName, presetType }: EditPresetProps) {
       <AlertDialogTrigger>
         <Pencil className="h-4 w-4" />
       </AlertDialogTrigger>
-      <AlertDialogContent className="dark">
+      <AlertDialogContent className="">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white">{`Edit ${activePreset.displayName} Preset - ${presetName}`}</AlertDialogTitle>
         </AlertDialogHeader>

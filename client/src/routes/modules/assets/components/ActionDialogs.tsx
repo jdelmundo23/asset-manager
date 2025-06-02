@@ -37,7 +37,7 @@ export function GenericDialog({
 }: GenericDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent className={`dark ${className}`}>
+      <AlertDialogContent className={` ${className}`}>
         <div
           className="absolute right-4 top-4 cursor-pointer text-white"
           onClick={() => setOpen(false)}

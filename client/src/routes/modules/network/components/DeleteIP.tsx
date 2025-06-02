@@ -22,7 +22,7 @@ interface DeleteIPProps {
 function DeleteIP({ open, setOpen, row, fetcher }: DeleteIPProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogContent className="dark">
+      <AlertDialogContent className="">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-white">
             Are you absolutely sure?
