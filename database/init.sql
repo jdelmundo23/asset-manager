@@ -60,13 +60,21 @@ CREATE TABLE Assets (
     note NVARCHAR(255)
 );
 
+CREATE TABLE Subnets (
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    subnetPrefix VARCHAR(11) NOT NULL UNIQUE,
+    locationID INT NULL FOREIGN KEY REFERENCES Locations(ID) ON DELETE SET NULL,
+);
+
 CREATE TABLE IPAddresses (
     ID INT IDENTITY(1000,1) PRIMARY KEY,
-    ipAddress VARCHAR(15) NOT NULL UNIQUE,
+    hostNumber TINYINT NOT NULL,
     name VARCHAR(100),
     macAddress VARCHAR(24),
     assetID INT NULL FOREIGN KEY REFERENCES Assets(ID) ON DELETE SET NULL,
-    note NVARCHAR(255)
+    note NVARCHAR(255),
+    subnetID INT NOT NULL FOREIGN KEY REFERENCES Subnets(ID) ON DELETE CASCADE,
+    UNIQUE (hostNumber, subnetID)
 );
 
 -- Create login and user for the database
@@ -126,20 +134,27 @@ VALUES (
     ''Assigned to John Doe for development use.''
 );
 
+
+INSERT INTO Subnets (subnetPrefix, locationID) VALUES (''192.168.1'', (SELECT ID FROM Locations WHERE name = ''Main Office''));
+
 INSERT INTO IPAddresses (
-    ipAddress,
+    hostNumber,
     name,
     macAddress,
     assetID,
-    note
+    note,
+    subnetID
 )
 VALUES (
-    ''192.168.1.100'',
+    100,
     ''Laptop NIC'',
     ''00-14-22-01-23-45'',
     (SELECT ID FROM Assets WHERE identifier = ''LT-001''),
-    ''Static IP for laptop''
+    ''Static IP for laptop'',
+    (SELECT ID FROM Subnets WHERE subnetPrefix = ''192.168.1'')
 );
+
+
 ';
 
 EXEC sp_executesql @sql;

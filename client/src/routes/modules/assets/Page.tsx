@@ -46,7 +46,7 @@ function Page() {
     <div className="container mx-auto flex w-11/12 flex-col gap-2 py-10">
       <AssetContext.Provider value={{ ...data, fetcher }}>
         <TableToolbar tableTitle="Assets">
-          <div className="flex gap-x-1">
+          <div className="flex w-full justify-end gap-x-1">
             <BulkActionDropdown
               entity={"asset"}
               selectedRows={selectedRows}

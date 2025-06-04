@@ -20,6 +20,7 @@ import assetBulkRouter from "./routes/api/assets/assets_bulk";
 import ipBulkRouter from "./routes/api/network/ips_bulk";
 import usersRouter from "./routes/api/users";
 import ipsRouter from "./routes/api/network/ips";
+import subnetRouter from "./routes/api/network/subnets";
 
 const corsOptions = {
   origin: process.env.CLIENT_ORIGIN,
@@ -57,6 +58,7 @@ app.use("/api/assets/bulk", assetBulkRouter);
 app.use("/api/ips/bulk", ipBulkRouter);
 app.use("/api/assets", assetRouter);
 app.use("/api/ips", ipsRouter);
+app.use("/api/subnets", subnetRouter);
 app.use("/api/users", usersRouter);
 app.get("/", function (req, res) {
   res.json("API for inventory management");

@@ -6,10 +6,11 @@ import { z } from "zod";
 
 const inputs = (ip: IP) => [
   { name: "ID", type: sql.Int, value: ip.ID },
-  { name: "ipAddress", type: sql.VarChar(15), value: ip.ipAddress },
+  { name: "hostNumber", type: sql.TinyInt, value: ip.hostNumber },
   { name: "name", type: sql.VarChar(100), value: ip.name },
   { name: "macAddress", type: sql.VarChar(24), value: ip.macAddress },
   { name: "assetID", type: sql.Int, value: ip.assetID },
+  { name: "subnetID", type: sql.VarChar(11), value: ip.subnetID },
 ];
 
 const appendInputs = (
@@ -44,8 +45,8 @@ const checkExistingIP: RequestHandler = async (req, res, next) => {
 
     const result = await pool
       .request()
-      .input("ipAddress", sql.VarChar(15), ip.ipAddress).query(`
-      SELECT ID from ipAddresses WHERE ipAddress = @ipAddress
+      .input("hostNumber", sql.TinyInt, ip.hostNumber).query(`
+      SELECT ID from ipAddresses WHERE hostNumber = @hostNumber AND subnetID = @subnetID;
 `);
 
     if (result.recordset[0]?.ID && result.recordset[0]?.ID !== ip.ID) {
@@ -68,11 +69,15 @@ router.use(checkExistingIP);
 router.get("/all", async function (req, res) {
   try {
     const pool = await getPool();
-    const result = await pool
-      .request()
-      .query(
-        `SELECT IpAddresses.*, Assets.name AS assetName FROM IpAddresses LEFT JOIN Assets ON IpAddresses.assetID = Assets.ID`
-      );
+    const result = await pool.request().query(
+      `SELECT 
+        IpAddresses.*, 
+        Assets.name AS assetName,
+        Subnets.subnetPrefix
+      FROM IpAddresses
+      LEFT JOIN Assets ON IpAddresses.assetID = Assets.ID
+      LEFT JOIN Subnets ON IpAddresses.subnetID = Subnets.ID;`
+    );
 
     const parse = z.array(ipSchema).safeParse(result.recordset);
 

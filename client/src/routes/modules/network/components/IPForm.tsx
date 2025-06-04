@@ -58,7 +58,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
         await handleAction("ip", "edit", values, fetcher);
       }
     } catch (error) {
-      form.setError("ipAddress", {
+      form.setError("hostNumber", {
         message:
           axios.isAxiosError(error) && error.status !== 500
             ? error.response?.data?.error
@@ -75,7 +75,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
       >
         <FormField
           control={form.control}
-          name="ipAddress"
+          name="hostNumber"
           render={({ field }) => (
             <FormItem>
               <FormLabel>IP Address</FormLabel>

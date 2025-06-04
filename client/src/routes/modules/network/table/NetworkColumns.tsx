@@ -16,6 +16,13 @@ import DeleteIP from "../components/DeleteIP";
 import EditIP from "../components/EditIP";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
 
+function formatIP(row: IPRow) {
+  const { subnetPrefix, hostNumber } = row;
+  return subnetPrefix != null && hostNumber != null
+    ? `${subnetPrefix}.${hostNumber}`
+    : "";
+}
+
 export const getColumns = (): ColumnDef<IPRow>[] => {
   return [
     {
@@ -41,8 +48,16 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
       enableHiding: false,
     },
     {
-      accessorKey: "ipAddress",
+      accessorKey: "hostNumber",
       header: "IP Address",
+      cell: ({ row }) => formatIP(row.original),
+      enableSorting: true,
+      sortingFn: (rowA, rowB) =>
+        formatIP(rowA.original).localeCompare(formatIP(rowB.original)),
+      filterFn: (row, columnId, filterValue) =>
+        formatIP(row.original)
+          .toLowerCase()
+          .includes(filterValue.toLowerCase()),
       meta: { type: "text" },
     },
     {
@@ -96,16 +111,14 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
             <DropdownMenuContent align="end" className="">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() =>
-                  navigator.clipboard.writeText(ip.ipAddress.toString())
-                }
+                onClick={() => navigator.clipboard.writeText(formatIP(ip))}
               >
                 Copy IP
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setEditOpen(true)}>
+              {/* <DropdownMenuItem onClick={() => setEditOpen(true)}>
                 Edit IP
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem
                 onClick={() => setDeleteOpen(true)}
                 className="text-red-600"

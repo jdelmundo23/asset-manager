@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import AuthContext from "../context/AuthContext";
 import { Navigate } from "react-router";
 import { Card } from "@/components/shadcn-ui/card";
@@ -12,6 +12,10 @@ const serverUrl = import.meta.env.VITE_BACKEND_URL;
 function Signin() {
   const [redirecting, setRedirecting] = useState<boolean>(false);
   const { authenticated } = useContext(AuthContext);
+
+  useEffect(() => {
+    setRedirecting(false);
+  }, []);
 
   const signIn = async () => {
     setRedirecting(true);

@@ -45,15 +45,32 @@ export const assetSchema = z
     }
   );
 
-export type Asset = z.infer<typeof assetSchema>;
+export const assetRowSchema = assetSchema.innerType().extend({
+  ID: z.number(),
+});
 
-export interface AssetRow extends Asset {
-  ID: number;
-}
+const subnetPrefixSchema = z
+  .string()
+  .regex(
+    /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/,
+    "Invalid subnet prefix (must be like '192.168.1')"
+  )
+  .refine(
+    (val) =>
+      val.split(".").every((octet) => {
+        const n = Number(octet);
+        return n >= 0 && n <= 255;
+      }),
+    { message: "Each octet must be between 0 and 255" }
+  );
 
 export const ipSchema = z.object({
   ID: z.number().optional(),
-  ipAddress: z.string().ip(),
+  hostNumber: z
+    .number()
+    .int()
+    .min(1, "Host number must be between 1 and 255")
+    .max(255, "Host number must be between 1 and 255"),
   name: z.string().min(2).max(100),
   macAddress: z
     .union([
@@ -69,10 +86,32 @@ export const ipSchema = z.object({
     .transform((value) => value ?? ""),
   assetID: z.number().nullish(),
   assetName: z.string().min(2).max(100).nullish(),
+  subnetPrefix: subnetPrefixSchema.nullish(),
+  subnetID: z.number(),
 });
+
+export const ipRowSchema = ipSchema.extend({
+  ID: z.number(),
+});
+
+export const subnetSchema = z.object({
+  ID: z.number().optional(),
+  subnetPrefix: subnetPrefixSchema,
+  locationID: z.number().nullable(),
+});
+
+export const subnetRowSchema = subnetSchema.extend({
+  ID: z.number(),
+});
+
+export type Asset = z.infer<typeof assetSchema>;
+
+export type AssetRow = z.infer<typeof assetRowSchema>;
 
 export type IP = z.infer<typeof ipSchema>;
 
-export interface IPRow extends IP {
-  ID: number;
-}
+export type IPRow = z.infer<typeof ipRowSchema>;
+
+export type Subnet = z.infer<typeof subnetSchema>;
+
+export type SubnetRow = z.infer<typeof subnetRowSchema>;
