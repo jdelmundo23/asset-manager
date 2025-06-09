@@ -15,13 +15,7 @@ import IPContext from "@/context/IPContext";
 import DeleteIP from "../components/DeleteIP";
 import EditIP from "../components/EditIP";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
-
-function formatIP(row: IPRow) {
-  const { subnetPrefix, hostNumber } = row;
-  return subnetPrefix != null && hostNumber != null
-    ? `${subnetPrefix}.${hostNumber}`
-    : "";
-}
+import { formatIP } from "@/lib/utils";
 
 export const getColumns = (): ColumnDef<IPRow>[] => {
   return [

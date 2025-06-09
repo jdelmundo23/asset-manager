@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { Skeleton } from "./shadcn-ui/skeleton";
 import { TruncateHover } from "./TruncateHover";
 import { ScrollArea } from "./shadcn-ui/scroll-area";
+import { formatIP } from "@/lib/utils";
 
 interface IPViewProps {
   assetID: number;
@@ -77,17 +78,20 @@ export default function IPView({ assetID, assetName }: IPViewProps) {
                 No IPs found for this asset.
               </p>
             ) : (
-              ips.map((ip) => (
-                <div
-                  key={ip.ipAddress}
-                  className="animate-fade-in grid grid-cols-[1.25fr_1.5fr_1.75fr_0.5fr] gap-x-2 border-t py-1 duration-150"
-                >
-                  <p>{ip.ipAddress}</p>
-                  <TruncateHover>{ip.name}</TruncateHover>
-                  <p>{ip.macAddress}</p>
-                  <p>View</p>
-                </div>
-              ))
+              ips.map((ip) => {
+                const ipAddress = formatIP(ip);
+                return (
+                  <div
+                    key={ipAddress}
+                    className="animate-fade-in grid grid-cols-[1.25fr_1.5fr_1.75fr_0.5fr] gap-x-2 border-t py-1 duration-150"
+                  >
+                    <p>{ipAddress}</p>
+                    <TruncateHover>{ip.name}</TruncateHover>
+                    <p>{ip.macAddress}</p>
+                    <p>View</p>
+                  </div>
+                );
+              })
             )}
           </ScrollArea>
         </DialogHeader>

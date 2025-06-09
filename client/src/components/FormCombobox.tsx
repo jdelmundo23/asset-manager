@@ -20,18 +20,21 @@ import {
   PopoverTrigger,
 } from "@/components/shadcn-ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
-import { Asset } from "@shared/schemas";
+import { FieldPathValue, Path, UseFormReturn } from "react-hook-form";
+import { Asset, Subnet } from "@shared/schemas";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
+type SupportedFormType = Asset | Subnet;
+
 interface FormComboboxProps<
-  T extends keyof Asset,
+  S extends SupportedFormType,
+  T extends Path<S>,
   C extends Record<L, string>,
   V extends keyof C,
   L extends keyof C,
 > {
-  form: UseFormReturn<Asset>;
+  form: UseFormReturn<S>;
   options: {
     field: T;
     fieldLabel: string;
@@ -42,18 +45,20 @@ interface FormComboboxProps<
     valueKey: V;
     labelKey: L;
   };
-  onSelect: (val: Asset[T], fieldName: T, newVal: C) => void;
+  onSelect: (val: FieldPathValue<S, T>, fieldName: T, newVal: C) => void;
   className?: string;
 }
+
 function FormCombobox<
-  T extends keyof Asset,
+  S extends SupportedFormType,
+  T extends Path<S>,
   C extends Record<L, string>,
   V extends keyof C,
   L extends keyof C,
->(props: FormComboboxProps<T, C, V, L>) {
+>(props: FormComboboxProps<S, T, C, V, L>) {
   const { items, valueKey, labelKey } = props.choices;
-
   const [open, setOpen] = useState<boolean>(false);
+
   return (
     <FormField
       control={props.form.control}
@@ -102,7 +107,6 @@ function FormCombobox<
                             props.options.field,
                             choice
                           );
-
                           if (field.value !== choice[valueKey]) {
                             setTimeout(() => setOpen(false), 75);
                           }

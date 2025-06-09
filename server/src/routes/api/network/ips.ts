@@ -1,21 +1,20 @@
 import express, { RequestHandler } from "express";
 import { getPool } from "../../../sql";
 import sql from "mssql";
-import { IP, ipSchema } from "@shared/schemas";
+import { IPInput, IPRow, ipInputSchema, ipRowSchema } from "@shared/schemas";
 import { z } from "zod";
 
-const inputs = (ip: IP) => [
+const inputs = (ip: IPInput) => [
   { name: "ID", type: sql.Int, value: ip.ID },
-  { name: "hostNumber", type: sql.TinyInt, value: ip.hostNumber },
+  { name: "hostNumber", type: sql.TinyInt, value: ip.ipAddress },
   { name: "name", type: sql.VarChar(100), value: ip.name },
   { name: "macAddress", type: sql.VarChar(24), value: ip.macAddress },
   { name: "assetID", type: sql.Int, value: ip.assetID },
-  { name: "subnetID", type: sql.VarChar(11), value: ip.subnetID },
 ];
 
 const appendInputs = (
   request: sql.Request,
-  ip: IP,
+  ip: IPInput,
   exclusions: string[] = []
 ) => {
   for (const input of inputs(ip)) {
@@ -31,22 +30,22 @@ const checkExistingIP: RequestHandler = async (req, res, next) => {
     return next();
   }
 
-  const parse = ipSchema.safeParse(req.body);
+  const parse = ipInputSchema.safeParse(req.body);
 
   if (!parse.success) {
     res.status(400).json({ error: parse.error.format() });
     return;
   }
 
-  const ip: IP = parse.data;
+  const ip = parse.data;
 
   try {
     const pool = await getPool();
 
     const result = await pool
       .request()
-      .input("hostNumber", sql.TinyInt, ip.hostNumber).query(`
-      SELECT ID from ipAddresses WHERE hostNumber = @hostNumber AND subnetID = @subnetID;
+      .input("ipAddress", sql.VarChar(15), ip.ipAddress).query(`
+      SELECT ID from ipAddresses WHERE ipAddress = @ipAddress;
 `);
 
     if (result.recordset[0]?.ID && result.recordset[0]?.ID !== ip.ID) {
@@ -79,7 +78,7 @@ router.get("/all", async function (req, res) {
       LEFT JOIN Subnets ON IpAddresses.subnetID = Subnets.ID;`
     );
 
-    const parse = z.array(ipSchema).safeParse(result.recordset);
+    const parse = z.array(ipRowSchema).safeParse(result.recordset);
 
     if (parse.error) {
       console.error(parse.error);
@@ -112,7 +111,7 @@ router.get("/by-asset/:assetID", async function (req, res) {
       return;
     }
 
-    const parse = z.array(ipSchema).safeParse(result.recordset);
+    const parse = z.array(ipRowSchema).safeParse(result.recordset);
 
     if (parse.error) {
       console.error(parse.error);
@@ -127,7 +126,7 @@ router.get("/by-asset/:assetID", async function (req, res) {
 });
 
 router.post("/", async function (req, res) {
-  const ip: IP = req.body;
+  const ip = req.body;
 
   try {
     const pool = await getPool();
@@ -155,7 +154,7 @@ router.post("/", async function (req, res) {
 });
 
 router.put("/", async function (req, res) {
-  const ip: IP = req.body;
+  const ip = req.body;
 
   if (!ip.ID) {
     res.status(400).json({ error: "Missing ID of IP to edit" });

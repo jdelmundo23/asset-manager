@@ -8,7 +8,7 @@ import {
 } from "@/components/shadcn-ui/form";
 import { Input } from "@/components/shadcn-ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IP, IPRow, ipSchema } from "@shared/schemas";
+import { IPInput, IPRow, ipInputSchema } from "@shared/schemas";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/shadcn-ui/button";
@@ -39,8 +39,8 @@ type IPFormProps = AddModeProps | EditModeProps;
 
 export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
   const { fetcher } = useContext(IpContext);
-  const form = useForm<IP>({
-    resolver: zodResolver(ipSchema),
+  const form = useForm<IPInput>({
+    resolver: zodResolver(ipInputSchema),
     ...(mode === "edit" && ip ? { defaultValues: ip } : {}),
   });
 
@@ -50,7 +50,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
     }
   }, [form.formState.isSubmitSuccessful]);
 
-  async function onSubmit(values: IP) {
+  async function onSubmit(values: IPInput) {
     try {
       if (mode === "add") {
         await handleAction("ip", "add", values, fetcher);
@@ -58,7 +58,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
         await handleAction("ip", "edit", values, fetcher);
       }
     } catch (error) {
-      form.setError("hostNumber", {
+      form.setError("ipAddress", {
         message:
           axios.isAxiosError(error) && error.status !== 500
             ? error.response?.data?.error
@@ -75,7 +75,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
       >
         <FormField
           control={form.control}
-          name="hostNumber"
+          name="ipAddress"
           render={({ field }) => (
             <FormItem>
               <FormLabel>IP Address</FormLabel>

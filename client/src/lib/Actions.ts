@@ -1,4 +1,11 @@
-import { Asset, AssetRow, IP, IPRow } from "@shared/schemas";
+import {
+  Asset,
+  AssetRow,
+  IPInput,
+  IPRow,
+  Subnet,
+  SubnetRow,
+} from "@shared/schemas";
 import { FetcherWithComponents } from "react-router";
 import {
   showInfoToast,
@@ -8,22 +15,22 @@ import {
 } from "@/lib/toasts";
 import { handleError } from "./handleError";
 import axiosApi from "./axios";
+import { AxiosResponse } from "axios";
 
 type ActionType = "add" | "edit" | "delete" | "duplicate";
 
-type EndpointType = "asset" | "ip";
+type EndpointType = "asset" | "ip" | "subnet";
 
-interface Action {
+type Entity = Asset | AssetRow | IPInput | IPRow | Subnet | SubnetRow;
+
+interface Action<T extends Entity> {
   ing: string;
   ed: string;
-  url: (
-    endpoint: EndpointType,
-    values: Asset | AssetRow | IP | IPRow
-  ) => string;
+  url: (endpoint: EndpointType, values: T) => string;
   method: "post" | "put" | "delete";
 }
 
-const actions: Record<ActionType, Action> = {
+const actions: Record<ActionType, Action<Entity>> = {
   add: {
     method: "post",
     url: (endpoint) => `/api/${endpoint}s`,
@@ -50,12 +57,12 @@ const actions: Record<ActionType, Action> = {
   },
 } as const;
 
-export const handleAction = async (
+export const handleAction = async <T extends Entity, R>(
   endpointType: EndpointType,
   actionType: ActionType,
-  values: Asset | AssetRow | IP | IPRow,
-  fetcher: FetcherWithComponents<any> | undefined
-): Promise<void> => {
+  values: T,
+  fetcher?: FetcherWithComponents<any>
+): Promise<AxiosResponse<R>> => {
   if (
     (actionType === "edit" ||
       actionType === "delete" ||
@@ -69,15 +76,14 @@ export const handleAction = async (
 
   const loadingToast = showLoadingToast(
     `${action.ing} ${endpointType}`,
-    values.name
+    "subnetPrefix" in values ? (values.subnetPrefix ?? "") : values.name
   );
 
   try {
-    if ("ipAddress" in values) {
-      await axiosApi[action.method](action.url(endpointType, values), values);
-    } else {
-      await axiosApi[action.method](action.url(endpointType, values), values);
-    }
+    const response = await axiosApi[action.method](
+      action.url(endpointType, values),
+      values
+    );
 
     try {
       await fetcher?.load(
@@ -85,10 +91,16 @@ export const handleAction = async (
       );
 
       const toastType = actionType === "add" ? showSuccessToast : showInfoToast;
-      toastType(loadingToast, `${action.ed} ${endpointType}`, values.name);
+      toastType(
+        loadingToast,
+        `${action.ed} ${endpointType}`,
+        "subnetPrefix" in values ? (values.subnetPrefix ?? "") : values.name
+      );
     } catch {
       showListUpdateErrorToast(loadingToast);
     }
+
+    return response;
   } catch (error) {
     handleError(error, loadingToast);
 

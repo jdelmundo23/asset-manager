@@ -21,3 +21,23 @@ export const getPool = async (): Promise<ConnectionPool> => {
   }
   return poolPromise;
 };
+
+export async function recordExists(
+  pool: ConnectionPool,
+  table: string,
+  where: Record<string, any>
+) {
+  const request = pool.request();
+  const conditions: string[] = [];
+
+  for (const key in where) {
+    request.input(key, where[key]);
+    conditions.push(`${key} = @${key}`);
+  }
+
+  const whereClause = conditions.join(" AND ");
+  const query = `SELECT 1 FROM ${table} WHERE ${whereClause}`;
+
+  const result = await request.query(query);
+  return result.recordset.length > 0;
+}

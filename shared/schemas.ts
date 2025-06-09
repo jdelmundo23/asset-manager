@@ -64,14 +64,7 @@ const subnetPrefixSchema = z
     { message: "Each octet must be between 0 and 255" }
   );
 
-export const ipSchema = z.object({
-  ID: z.number().optional(),
-  hostNumber: z
-    .number()
-    .int()
-    .min(1, "Host number must be between 1 and 255")
-    .max(255, "Host number must be between 1 and 255"),
-  name: z.string().min(2).max(100),
+const baseIPSchema = z.object({
   macAddress: z
     .union([
       z
@@ -86,18 +79,30 @@ export const ipSchema = z.object({
     .transform((value) => value ?? ""),
   assetID: z.number().nullish(),
   assetName: z.string().min(2).max(100).nullish(),
-  subnetPrefix: subnetPrefixSchema.nullish(),
-  subnetID: z.number(),
+  name: z.string().min(2).max(100),
+  note: z.string().max(255).optional(),
 });
 
-export const ipRowSchema = ipSchema.extend({
+export const ipInputSchema = baseIPSchema.extend({
+  ID: z.number().optional(),
+  ipAddress: z.string().ip(),
+});
+
+export const ipRowSchema = baseIPSchema.extend({
   ID: z.number(),
+  hostNumber: z
+    .number()
+    .int()
+    .min(1, "Host number must be between 1 and 255")
+    .max(255, "Host number must be between 1 and 255"),
+  subnetPrefix: subnetPrefixSchema.nullish(),
+  subnetID: z.number(),
 });
 
 export const subnetSchema = z.object({
   ID: z.number().optional(),
   subnetPrefix: subnetPrefixSchema,
-  locationID: z.number().nullable(),
+  locationID: z.number().nullish(),
 });
 
 export const subnetRowSchema = subnetSchema.extend({
@@ -108,7 +113,7 @@ export type Asset = z.infer<typeof assetSchema>;
 
 export type AssetRow = z.infer<typeof assetRowSchema>;
 
-export type IP = z.infer<typeof ipSchema>;
+export type IPInput = z.infer<typeof ipInputSchema>;
 
 export type IPRow = z.infer<typeof ipRowSchema>;
 
