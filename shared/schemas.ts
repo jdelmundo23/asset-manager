@@ -53,7 +53,7 @@ const subnetPrefixSchema = z
   .string()
   .regex(
     /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/,
-    "Invalid subnet prefix (must be like '192.168.1')"
+    "Invalid subnet prefix (ex: '192.168.1')"
   )
   .refine(
     (val) =>
@@ -61,7 +61,7 @@ const subnetPrefixSchema = z
         const n = Number(octet);
         return n >= 0 && n <= 255;
       }),
-    { message: "Each octet must be between 0 and 255" }
+    { message: "Octet must be between 0 and 255" }
   );
 
 const baseIPSchema = z.object({

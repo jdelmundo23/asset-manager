@@ -7,13 +7,14 @@ import {
   CommandList,
 } from "@/components/shadcn-ui/command";
 import { cn } from "@/lib/utils";
-import { CheckIcon, Plus } from "lucide-react";
+import { CheckIcon, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import AddSubnet from "./AddSubnet";
 import { Button } from "@/components/shadcn-ui/button";
 import { useSubnets } from "@/context/SubnetContext";
 import { Skeleton } from "@/components/shadcn-ui/skeleton";
 import { ScrollArea } from "@/components/shadcn-ui/scroll-area";
+import DeleteSubnet from "./DeleteSubnet";
 
 export default function SubnetSearch() {
   const { subnets, isLoading, selectedSubnet, setSelectedSubnet } =
@@ -49,7 +50,7 @@ export default function SubnetSearch() {
             </div>
           ) : (
             <div className="">
-              <p>Subnet not found</p>
+              <p>{search ? "No subnets" : "Subnet not found"}</p>
               <AddSubnet setSearch={setSearch}>
                 <Button variant={"link"} className="font-bold">
                   <div className="flex items-center">
@@ -61,10 +62,10 @@ export default function SubnetSearch() {
           )}
         </CommandEmpty>
         <ScrollArea className="max-h-72">
-          <CommandGroup>
+          <CommandGroup className="p-0">
             {subnets.map((subnet) => (
               <CommandItem
-                className="animate-fade-in duration-200"
+                className="animate-fade-in group duration-200"
                 key={subnet.ID}
                 value={subnet.subnetPrefix}
                 onSelect={(value) => {
@@ -86,6 +87,16 @@ export default function SubnetSearch() {
                   )}
                 />
                 {subnet.subnetPrefix}
+                <div className="flex w-full justify-end">
+                  <DeleteSubnet subnet={subnet}>
+                    <button
+                      type="button"
+                      className="cursor-pointer opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                    >
+                      <Trash2 />
+                    </button>
+                  </DeleteSubnet>
+                </div>
               </CommandItem>
             ))}
           </CommandGroup>

@@ -186,7 +186,7 @@ router.delete("/:ipID", async function (req, res) {
   const { ipID } = req.params;
 
   if (!ipID) {
-    res.status(400).json({ error: "Asset ID is required" });
+    res.status(400).json({ error: "IP Address ID is required" });
     return;
   }
 

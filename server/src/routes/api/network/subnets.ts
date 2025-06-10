@@ -68,4 +68,25 @@ router.post("/", async function (req, res) {
   }
 });
 
+router.delete("/:subnetID", async function (req, res) {
+  const { subnetID } = req.params;
+
+  if (!subnetID) {
+    res.status(400).json({ error: "Subnet ID is required" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+    await pool
+      .request()
+      .input("ID", sql.Int, subnetID)
+      .query(`DELETE FROM Subnets WHERE ID = @ID`);
+    res.status(200).json({ message: "Subnet deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete subnet" });
+  }
+});
+
 export default router;
