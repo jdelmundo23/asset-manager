@@ -26,8 +26,12 @@ export default function SubnetComboxbox({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild className="text-white">
-        <Button variant="outline" role="combobox">
-          Select subnet...{" "}
+        <Button
+          variant="outline"
+          role="combobox"
+          className="w-40 justify-between"
+        >
+          {selectedSubnet ? selectedSubnet.subnetPrefix : "Select subnet..."}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

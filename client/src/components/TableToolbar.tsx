@@ -14,10 +14,12 @@ export default function TableToolbar({
 
   return (
     <div className="animate-fade-in flex items-center">
-      <ChevronLeft
-        onClick={() => navigate("/app")}
-        className="cursor-pointer transition-all duration-150 hover:scale-125"
-      />
+      <div>
+        <ChevronLeft
+          onClick={() => navigate("/app")}
+          className="cursor-pointer transition-all duration-150 hover:scale-125"
+        />
+      </div>
       <h1 className="text-2xl font-medium">{tableTitle}</h1>
       {children}
     </div>

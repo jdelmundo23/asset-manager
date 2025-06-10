@@ -15,6 +15,8 @@ import Row from "./components/Row";
 import { handleError } from "@/lib/handleError";
 import axiosApi from "@/lib/axios";
 import { Skeleton } from "@/components/shadcn-ui/skeleton";
+import { ChevronLeft } from "lucide-react";
+import { useNavigate } from "react-router";
 
 interface tableRow {
   ID: number;
@@ -32,6 +34,7 @@ function Page() {
   const [data, setData] = useState<[]>([]);
   const [typeData, setTypeData] = useState<[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
   const handleTabChange = async (tabValue: string) => {
     const table = presets.find((preset) => preset.displayName === tabValue);
     if (table) {
@@ -56,15 +59,19 @@ function Page() {
   };
 
   return (
-    <div className="container mx-auto w-11/12 py-10 md:w-3/5">
-      <h1 className="text-2xl font-medium">Presets</h1>
-      <p className="text-muted-foreground">
-        Manage the presets used for asset columns.
-      </p>
-      <Separator className="my-4" />
+    <div className="container mx-auto flex w-11/12 flex-col items-center py-10 md:w-3/5">
+      <div className="animate-fade-in flex w-full max-w-md items-center justify-start">
+        <ChevronLeft
+          onClick={() => navigate("/app")}
+          className="cursor-pointer transition-all duration-150 hover:scale-125"
+        />
+        <h1 className="text-center text-2xl font-medium">Presets</h1>
+      </div>
+
+      <Separator className="animate-fade-in my-4 max-w-md" />
       <Tabs
         defaultValue="blank"
-        className="w-full max-w-md"
+        className="animate-fade-in-up w-full max-w-md"
         onValueChange={handleTabChange}
       >
         <TabsList className="w-full justify-between">
