@@ -16,7 +16,7 @@ export const modules = [
   {
     link: "/app/presets",
     title: "Presets",
-    description: "Manage inventory presets",
+    description: "Manage asset presets",
     icon: NotepadText,
   },
   {

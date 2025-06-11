@@ -1,6 +1,6 @@
 {
-  "short_name": "Inventory Management",
-  "name": "Management application for company assets",
+  "short_name": "Asset Manager",
+  "name": "Application built to track organizational assets and associated network information",
   "icons": [
     {
       "src": "favicon.ico",

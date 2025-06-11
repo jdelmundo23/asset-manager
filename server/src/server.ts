@@ -61,7 +61,7 @@ app.use("/api/ips", ipsRouter);
 app.use("/api/subnets", subnetRouter);
 app.use("/api/users", usersRouter);
 app.get("/", function (req, res) {
-  res.json("API for inventory management");
+  res.json("API for asset manager");
 });
 
 app.use(function (req, res, next) {

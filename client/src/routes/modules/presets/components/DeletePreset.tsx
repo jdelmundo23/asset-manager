@@ -24,10 +24,10 @@ function DeletePreset({ presetName }: DeletePresetProps) {
 
   async function onConfirm() {
     try {
-      const response = await axiosApi.delete(
+      await axiosApi.delete(
         `/api/presets/${activePreset.tableName}/${presetName}`
       );
-      console.log("Preset delete successfully", response.data);
+
       reloadData();
     } catch (error) {
       handleError(error);

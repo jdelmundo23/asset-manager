@@ -1,6 +1,6 @@
 export const mockAuthData = {
   authenticated: true,
-  upn: "devmode@inventorymanagement.com",
+  upn: "devmode@assetmanager.com",
   name: "Developer Account",
   roles: [],
 };

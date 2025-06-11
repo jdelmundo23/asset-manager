@@ -57,9 +57,7 @@ async function handlePreset(
   const method = operation === "add" ? "post" : "put";
   const data = mode === "common" ? { name, oldName } : { name, type, oldName };
 
-  console.log(data);
-  const response = await axiosApi[method](url, data);
-  console.log(`Preset operation successful`, response.data);
+  await axiosApi[method](url, data);
 }
 
 export default function PresetForm({
