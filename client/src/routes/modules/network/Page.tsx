@@ -52,7 +52,8 @@ function Page() {
                 setSelectedRows={setSelectedRows}
                 deleting
               />
-              <AddIP /> */}
+               */}
+              <AddIP />
             </div>
           </div>
         </TableToolbar>

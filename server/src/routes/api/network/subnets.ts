@@ -1,8 +1,9 @@
 import { subnetSchema } from "@shared/schemas";
 import express from "express";
-import { getPool, recordExists } from "../../../sql";
+import { getPool } from "../../../sql";
 import sql from "mssql";
 import { z } from "zod";
+import { parseInputReq, recordExists } from "../../../utils";
 const router = express.Router();
 
 router.get("/all", async function (req, res) {
@@ -25,23 +26,23 @@ router.get("/all", async function (req, res) {
 });
 
 router.post("/", async function (req, res) {
-  const parse = subnetSchema.safeParse(req.body);
-
-  if (!parse.success) {
-    res.status(400).json({ error: parse.error.format() });
+  const subnet = parseInputReq(subnetSchema, req.body);
+  if (!subnet) {
+    res.status(400).json({ error: "Invalid request body" });
     return;
   }
-
-  const subnet = parse.data;
 
   try {
     const pool = await getPool();
 
-    const exists = await recordExists(pool, "Subnets", {
+    const check = await recordExists(pool, "Subnets", {
       subnetPrefix: subnet.subnetPrefix,
     });
-
-    if (exists) {
+    if (check.error) {
+      res.status(500).json({ error: "Failed to check if subnet exists" });
+      return;
+    }
+    if (check.exists) {
       res.status(400).json({ error: "Subnet already exists" });
       return;
     }

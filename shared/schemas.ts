@@ -80,7 +80,7 @@ const baseIPSchema = z.object({
   assetID: z.number().nullish(),
   assetName: z.string().min(2).max(100).nullish(),
   name: z.string().min(2).max(100),
-  note: z.string().max(255).optional(),
+  note: z.string().max(255).nullish(),
 });
 
 export const ipInputSchema = baseIPSchema.extend({
@@ -99,6 +99,8 @@ export const ipRowSchema = baseIPSchema.extend({
   subnetID: z.number(),
 });
 
+export const ipInsertSchema = ipRowSchema.partial({ ID: true });
+
 export const subnetSchema = z.object({
   ID: z.number().optional(),
   subnetPrefix: subnetPrefixSchema,
@@ -114,6 +116,8 @@ export type Asset = z.infer<typeof assetSchema>;
 export type AssetRow = z.infer<typeof assetRowSchema>;
 
 export type IPInput = z.infer<typeof ipInputSchema>;
+
+export type IPInsert = z.infer<typeof ipInsertSchema>;
 
 export type IPRow = z.infer<typeof ipRowSchema>;
 
