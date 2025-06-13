@@ -9,7 +9,10 @@ const router = express.Router();
 router.get("/all", async function (req, res) {
   try {
     const pool = await getPool();
-    const result = await pool.request().query(`SELECT * FROM Subnets`);
+    const result = await pool.request().query(
+      `SELECT Subnets.*, Locations.name as locationName FROM Subnets 
+      LEFT JOIN Locations ON Subnets.locationID = Locations.ID;`
+    );
 
     const parse = z.array(subnetSchema).safeParse(result.recordset);
 

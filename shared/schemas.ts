@@ -105,6 +105,7 @@ export const subnetSchema = z.object({
   ID: z.number().optional(),
   subnetPrefix: subnetPrefixSchema,
   locationID: z.number().nullish(),
+  locationName: z.string().min(2).max(50).nullish(),
 });
 
 export const subnetRowSchema = subnetSchema.extend({

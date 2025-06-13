@@ -50,7 +50,7 @@ export default function SubnetSearch() {
             </div>
           ) : (
             <div className="">
-              <p>{search ? "No subnets" : "Subnet not found"}</p>
+              <p>{search ? "Subnet not found" : "No subnets"}</p>
               <AddSubnet setSearch={setSearch}>
                 <Button variant={"link"} className="font-bold">
                   <div className="flex items-center">
@@ -86,7 +86,13 @@ export default function SubnetSearch() {
                       : "opacity-0"
                   )}
                 />
-                {subnet.subnetPrefix}
+                <div className="flex w-full items-center justify-between gap-x-1">
+                  <p>{subnet.subnetPrefix}</p>
+                  <p className="text-muted-foreground/70 text-nowrap text-xs">
+                    {subnet.locationName}
+                  </p>
+                </div>
+
                 <div className="flex w-full justify-end">
                   <DeleteSubnet subnet={subnet}>
                     <button
