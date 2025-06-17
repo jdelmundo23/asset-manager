@@ -19,7 +19,8 @@ export const parseInputReq = <T extends ZodTypeAny>(
 export const recordExists = async (
   pool: ConnectionPool,
   table: string,
-  where: Record<string, unknown>
+  where: Record<string, unknown> = {},
+  whereNot: Record<string, unknown> = {}
 ) => {
   const request = pool.request();
   const conditions: string[] = [];
@@ -29,8 +30,15 @@ export const recordExists = async (
     conditions.push(`${key} = @${key}`);
   }
 
-  const whereClause = conditions.join(" AND ");
-  const query = `SELECT 1 FROM ${table} WHERE ${whereClause}`;
+  for (const key in whereNot) {
+    const paramName = `not_${key}`;
+    request.input(paramName, whereNot[key]);
+    conditions.push(`${key} != @${paramName}`);
+  }
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+  const query = `SELECT 1 FROM ${table} ${whereClause}`;
 
   let result;
   try {

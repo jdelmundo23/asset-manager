@@ -1,4 +1,4 @@
-import { subnetSchema } from "@shared/schemas";
+import { subnetRowSchema, subnetSchema } from "@shared/schemas";
 import express from "express";
 import { getPool } from "../../../sql";
 import sql from "mssql";
@@ -69,6 +69,38 @@ router.post("/", async function (req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to add data" });
+  }
+});
+
+router.put("/", async function (req, res) {
+  const subnet = parseInputReq(subnetRowSchema, req.body);
+  if (!subnet) {
+    res.status(400).json({ error: "Invalid request body" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+
+    const result = await pool
+      .request()
+      .input("ID", sql.Int, subnet.ID)
+      .input("locationID", sql.Int, subnet.locationID).query(`
+        UPDATE Subnets
+        SET 
+          locationID = @locationID
+        OUTPUT INSERTED.*
+        WHERE ID = @ID
+      `);
+
+    const updatedRow = result.recordset[0];
+
+    res
+      .status(200)
+      .json({ message: "Data updated successfully!", ...updatedRow });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update data" });
   }
 });
 

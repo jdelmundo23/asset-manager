@@ -7,7 +7,7 @@ import {
   CommandList,
 } from "@/components/shadcn-ui/command";
 import { cn } from "@/lib/utils";
-import { CheckIcon, Plus, Trash2 } from "lucide-react";
+import { CheckIcon, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import AddSubnet from "./AddSubnet";
 import { Button } from "@/components/shadcn-ui/button";
@@ -15,6 +15,7 @@ import { useSubnets } from "@/context/SubnetContext";
 import { Skeleton } from "@/components/shadcn-ui/skeleton";
 import { ScrollArea } from "@/components/shadcn-ui/scroll-area";
 import DeleteSubnet from "./DeleteSubnet";
+import EditSubnet from "./EditSubnet";
 
 export default function SubnetSearch() {
   const { subnets, isLoading, selectedSubnet, setSelectedSubnet } =
@@ -93,7 +94,15 @@ export default function SubnetSearch() {
                   </p>
                 </div>
 
-                <div className="flex w-full justify-end">
+                <div className="flex w-full justify-end gap-x-1">
+                  <EditSubnet setSearch={setSearch} subnet={subnet}>
+                    <button
+                      type="button"
+                      className="cursor-pointer opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                    >
+                      <Pencil />
+                    </button>
+                  </EditSubnet>
                   <DeleteSubnet subnet={subnet}>
                     <button
                       type="button"

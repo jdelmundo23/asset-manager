@@ -104,6 +104,7 @@ export default function SubnetForm({
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
+          disabled={mode === "edit"}
           control={form.control}
           name="subnetPrefix"
           render={({ field }) => (
@@ -131,7 +132,8 @@ export default function SubnetForm({
           }}
           onSelect={async (val, fieldName, newVal) => {
             if (val === newVal.ID) {
-              form.resetField(fieldName);
+              form.setValue(fieldName, null);
+              await form.trigger(fieldName);
             } else {
               form.setValue(fieldName, newVal.ID);
               await form.trigger(fieldName);
