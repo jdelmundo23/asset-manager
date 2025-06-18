@@ -85,7 +85,7 @@ const baseIPSchema = z.object({
 
 export const ipInputSchema = baseIPSchema.extend({
   ID: z.number().optional(),
-  ipAddress: z.string().ip(),
+  ipAddress: z.string().ip({ message: "Invalid IP Format" }),
 });
 
 export const ipRowSchema = baseIPSchema.extend({

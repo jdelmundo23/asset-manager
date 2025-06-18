@@ -4,12 +4,12 @@ import {
 } from "@/components/shadcn-ui/alert-dialog";
 import IPForm from "./IPForm";
 import { X } from "lucide-react";
-import { IPRow } from "@shared/schemas";
+import { IPInput } from "@shared/schemas";
 
 interface EditIPProps {
   open: boolean;
   setOpen: (val: boolean) => void;
-  ip: IPRow;
+  ip: IPInput;
 }
 
 function EditIP({ open, setOpen, ip }: EditIPProps) {

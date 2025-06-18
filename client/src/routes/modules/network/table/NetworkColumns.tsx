@@ -110,9 +110,9 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
                 Copy IP
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              {/* <DropdownMenuItem onClick={() => setEditOpen(true)}>
+              <DropdownMenuItem onClick={() => setEditOpen(true)}>
                 Edit IP
-              </DropdownMenuItem> */}
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setDeleteOpen(true)}
                 className="text-red-600"
@@ -120,7 +120,16 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
                 Delete IP
               </DropdownMenuItem>
             </DropdownMenuContent>
-            <EditIP open={editOpen} setOpen={setEditOpen} ip={ip} />
+            <EditIP
+              open={editOpen}
+              setOpen={setEditOpen}
+              ip={{
+                ...ip,
+                ipAddress: ip.subnetPrefix
+                  ? ip.subnetPrefix + "." + ip.hostNumber
+                  : "",
+              }}
+            />
             <DeleteIP
               open={deleteOpen}
               setOpen={setDeleteOpen}

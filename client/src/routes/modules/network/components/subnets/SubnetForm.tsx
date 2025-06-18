@@ -44,7 +44,11 @@ export default function SubnetForm({
   setSearch,
 }: SubnetFormProps) {
   const { refetchSubnets, setSelectedSubnet } = useSubnets();
-  const [locations, setLocations] = useState<Preset[]>([]);
+  const [locations, setLocations] = useState<Preset[]>(
+    subnet?.locationID && subnet?.locationName
+      ? [{ ID: subnet.locationID, name: subnet.locationName }]
+      : []
+  );
 
   useEffect(() => {
     (async () => {

@@ -8,7 +8,7 @@ import {
 } from "@/components/shadcn-ui/form";
 import { Input } from "@/components/shadcn-ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { IPInput, IPRow, ipInputSchema } from "@shared/schemas";
+import { IPInput, ipInputSchema } from "@shared/schemas";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/shadcn-ui/button";
@@ -32,7 +32,7 @@ interface AddModeProps extends BaseProps {
 
 interface EditModeProps extends BaseProps {
   mode: "edit";
-  ip: IPRow;
+  ip: IPInput;
 }
 
 type IPFormProps = AddModeProps | EditModeProps;
@@ -60,7 +60,9 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
     } catch (error) {
       form.setError("ipAddress", {
         message:
-          axios.isAxiosError(error) && error.status !== 500
+          axios.isAxiosError(error) &&
+          error.status !== 500 &&
+          error.status !== 401
             ? error.response?.data?.error
             : "An error has occurred",
       });
