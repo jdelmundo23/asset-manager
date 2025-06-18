@@ -46,13 +46,13 @@ function Page() {
               setSelectedSubnet={setSelectedSubnet}
             />
             <div className="flex gap-x-1">
-              {/* <BulkActionDropdown
+              <BulkActionDropdown
                 entity={"ip"}
                 selectedRows={selectedRows}
                 setSelectedRows={setSelectedRows}
                 deleting
               />
-               */}
+
               <AddIP />
             </div>
           </div>

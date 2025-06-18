@@ -214,17 +214,32 @@ router.put("/", async function (req, res) {
       return;
     }
 
-    const check = await recordExists(pool, "IPAddresses", {
-      subnetID: subnetID,
-      hostNumber: hostNumber,
-    });
-    if (check.error) {
-      res.status(500).json({ error: "Failed to check if IP exists" });
+    const existing = await pool
+      .request()
+      .input("ID", ip.ID)
+      .query(`SELECT subnetID, hostNumber FROM IPAddresses WHERE ID = @ID`);
+
+    if (!existing.recordset.length) {
+      res.status(404).json({ error: "IP record not found" });
       return;
     }
-    if (check.exists) {
-      res.status(400).json({ error: "IP Address already exists" });
-      return;
+
+    const current = existing.recordset[0];
+
+    if (current.subnetID !== subnetID || current.hostNumber !== hostNumber) {
+      const check = await recordExists(pool, "IPAddresses", {
+        subnetID: subnetID,
+        hostNumber: hostNumber,
+      });
+
+      if (check.error) {
+        res.status(500).json({ error: "Failed to check if IP exists" });
+        return;
+      }
+      if (check.exists) {
+        res.status(400).json({ error: "IP Address already exists" });
+        return;
+      }
     }
 
     const ipInsert: IPInsert = {
