@@ -13,6 +13,7 @@ import { useContext } from "react";
 import IpContext from "@/context/IPContext";
 import { RowSelectionState } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
+import { TruncateHover } from "./TruncateHover";
 
 interface TableSheetProps {
   value: number | null | undefined;
@@ -47,11 +48,15 @@ export function AssetTableSheet({
             !value && "text-muted-foreground"
           )}
         >
-          {value
-            ? assets.find((row) => {
-                return row.ID === value;
-              })?.name
-            : "Select Asset"}
+          <TruncateHover>
+            {value
+              ? String(
+                  assets.find((row) => {
+                    return row.ID === value;
+                  })?.name ?? ""
+                )
+              : "Select Asset"}
+          </TruncateHover>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </SheetTrigger>
@@ -72,6 +77,7 @@ export function AssetTableSheet({
             "warrantyExp",
             "cost",
             "actions",
+            "ips",
           ]}
           selectedRow={selectedRow}
           onRowSelect={setSelectedRow}

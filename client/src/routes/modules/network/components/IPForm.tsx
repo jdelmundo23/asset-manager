@@ -73,7 +73,7 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto space-y-3 py-1 text-white"
+        className="mx-auto w-56 space-y-3 py-1 text-white"
       >
         <FormField
           control={form.control}
@@ -130,7 +130,26 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
             });
             return (
               <FormItem className="flex flex-col space-y-2">
-                <FormLabel>Asset</FormLabel>
+                <FormLabel className="flex items-baseline justify-between">
+                  Asset
+                  {field.value ? (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        form.setValue(field.name, null, {
+                          shouldDirty: true,
+                        });
+                      }}
+                    >
+                      <p className="text-[0.55rem] font-light underline opacity-50">
+                        Clear asset
+                      </p>
+                    </button>
+                  ) : (
+                    ""
+                  )}
+                </FormLabel>
                 <FormControl>
                   <AssetTableSheet
                     value={field.value}

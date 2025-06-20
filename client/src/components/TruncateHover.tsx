@@ -17,7 +17,11 @@ export function TruncateHover({ children }: TruncateHoverProps) {
   useEffect(() => {
     const el = textRef.current;
     if (el) {
-      setIsTruncated(el.scrollWidth > el.clientWidth);
+      const timeout = setTimeout(() => {
+        setIsTruncated(el.scrollWidth > el.clientWidth);
+      }, 50);
+
+      return () => clearTimeout(timeout);
     }
   }, [children]);
 
@@ -30,7 +34,10 @@ export function TruncateHover({ children }: TruncateHoverProps) {
           </p>
         </TooltipTrigger>
         {isTruncated ? (
-          <TooltipContent className="pointer-events-auto">
+          <TooltipContent
+            className="pointer-events-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <p>{children}</p>
           </TooltipContent>
         ) : (

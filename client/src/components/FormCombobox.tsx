@@ -24,6 +24,7 @@ import { FieldPathValue, Path, UseFormReturn } from "react-hook-form";
 import { Asset, Subnet } from "@shared/schemas";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { TruncateHover } from "./TruncateHover";
 
 type SupportedFormType = Asset | Subnet;
 
@@ -78,13 +79,15 @@ function FormCombobox<
                     props.className
                   )}
                 >
-                  <p className="truncate">
-                    {field.value
-                      ? items.find(
-                          (choice) => choice[valueKey] === field.value
-                        )?.[labelKey]
-                      : `Select ${props.options.msgLabel}`}
-                  </p>
+                  <TruncateHover>
+                    {String(
+                      field.value
+                        ? (items.find(
+                            (choice) => choice[valueKey] === field.value
+                          )?.[labelKey] ?? "")
+                        : `Select ${props.options.msgLabel}`
+                    )}
+                  </TruncateHover>
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </FormControl>
@@ -120,7 +123,7 @@ function FormCombobox<
                               : "opacity-0"
                           )}
                         />
-                        {choice[labelKey]}
+                        <TruncateHover>{choice[labelKey]}</TruncateHover>
                       </CommandItem>
                     ))}
                   </CommandGroup>
