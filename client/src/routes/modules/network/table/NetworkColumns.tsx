@@ -42,9 +42,9 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
       enableHiding: false,
     },
     {
-      accessorKey: "hostNumber",
+      id: "ipAddress",
+      accessorFn: (row) => formatIP(row),
       header: "IP Address",
-      cell: ({ row }) => formatIP(row.original),
       enableSorting: true,
       sortingFn: (rowA, rowB) =>
         formatIP(rowA.original).localeCompare(formatIP(rowB.original)),

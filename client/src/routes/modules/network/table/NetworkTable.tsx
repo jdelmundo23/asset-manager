@@ -11,7 +11,7 @@ import {
 import { Dispatch, SetStateAction, useState } from "react";
 import { getColumns } from "./NetworkColumns";
 import TableRenderer from "@/components/TableRenderer";
-import { IPRow, ipRowSchema } from "@shared/schemas";
+import { ipInputSchema, IPRow } from "@shared/schemas";
 
 interface DataTableProps {
   ips: IPRow[] | undefined;
@@ -68,7 +68,7 @@ export function DataTable({
       table={table}
       columnLength={columns.length}
       animated={animated}
-      schema={ipRowSchema}
+      schema={ipInputSchema}
     />
   );
 }

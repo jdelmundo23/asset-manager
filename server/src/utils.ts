@@ -1,4 +1,4 @@
-import { z, ZodTypeAny } from "zod";
+import { z, ZodRawShape, ZodTypeAny } from "zod";
 import sql, { ConnectionPool } from "mssql";
 import { subnetRowSchema } from "@shared/schemas";
 
@@ -105,3 +105,15 @@ export const addSubnet = async (
     throw error;
   }
 };
+
+export function validateSingleField<T extends ZodRawShape>(
+  schema: z.ZodObject<T>,
+  key: keyof T,
+  value: unknown
+) {
+  const fieldSchema = schema.shape[key as keyof T] as ZodTypeAny | undefined;
+
+  if (!fieldSchema) return undefined;
+
+  return fieldSchema.safeParse(value);
+}

@@ -8,16 +8,28 @@ import {
   parseInputReq,
   recordExists,
   splitIpAddress,
+  validateSingleField,
 } from "../../../utils";
 
-const inputs = (ip: IPInsert) => [
-  { name: "ID", type: sql.Int, value: ip.ID },
-  { name: "hostNumber", type: sql.TinyInt, value: ip.hostNumber },
-  { name: "subnetID", type: sql.Int, value: ip.subnetID },
-  { name: "name", type: sql.VarChar(100), value: ip.name },
-  { name: "macAddress", type: sql.VarChar(24), value: ip.macAddress },
-  { name: "assetID", type: sql.Int, value: ip.assetID },
+type InputField = {
+  name: string;
+  type: sql.ISqlType | (() => sql.ISqlType);
+};
+
+const inputDefinitions: InputField[] = [
+  { name: "ID", type: sql.Int },
+  { name: "hostNumber", type: sql.TinyInt },
+  { name: "subnetID", type: sql.Int },
+  { name: "name", type: sql.VarChar(100) },
+  { name: "macAddress", type: sql.VarChar(24) },
+  { name: "assetID", type: sql.Int },
 ];
+
+const inputs = (ip: Partial<IPInsert> = {}) =>
+  inputDefinitions.map((def) => ({
+    ...def,
+    value: ip[def.name as keyof IPInsert],
+  }));
 
 const appendInputs = (
   request: sql.Request,
@@ -31,40 +43,6 @@ const appendInputs = (
   }
   return request;
 };
-//   if (req.method !== "POST" && req.method !== "PUT") {
-//     return next();
-//   }
-
-//   const parse = ipInputSchema.safeParse(req.body);
-
-//   if (!parse.success) {
-//     res.status(400).json({ error: parse.error.format() });
-//     return;
-//   }
-
-//   const ip = parse.data;
-
-//   try {
-//     const pool = await getPool();
-
-//     const result = await pool
-//       .request()
-//       .input("ipAddress", sql.VarChar(15), ip.ipAddress).query(`
-//       SELECT ID from ipAddresses WHERE ipAddress = @ipAddress;
-// `);
-
-//     if (result.recordset[0]?.ID && result.recordset[0]?.ID !== ip.ID) {
-//       res.status(400).json({ error: "IP already exists" });
-//       return;
-//     }
-//     req.body = parse.data;
-
-//     next();
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).json({ error: "Failed to check if IP exists" });
-//   }
-// };
 
 const router = express.Router();
 
@@ -285,6 +263,82 @@ router.delete("/:ipID", async function (req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to delete IP" });
+  }
+});
+
+router.patch("/", async function (req, res) {
+  const ipID = req.body.ID;
+  const columnName = req.body.column;
+  const newValue = req.body.value;
+
+  const valueCheck = validateSingleField(ipInputSchema, columnName, newValue);
+  if (!valueCheck?.success) {
+    res.status(400).json({ error: "Value failed input validation" });
+    return;
+  }
+
+  if (!ipID) {
+    res.status(400).json({ error: "IP Address ID is required" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+
+    const sqlReq = pool.request().input("ID", sql.Int, ipID);
+
+    if (columnName === "ipAddress") {
+      const { subnetPrefix, hostNumber } = splitIpAddress(newValue);
+
+      let subnetID;
+      try {
+        ({ subnetID } = await addSubnet(pool, subnetPrefix));
+      } catch {
+        res.status(500).json({ error: "Failed to get or add subnet" });
+        return;
+      }
+
+      const check = await recordExists(pool, "IPAddresses", {
+        subnetID: subnetID,
+        hostNumber: hostNumber,
+      });
+      if (check.error) {
+        res.status(500).json({ error: "Failed to check if IP exists" });
+        return;
+      }
+      if (check.exists) {
+        res.status(400).json({ error: "IP Address already exists" });
+        return;
+      }
+
+      await sqlReq
+        .input("subnetID", sql.Int, subnetID)
+        .input("hostNumber", sql.TinyInt, hostNumber).query(`UPDATE IPAddresses
+          SET 
+          hostNumber = @hostNumber, 
+          subnetID = @subnetID
+          WHERE ID = @ID`);
+    } else {
+      const inputField = inputDefinitions.find(
+        (def) => def.name === columnName
+      );
+
+      if (!inputField) {
+        res
+          .status(400)
+          .json({ error: "Field type not found due to invalid column" });
+        return;
+      }
+      await sqlReq.input(columnName, inputField.type, newValue).query(`
+        UPDATE IPAddresses
+          
+          SET ${columnName} = @${columnName} 
+          WHERE ID = @ID`);
+    }
+    res.status(200).json({ message: "Cell edited successfully!" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Failed to edit cell" });
   }
 });
 
