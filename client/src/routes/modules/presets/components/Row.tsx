@@ -14,7 +14,7 @@ function Row({ row }: RowProps) {
   const { typeData, activePreset } = useContext(PresetContext);
   const type =
     (
-      typeData.find((typeRow: Preset) => typeRow.ID === row.typeID) as
+      typeData?.find((typeRow: Preset) => typeRow.ID === row.typeID) as
         | Preset
         | undefined
     )?.name || "";

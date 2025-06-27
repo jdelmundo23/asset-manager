@@ -21,6 +21,9 @@ import RedirectRoot from "./routes/RedirectRoot";
 import { Toaster } from "sonner";
 import PlaceholderRoute from "./routes/Placeholder";
 import axiosApi from "./lib/axios";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -64,9 +67,11 @@ const Root = () => {
   }, []);
 
   return (
-    <AuthContext.Provider value={authInfo}>
-      <RouterProvider router={router} />
-    </AuthContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <AuthContext.Provider value={authInfo}>
+        <RouterProvider router={router} />
+      </AuthContext.Provider>
+    </QueryClientProvider>
   );
 };
 

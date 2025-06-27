@@ -12,6 +12,7 @@ import {
 import PresetContext from "@/context/PresetContext";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
+import { useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { useContext } from "react";
 
@@ -20,7 +21,9 @@ interface DeletePresetProps {
 }
 
 function DeletePreset({ presetName }: DeletePresetProps) {
-  const { reloadData, activePreset } = useContext(PresetContext);
+  const queryClient = useQueryClient();
+
+  const { activePreset } = useContext(PresetContext);
 
   async function onConfirm() {
     try {
@@ -28,7 +31,13 @@ function DeletePreset({ presetName }: DeletePresetProps) {
         `/api/presets/${activePreset.tableName}/${presetName}`
       );
 
-      reloadData();
+      queryClient.invalidateQueries({
+        queryKey: ["preset", activePreset.tableName],
+      });
+
+      if (activePreset.tableName === "assetmodels") {
+        queryClient.invalidateQueries({ queryKey: ["types"] });
+      }
     } catch (error) {
       handleError(error);
     }

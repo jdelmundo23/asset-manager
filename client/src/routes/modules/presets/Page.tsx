@@ -17,6 +17,7 @@ import axiosApi from "@/lib/axios";
 import { Skeleton } from "@/components/shadcn-ui/skeleton";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 
 interface tableRow {
   ID: number;
@@ -31,32 +32,30 @@ const presets = [
 ];
 
 function Page() {
-  const [data, setData] = useState<[]>([]);
-  const [typeData, setTypeData] = useState<[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
-  const handleTabChange = async (tabValue: string) => {
-    const table = presets.find((preset) => preset.displayName === tabValue);
-    if (table) {
-      try {
-        setIsLoading(true);
-        const result = await axiosApi.get(`/api/presets/${table.tableName}`);
-        setData(result.data);
+  const [tabValue, setTabValue] = useState<string>("");
+  const table = presets.find((preset) => preset.displayName === tabValue);
 
-        if (tabValue === "Models") {
-          const result = await axiosApi.get(`/api/presets/assettypes`);
-          setTypeData(result.data);
-        } else {
-          setTypeData([]);
-        }
-      } catch (error) {
-        setData([]);
-        handleError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
+  const presetQuery = useQuery({
+    queryKey: ["preset", table?.tableName],
+    queryFn: () =>
+      axiosApi.get(`/api/presets/${table?.tableName}`).then((res) => res.data),
+    enabled: !!table?.tableName,
+  });
+
+  const typeQuery = useQuery({
+    queryKey: ["types"],
+    queryFn: () =>
+      axiosApi.get(`/api/presets/assettypes`).then((res) => res.data),
+    enabled: tabValue === "Models",
+  });
+
+  if (presetQuery.isError || typeQuery.isError) {
+    handleError(typeQuery.isError ? typeQuery.error : presetQuery.error);
+  }
+
+  const isLoading = presetQuery.isLoading || typeQuery.isLoading;
+
+  const navigate = useNavigate();
 
   return (
     <div className="container mx-auto flex w-11/12 flex-col items-center py-10 md:w-3/5">
@@ -72,7 +71,7 @@ function Page() {
       <Tabs
         defaultValue="blank"
         className="animate-fade-in-up w-full max-w-md"
-        onValueChange={handleTabChange}
+        onValueChange={(value) => setTabValue(value)}
       >
         <TabsList className="w-full justify-between">
           {presets.map((preset) => (
@@ -100,9 +99,8 @@ function Page() {
                 displayName: preset.displayName,
                 tableName: preset.tableName,
               },
-              presetData: data,
-              typeData: typeData,
-              reloadData: () => handleTabChange(preset.displayName),
+              presetData: presetQuery.data,
+              typeData: typeQuery.data,
             }}
           >
             <TabsContent value={preset.displayName}>
@@ -115,8 +113,8 @@ function Page() {
                       <Skeleton className="h-8 w-full rounded-xl" />
                     </div>
                   ) : (
-                    <div className="animate-fade-in flex flex-col space-y-3 p-4">
-                      {data.map((row: tableRow) => (
+                    <div className="animate-fade-in flex flex-col space-y-3 p-4 duration-150">
+                      {presetQuery?.data?.map((row: tableRow) => (
                         <Row key={row.ID} row={row} />
                       ))}
 

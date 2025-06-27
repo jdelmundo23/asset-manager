@@ -31,6 +31,7 @@ import PresetContext from "@/context/PresetContext";
 import { Preset } from "@shared/schemas";
 import { handleError } from "@/lib/handleError";
 import axiosApi from "@/lib/axios";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface PresetFormProps {
   operation: "add" | "edit";
@@ -66,7 +67,9 @@ export default function PresetForm({
   oldPresetType,
   closeDialog,
 }: PresetFormProps) {
-  const { reloadData, typeData, activePreset } = useContext(PresetContext);
+  const queryClient = useQueryClient();
+
+  const { typeData, activePreset } = useContext(PresetContext);
 
   const [msg, setMsg] = useState<string>("");
 
@@ -115,8 +118,14 @@ export default function PresetForm({
           );
         }
       }
+      queryClient.invalidateQueries({
+        queryKey: ["preset", activePreset.tableName],
+      });
+
+      if (activePreset.tableName === "assetmodels") {
+        queryClient.invalidateQueries({ queryKey: ["types"] });
+      }
       closeDialog();
-      reloadData();
     } catch (error) {
       const errorMsg = handleError(error);
       setMsg(errorMsg);
@@ -151,7 +160,7 @@ export default function PresetForm({
             </FormItem>
           )}
         />
-        {typeData.length > 0 ? (
+        {activePreset.tableName === "assetmodels" && typeData.length > 0 ? (
           <FormField
             control={form.control}
             name="presetType"

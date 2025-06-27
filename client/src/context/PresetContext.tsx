@@ -5,7 +5,6 @@ interface PresetContextType {
     tableName: string;
   };
   presetData: [];
-  reloadData: () => void;
   typeData: [];
 }
 
@@ -15,7 +14,6 @@ const PresetContext = createContext<PresetContextType>({
     tableName: "",
   },
   presetData: [],
-  reloadData: () => {},
   typeData: [],
 });
 
