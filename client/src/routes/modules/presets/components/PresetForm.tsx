@@ -31,7 +31,8 @@ import PresetContext from "@/context/PresetContext";
 import { Preset } from "@shared/schemas";
 import { handleError } from "@/lib/handleError";
 import axiosApi from "@/lib/axios";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface PresetFormProps {
   operation: "add" | "edit";
@@ -61,17 +62,47 @@ async function handlePreset(
   await axiosApi[method](url, data);
 }
 
+const handlePresetMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      operation,
+      mode,
+      table,
+      name,
+      oldName,
+      type,
+    }: {
+      operation: "add" | "edit";
+      mode: "common" | "model";
+      table: string;
+      name: string;
+      oldName?: string;
+      type?: string;
+    }) => handlePreset(operation, mode, table, name, oldName, type),
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["preset", variables.table],
+      });
+
+      if (variables.table === "assetmodels") {
+        queryClient.invalidateQueries({ queryKey: ["types"] });
+      }
+    },
+  });
+};
+
 export default function PresetForm({
   operation,
   oldPresetName,
   oldPresetType,
   closeDialog,
 }: PresetFormProps) {
-  const queryClient = useQueryClient();
-
   const { typeData, activePreset } = useContext(PresetContext);
-
   const [msg, setMsg] = useState<string>("");
+  const mutation = handlePresetMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,57 +110,33 @@ export default function PresetForm({
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      if (activePreset.tableName === "assetmodels" && values.presetType) {
-        if (operation === "edit" && oldPresetName) {
-          await handlePreset(
-            "edit",
-            "model",
-            "assetModels",
-            values.presetName,
-            oldPresetName,
-            values.presetType
-          );
-        } else {
-          await handlePreset(
-            "add",
-            "model",
-            "assetModels",
-            values.presetName,
-            "",
-            values.presetType
-          );
-        }
-      } else {
-        if (operation === "edit" && oldPresetName) {
-          await handlePreset(
-            "edit",
-            "common",
-            activePreset.tableName,
-            values.presetName,
-            oldPresetName
-          );
-        } else {
-          await handlePreset(
-            "add",
-            "common",
-            activePreset.tableName,
-            values.presetName
-          );
-        }
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["preset", activePreset.tableName],
-      });
+    const isModel = activePreset.tableName === "assetmodels";
+    const mode: "common" | "model" = isModel ? "model" : "common";
+    const operationType = operation as "add" | "edit";
 
-      if (activePreset.tableName === "assetmodels") {
-        queryClient.invalidateQueries({ queryKey: ["types"] });
-      }
-      closeDialog();
-    } catch (error) {
-      const errorMsg = handleError(error);
-      setMsg(errorMsg);
-    }
+    const variables = {
+      operation: operationType,
+      mode,
+      table: activePreset.tableName,
+      name: values.presetName,
+      oldName: operationType === "edit" ? oldPresetName : undefined,
+      type: isModel ? values.presetType : undefined,
+    };
+
+    toast
+      .promise(
+        mutation.mutateAsync(variables).then(() => closeDialog()),
+        {
+          loading:
+            operationType === "edit" ? "Saving changes..." : "Adding preset...",
+          success: `Preset ${operation}ed!`,
+        }
+      )
+      .unwrap()
+      .catch((err) => {
+        const errorMsg = handleError(err);
+        setMsg(errorMsg);
+      });
   }
 
   return (
@@ -156,7 +163,7 @@ export default function PresetForm({
                   }}
                 />
               </FormControl>
-              <FormMessage>{msg}</FormMessage>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -214,7 +221,7 @@ export default function PresetForm({
                   </PopoverContent>
                 </Popover>
 
-                <FormMessage />
+                <FormMessage>{msg}</FormMessage>
               </FormItem>
             )}
           />

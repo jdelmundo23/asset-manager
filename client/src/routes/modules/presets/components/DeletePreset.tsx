@@ -12,38 +12,67 @@ import {
 import PresetContext from "@/context/PresetContext";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { toast } from "sonner";
 
 interface DeletePresetProps {
   presetName: string;
 }
 
-function DeletePreset({ presetName }: DeletePresetProps) {
+const deletePresetMutation = () => {
   const queryClient = useQueryClient();
 
-  const { activePreset } = useContext(PresetContext);
+  return useMutation({
+    mutationFn: ({
+      tableName,
+      presetName,
+    }: {
+      tableName: string;
+      presetName: string;
+    }) => {
+      return axiosApi.delete(`/api/presets/${tableName}/${presetName}`);
+    },
 
-  async function onConfirm() {
-    try {
-      await axiosApi.delete(
-        `/api/presets/${activePreset.tableName}/${presetName}`
-      );
-
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["preset", activePreset.tableName],
+        queryKey: ["preset", variables.tableName],
       });
 
-      if (activePreset.tableName === "assetmodels") {
+      if (variables.tableName === "assetmodels") {
         queryClient.invalidateQueries({ queryKey: ["types"] });
       }
-    } catch (error) {
-      handleError(error);
-    }
+    },
+  });
+};
+
+function DeletePreset({ presetName }: DeletePresetProps) {
+  const { activePreset } = useContext(PresetContext);
+  const [open, setOpen] = useState(false);
+  const mutation = deletePresetMutation();
+
+  async function onConfirm() {
+    const variables = {
+      tableName: activePreset.tableName,
+      presetName,
+    };
+
+    toast
+      .promise(
+        mutation.mutateAsync(variables).then(() => setOpen(false)),
+        {
+          loading: "Deleting preset...",
+          success: `Preset deleted!`,
+        }
+      )
+      .unwrap()
+      .catch((err) => {
+        handleError(err);
+      });
   }
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger>
         <Trash2 className="h-4 w-4" />
       </AlertDialogTrigger>
@@ -64,7 +93,14 @@ function DeletePreset({ presetName }: DeletePresetProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Continue</AlertDialogAction>
+          <AlertDialogAction
+            onClick={(e) => {
+              e.preventDefault();
+              onConfirm();
+            }}
+          >
+            Continue
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
