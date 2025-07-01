@@ -5,7 +5,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/shadcn-ui/tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/shadcn-ui/card";
 import AddPreset from "./components/AddPreset";
 import { ScrollArea } from "@/components/shadcn-ui/scroll-area";
@@ -49,9 +49,18 @@ function Page() {
     enabled: tabValue === "Models",
   });
 
-  if (presetQuery.isError || typeQuery.isError) {
-    handleError(typeQuery.isError ? typeQuery.error : presetQuery.error);
-  }
+  useEffect(() => {
+    if (presetQuery.isError) {
+      handleError(presetQuery.error);
+    } else if (typeQuery.isError) {
+      handleError(typeQuery.error);
+    }
+  }, [
+    presetQuery.isError,
+    presetQuery.error,
+    typeQuery.isError,
+    typeQuery.error,
+  ]);
 
   const isLoading = presetQuery.isLoading || typeQuery.isLoading;
 

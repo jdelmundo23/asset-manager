@@ -8,13 +8,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/shadcn-ui/alert-dialog";
-import { handleAction } from "@/lib/Actions";
+import { useHandleAction } from "@/lib/Actions";
 import { AssetRow } from "@shared/schemas";
 import { Button } from "@/components/shadcn-ui/button";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import AssetForm from "./AssetForm";
 import { X } from "lucide-react";
-import AssetContext from "@/context/AssetContext";
 
 interface GenericDialogProps {
   open: boolean;
@@ -104,7 +103,7 @@ interface DeleteAssetProps {
 }
 
 export function DeleteAsset({ open, setOpen, row }: DeleteAssetProps) {
-  const { fetcher } = useContext(AssetContext);
+  const { handleAction } = useHandleAction<AssetRow, unknown>();
   return (
     <GenericDialog
       open={open}
@@ -114,9 +113,7 @@ export function DeleteAsset({ open, setOpen, row }: DeleteAssetProps) {
     >
       <AlertDialogFooter>
         <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
-        <AlertDialogAction
-          onClick={() => handleAction("asset", "delete", row, fetcher)}
-        >
+        <AlertDialogAction onClick={() => handleAction("asset", "delete", row)}>
           Delete
         </AlertDialogAction>
       </AlertDialogFooter>
@@ -131,7 +128,7 @@ interface DuplicateAssetProps {
 }
 
 export function DuplicateAsset({ open, setOpen, row }: DuplicateAssetProps) {
-  const { fetcher } = useContext(AssetContext);
+  const { handleAction } = useHandleAction<AssetRow, unknown>();
   return (
     <GenericDialog
       open={open}
@@ -142,7 +139,7 @@ export function DuplicateAsset({ open, setOpen, row }: DuplicateAssetProps) {
       <AlertDialogFooter>
         <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
         <AlertDialogAction
-          onClick={() => handleAction("asset", "duplicate", row, fetcher)}
+          onClick={() => handleAction("asset", "duplicate", row)}
         >
           Duplicate
         </AlertDialogAction>

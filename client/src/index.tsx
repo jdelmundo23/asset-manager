@@ -14,7 +14,7 @@ import Signin from "./routes/Signin";
 import Protected from "./routes/Protected";
 import Menu from "./routes/app/components/Menu";
 import Presets from "./routes/modules/presets/Page";
-import Assets, { loader as assetLoader } from "./routes/modules/assets/Page";
+import Assets from "./routes/modules/assets/Page";
 import Network, { loader as ipLoader } from "./routes/modules/network/Page";
 import AuthContext, { AuthContextType } from "./context/AuthContext";
 import RedirectRoot from "./routes/RedirectRoot";
@@ -39,11 +39,7 @@ const router = createBrowserRouter(
           <Route index element={<Menu />}></Route>
           <Route path="phones" element={<PlaceholderRoute />} />
           <Route path="presets" element={<Presets />}></Route>
-          <Route
-            path="assets"
-            element={<Assets />}
-            loader={assetLoader}
-          ></Route>
+          <Route path="assets" element={<Assets />}></Route>
           <Route path="network" element={<Network />} loader={ipLoader}></Route>
         </Route>
       </Route>

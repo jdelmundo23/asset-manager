@@ -16,6 +16,8 @@ import {
 import { handleError } from "./handleError";
 import axiosApi from "./axios";
 import { AxiosResponse } from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 type ActionType = "add" | "edit" | "delete" | "duplicate";
 
@@ -56,6 +58,57 @@ const actions: Record<ActionType, Action<Entity>> = {
     ed: "Duplicated",
   },
 } as const;
+
+export const useHandleAction = <T extends Entity, R>() => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<
+    AxiosResponse<R>,
+    unknown,
+    {
+      action: Action<T>;
+      endpointType: EndpointType;
+      values: T;
+    }
+  >({
+    mutationFn: ({ action, endpointType, values }) =>
+      axiosApi[action.method](action.url(endpointType, values), values),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assetData"] });
+    },
+  });
+
+  const handleAction = async (
+    endpointType: EndpointType,
+    actionType: ActionType,
+    values: T
+  ): Promise<AxiosResponse<R>> => {
+    if (
+      (actionType === "edit" ||
+        actionType === "delete" ||
+        actionType === "duplicate") &&
+      !("ID" in values)
+    ) {
+      throw new Error(`Cannot ${actionType} ${endpointType}: Missing ID.`);
+    }
+
+    const action = actions[actionType];
+
+    return toast
+      .promise(mutation.mutateAsync({ action, endpointType, values }), {
+        loading: `${action.ing} ${endpointType}`,
+        success: `${action.ed} ${endpointType}`,
+      })
+      .unwrap()
+      .then((response) => response)
+      .catch((error) => {
+        handleError(error);
+        throw error;
+      });
+  };
+
+  return { handleAction, mutation };
+};
 
 export const handleAction = async <T extends Entity, R>(
   endpointType: EndpointType,
