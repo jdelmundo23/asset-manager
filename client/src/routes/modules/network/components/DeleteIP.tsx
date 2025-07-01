@@ -8,18 +8,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/shadcn-ui/alert-dialog";
-import { handleAction } from "@/lib/Actions";
+import { useHandleAction } from "@/lib/Actions";
 import { IPRow } from "@shared/schemas";
-import { FetcherWithComponents } from "react-router";
 
 interface DeleteIPProps {
   open: boolean;
   setOpen: (val: boolean) => void;
   row: IPRow;
-  fetcher: FetcherWithComponents<any> | undefined;
 }
 
-function DeleteIP({ open, setOpen, row, fetcher }: DeleteIPProps) {
+function DeleteIP({ open, setOpen, row }: DeleteIPProps) {
+  const { handleAction } = useHandleAction<IPRow, unknown>();
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent className="">
@@ -33,9 +32,7 @@ function DeleteIP({ open, setOpen, row, fetcher }: DeleteIPProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={() => handleAction("ip", "delete", row, fetcher)}
-          >
+          <AlertDialogAction onClick={() => handleAction("ip", "delete", row)}>
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

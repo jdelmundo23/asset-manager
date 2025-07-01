@@ -25,6 +25,12 @@ type EndpointType = "asset" | "ip" | "subnet";
 
 type Entity = Asset | AssetRow | IPInput | IPRow | Subnet | SubnetRow;
 
+const queryKeys: Record<EndpointType, string> = {
+  asset: "assetData",
+  ip: "ipData",
+  subnet: "subnetData",
+} as const;
+
 interface Action<T extends Entity> {
   ing: string;
   ed: string;
@@ -73,8 +79,10 @@ export const useHandleAction = <T extends Entity, R>() => {
   >({
     mutationFn: ({ action, endpointType, values }) =>
       axiosApi[action.method](action.url(endpointType, values), values),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["assetData"] });
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys[variables.endpointType]],
+      });
     },
   });
 
@@ -94,15 +102,24 @@ export const useHandleAction = <T extends Entity, R>() => {
 
     const action = actions[actionType];
 
-    return toast
-      .promise(mutation.mutateAsync({ action, endpointType, values }), {
+    const toastReturn = toast.promise(
+      mutation.mutateAsync({ action, endpointType, values }),
+      {
         loading: `${action.ing} ${endpointType}`,
         success: `${action.ed} ${endpointType}`,
-      })
+      }
+    );
+
+    const toastID =
+      typeof toastReturn === "string" || typeof toastReturn === "number"
+        ? toastReturn
+        : undefined;
+
+    return toastReturn
       .unwrap()
       .then((response) => response)
       .catch((error) => {
-        handleError(error);
+        handleError(error, toastID);
         throw error;
       });
   };

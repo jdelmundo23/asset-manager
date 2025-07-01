@@ -9,11 +9,15 @@ import {
   SheetTrigger,
 } from "./shadcn-ui/sheet";
 import { DataTable } from "@/routes/modules/assets/table/AssetTable";
-import { useContext } from "react";
-import IpContext from "@/context/IPContext";
+import { useEffect, useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
 import { TruncateHover } from "./TruncateHover";
+import axiosApi from "@/lib/axios";
+import { handleError } from "@/lib/handleError";
+import { useQuery } from "@tanstack/react-query";
+import { assetRowSchema } from "@shared/schemas";
+import { z } from "zod";
 
 interface TableSheetProps {
   value: number | null | undefined;
@@ -28,15 +32,42 @@ export function AssetTableSheet({
   setSelectedRow,
   onConfirm,
 }: TableSheetProps) {
-  const { assets } = useContext(IpContext);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const assetQuery = useQuery({
+    queryKey: ["selectableAssets"],
+    queryFn: async () => {
+      const response = await axiosApi.get(`/api/assets/all`);
+      return z.array(assetRowSchema).parse(response.data);
+    },
+    retry: false,
+    enabled: !!value,
+  });
+
+  useEffect(() => {
+    if (open) {
+      assetQuery.refetch();
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (assetQuery.isError) {
+      handleError(assetQuery.error);
+    }
+  }, [assetQuery.isError, assetQuery.error]);
+
+  const assets = assetQuery.data;
+
   return (
     <Sheet
-      onOpenChange={(open) =>
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
         setTimeout(
           () => setSelectedRow({ [value ?? -1]: true }),
           open ? 0 : 500
-        )
-      }
+        );
+      }}
     >
       <SheetTrigger>
         <Button
@@ -45,16 +76,18 @@ export function AssetTableSheet({
           role="sheet"
           className={cn(
             "w-full justify-between",
-            !value && "text-muted-foreground"
+            !value || (assetQuery.isLoading && "text-muted-foreground")
           )}
         >
           <TruncateHover>
             {value
-              ? String(
-                  assets.find((row) => {
-                    return row.ID === value;
-                  })?.name ?? ""
-                )
+              ? assetQuery.isLoading
+                ? "Loading..."
+                : String(
+                    assets?.find((row) => {
+                      return row.ID === value;
+                    })?.name ?? ""
+                  )
               : "Select Asset"}
           </TruncateHover>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

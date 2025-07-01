@@ -10,14 +10,11 @@ import { Input } from "@/components/shadcn-ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IPInput, ipInputSchema } from "@shared/schemas";
 import { useForm } from "react-hook-form";
-
 import { Button } from "@/components/shadcn-ui/button";
-
 import { LoaderCircle } from "lucide-react";
-import IpContext from "@/context/IPContext";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
-import { handleAction } from "@/lib/Actions";
+import { useHandleAction } from "@/lib/Actions";
 import axios from "axios";
 import { AssetTableSheet } from "@/components/TableSheets";
 
@@ -38,7 +35,7 @@ interface EditModeProps extends BaseProps {
 type IPFormProps = AddModeProps | EditModeProps;
 
 export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
-  const { fetcher } = useContext(IpContext);
+  const { handleAction } = useHandleAction<IPInput, unknown>();
   const form = useForm<IPInput>({
     resolver: zodResolver(ipInputSchema),
     ...(mode === "edit" && ip ? { defaultValues: ip } : {}),
@@ -53,9 +50,9 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
   async function onSubmit(values: IPInput) {
     try {
       if (mode === "add") {
-        await handleAction("ip", "add", values, fetcher);
+        await handleAction("ip", "add", values);
       } else {
-        await handleAction("ip", "edit", values, fetcher);
+        await handleAction("ip", "edit", values);
       }
     } catch (error) {
       form.setError("ipAddress", {

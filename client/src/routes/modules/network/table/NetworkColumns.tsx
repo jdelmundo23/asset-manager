@@ -10,8 +10,7 @@ import {
 } from "@/components/shadcn-ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/shadcn-ui/button";
-import { useContext, useState } from "react";
-import IPContext from "@/context/IPContext";
+import { useState } from "react";
 import DeleteIP from "../components/DeleteIP";
 import EditIP from "../components/EditIP";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
@@ -89,8 +88,6 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
       cell: ({ row }) => {
         const ip = row.original;
 
-        const { fetcher } = useContext(IPContext);
-
         const [editOpen, setEditOpen] = useState(false);
         const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -130,12 +127,7 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
                   : "",
               }}
             />
-            <DeleteIP
-              open={deleteOpen}
-              setOpen={setDeleteOpen}
-              row={ip}
-              fetcher={fetcher}
-            />
+            <DeleteIP open={deleteOpen} setOpen={setDeleteOpen} row={ip} />
           </DropdownMenu>
         );
       },
