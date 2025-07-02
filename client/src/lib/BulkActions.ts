@@ -1,16 +1,12 @@
-import {
-  showInfoToast,
-  showListUpdateErrorToast,
-  showLoadingToast,
-  showSuccessToast,
-} from "@/lib/toasts";
-import { FetcherWithComponents } from "react-router";
 import { handleError } from "./handleError";
 import axiosApi from "./axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosResponse } from "axios";
+import { toast } from "sonner";
 
 type ActionType = "duplicate" | "edit" | "delete";
 
-type EndpointType = "asset" | "ip";
+type EndpointType = "asset" | "ip" | "subnet";
 
 interface Action {
   ing: string;
@@ -18,6 +14,12 @@ interface Action {
   url: (endpoint: EndpointType) => string;
   method: "post" | "put";
 }
+
+const queryKeys: Record<EndpointType, string> = {
+  asset: "assetData",
+  ip: "ipData",
+  subnet: "subnetData",
+} as const;
 
 const actions: Record<ActionType, Action> = {
   delete: {
@@ -40,32 +42,54 @@ const actions: Record<ActionType, Action> = {
   },
 } as const;
 
-export const handleBulkAction = async (
-  endpointType: EndpointType,
-  actionType: ActionType,
-  ids: string[],
-  fetcher: FetcherWithComponents<any> | undefined
-) => {
-  const action = actions[actionType];
+export const useBulkAction = <R>() => {
+  const queryClient = useQueryClient();
 
-  const loadingToast = showLoadingToast(`${action.ing} ${endpointType}s`);
-  try {
-    await axiosApi[action.method](action.url(endpointType), { ids });
-
-    try {
-      await fetcher?.load(
-        `/app/${endpointType === "asset" ? "assets" : "network"}`
-      );
-
-      const toastType =
-        actionType === "duplicate" ? showSuccessToast : showInfoToast;
-      toastType(loadingToast, `${action.ed} ${endpointType}s`);
-    } catch {
-      showListUpdateErrorToast(loadingToast);
+  const mutation = useMutation<
+    AxiosResponse<R>,
+    unknown,
+    {
+      action: Action;
+      endpointType: EndpointType;
+      ids: string[];
     }
-  } catch (error) {
-    handleError(error, loadingToast);
+  >({
+    mutationFn: ({ action, endpointType, ids }) =>
+      axiosApi[action.method](action.url(endpointType), { ids }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys[variables.endpointType]],
+      });
+    },
+  });
 
-    throw error;
-  }
+  const handleBulkAction = async (
+    endpointType: EndpointType,
+    actionType: ActionType,
+    ids: string[]
+  ): Promise<AxiosResponse<R>> => {
+    const action = actions[actionType];
+
+    const toastReturn = toast.promise(
+      mutation.mutateAsync({ action, endpointType, ids }),
+      {
+        loading: `${action.ing} ${endpointType}(s)`,
+        success: `${action.ed} ${endpointType}(s)`,
+      }
+    );
+
+    const toastID =
+      typeof toastReturn === "string" || typeof toastReturn === "number"
+        ? toastReturn
+        : undefined;
+
+    return toastReturn
+      .unwrap()
+      .then((response) => response)
+      .catch((error) => {
+        handleError(error, toastID);
+        throw error;
+      });
+  };
+  return { handleBulkAction, mutation };
 };

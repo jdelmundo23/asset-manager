@@ -1,4 +1,4 @@
-import { handleBulkAction } from "@/lib/BulkActions";
+import { useBulkAction } from "@/lib/BulkActions";
 import { buttonVariants } from "@/components/shadcn-ui/button";
 import {
   DropdownMenu,
@@ -6,12 +6,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import AssetContext from "@/context/AssetContext";
-import IPContext from "@/context/IPContext";
-import { cn } from "@/lib/utils";
 import { RowSelectionState } from "@tanstack/react-table";
 import { ChevronsUpDown, Copy, Pencil, Trash2 } from "lucide-react";
-import { useContext } from "react";
+import { cn } from "@/lib/utils";
 
 interface BulkActionDropdownProps {
   entity: "asset" | "ip";
@@ -30,8 +27,7 @@ export default function BulkActionDropdown({
   selectedRows,
   setSelectedRows,
 }: BulkActionDropdownProps) {
-  const { fetcher } =
-    entity === "asset" ? useContext(AssetContext) : useContext(IPContext);
+  const { handleBulkAction } = useBulkAction();
   const ids = Object.keys(selectedRows).filter((key) => selectedRows[key]);
 
   return (
@@ -55,7 +51,7 @@ export default function BulkActionDropdown({
         )}
         {duplicating && (
           <DropdownMenuItem
-            onClick={() => handleBulkAction(entity, "duplicate", ids, fetcher)}
+            onClick={() => handleBulkAction(entity, "duplicate", ids)}
           >
             <Copy />
             Duplicate
@@ -65,7 +61,7 @@ export default function BulkActionDropdown({
           <DropdownMenuItem
             className="text-red-600"
             onClick={() => {
-              handleBulkAction(entity, "delete", ids, fetcher);
+              handleBulkAction(entity, "delete", ids);
               setSelectedRows({});
             }}
           >
