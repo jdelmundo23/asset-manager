@@ -11,8 +11,8 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/shadcn-ui/button";
 import { useState } from "react";
-import DeleteIP from "../components/DeleteIP";
-import EditIP from "../components/EditIP";
+import DeleteIP from "../components/ips/DeleteIP";
+import EditIP from "../components/ips/EditIP";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
 import { formatIP } from "@/lib/utils";
 

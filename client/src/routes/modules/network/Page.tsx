@@ -3,7 +3,7 @@ import { IPRow, ipRowSchema, SubnetRow } from "@shared/schemas";
 import { z } from "zod";
 import { DataTable } from "./table/NetworkTable";
 import TableToolbar from "@/components/TableToolbar";
-import AddIP from "./components/AddIP";
+import AddIP from "./components/ips/AddIP";
 import { useEffect, useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "@/components/BulkActionDropdown";
