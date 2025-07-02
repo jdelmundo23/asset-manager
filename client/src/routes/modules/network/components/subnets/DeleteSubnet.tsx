@@ -10,8 +10,7 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
 } from "@/components/shadcn-ui/alert-dialog";
-import { useSubnets } from "@/context/SubnetContext";
-import { handleAction } from "@/lib/Actions";
+import { useHandleAction } from "@/lib/Actions";
 import { SubnetRow } from "@shared/schemas";
 
 interface DeleteSubnetProps {
@@ -20,7 +19,7 @@ interface DeleteSubnetProps {
 }
 
 export default function DeleteSubnet({ subnet, children }: DeleteSubnetProps) {
-  const { refetchSubnets } = useSubnets();
+  const { handleAction } = useHandleAction();
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild onClick={(e) => e.stopPropagation()}>
@@ -41,16 +40,7 @@ export default function DeleteSubnet({ subnet, children }: DeleteSubnetProps) {
             <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={async () => {
-                try {
-                  await handleAction<SubnetRow, SubnetRow>(
-                    "subnet",
-                    "delete",
-                    subnet
-                  );
-                  refetchSubnets();
-                } catch {
-                  return;
-                }
+                await handleAction("subnet", "delete", subnet);
               }}
             >
               Delete

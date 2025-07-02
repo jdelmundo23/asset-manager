@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/shadcn-ui/form";
 import { Input } from "@/components/shadcn-ui/input";
-import { handleAction } from "@/lib/Actions";
+import { useHandleAction } from "@/lib/Actions";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,7 +43,8 @@ export default function SubnetForm({
   subnet,
   setSearch,
 }: SubnetFormProps) {
-  const { refetchSubnets, setSelectedSubnet } = useSubnets();
+  const { handleAction } = useHandleAction<Subnet, SubnetRow>();
+  const { setSelectedSubnet } = useSubnets();
   const [locations, setLocations] = useState<Preset[]>(
     subnet?.locationID && subnet?.locationName
       ? [{ ID: subnet.locationID, name: subnet.locationName }]
@@ -76,20 +77,11 @@ export default function SubnetForm({
     let response;
     try {
       if (mode === "add") {
-        response = await handleAction<Subnet, SubnetRow>(
-          "subnet",
-          "add",
-          values
-        );
+        response = await handleAction("subnet", "add", values);
       } else {
-        response = await handleAction<Subnet, SubnetRow>(
-          "subnet",
-          "edit",
-          values
-        );
+        response = await handleAction("subnet", "edit", values);
       }
       setSelectedSubnet(response.data);
-      refetchSubnets();
       setSearch("");
     } catch (error) {
       form.setError("subnetPrefix", {

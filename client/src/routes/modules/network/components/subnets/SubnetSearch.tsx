@@ -87,7 +87,7 @@ export default function SubnetSearch() {
                       : "opacity-0"
                   )}
                 />
-                <div className="flex w-full items-center justify-between gap-x-1">
+                <div className="flex w-full items-center gap-x-1">
                   <p>{subnet.subnetPrefix}</p>
                   <p className="text-muted-foreground/70 text-nowrap text-xs">
                     {subnet.locationName}

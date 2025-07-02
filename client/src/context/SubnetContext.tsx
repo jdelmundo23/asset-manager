@@ -1,17 +1,12 @@
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
-import { SubnetRow } from "@shared/schemas";
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { SubnetRow, subnetRowSchema } from "@shared/schemas";
+import { useQuery } from "@tanstack/react-query";
+import { createContext, useContext, useEffect } from "react";
+import { z } from "zod";
 
 interface SubnetContextType {
   subnets: SubnetRow[];
-  refetchSubnets: () => Promise<void>;
   isLoading: boolean;
   selectedSubnet: SubnetRow | undefined;
   setSelectedSubnet: React.Dispatch<
@@ -34,31 +29,25 @@ export function SubnetProvider({
   selectedSubnet,
   setSelectedSubnet,
 }: SubnetProviderProps) {
-  const [subnets, setSubnets] = useState<SubnetRow[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const refetchSubnets = useCallback(async () => {
-    setIsLoading(true);
-    try {
+  const subnetQuery = useQuery({
+    queryKey: ["subnetData"],
+    queryFn: async () => {
       const response = await axiosApi.get("/api/subnets/all");
-      setSubnets(response.data);
-    } catch (error) {
-      handleError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+      return z.array(subnetRowSchema).parse(response.data);
+    },
+  });
 
   useEffect(() => {
-    refetchSubnets();
-  }, [refetchSubnets]);
+    if (subnetQuery.isError) {
+      handleError(subnetQuery.error);
+    }
+  }, [subnetQuery.isError, subnetQuery.error]);
 
   return (
     <SubnetContext.Provider
       value={{
-        subnets,
-        refetchSubnets,
-        isLoading,
+        subnets: subnetQuery.data ?? [],
+        isLoading: subnetQuery.isLoading,
         selectedSubnet,
         setSelectedSubnet,
       }}

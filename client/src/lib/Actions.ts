@@ -6,13 +6,7 @@ import {
   Subnet,
   SubnetRow,
 } from "@shared/schemas";
-import { FetcherWithComponents } from "react-router";
-import {
-  showInfoToast,
-  showListUpdateErrorToast,
-  showLoadingToast,
-  showSuccessToast,
-} from "@/lib/toasts";
+
 import { handleError } from "./handleError";
 import axiosApi from "./axios";
 import { AxiosResponse } from "axios";
@@ -125,55 +119,4 @@ export const useHandleAction = <T extends Entity, R>() => {
   };
 
   return { handleAction, mutation };
-};
-
-export const handleAction = async <T extends Entity, R>(
-  endpointType: EndpointType,
-  actionType: ActionType,
-  values: T,
-  fetcher?: FetcherWithComponents<any>
-): Promise<AxiosResponse<R>> => {
-  if (
-    (actionType === "edit" ||
-      actionType === "delete" ||
-      actionType === "duplicate") &&
-    !("ID" in values)
-  ) {
-    throw new Error(`Cannot ${actionType} ${endpointType}: Missing ID.`);
-  }
-
-  const action = actions[actionType];
-
-  const loadingToast = showLoadingToast(
-    `${action.ing} ${endpointType}`,
-    "subnetPrefix" in values ? (values.subnetPrefix ?? "") : values.name
-  );
-
-  try {
-    const response = await axiosApi[action.method](
-      action.url(endpointType, values),
-      values
-    );
-
-    try {
-      await fetcher?.load(
-        `/app/${endpointType === "asset" ? "assets" : "network"}`
-      );
-
-      const toastType = actionType === "add" ? showSuccessToast : showInfoToast;
-      toastType(
-        loadingToast,
-        `${action.ed} ${endpointType}`,
-        "subnetPrefix" in values ? (values.subnetPrefix ?? "") : values.name
-      );
-    } catch {
-      showListUpdateErrorToast(loadingToast);
-    }
-
-    return response;
-  } catch (error) {
-    handleError(error, loadingToast);
-
-    throw error;
-  }
 };

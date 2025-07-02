@@ -76,7 +76,7 @@ export function AssetTableSheet({
           role="sheet"
           className={cn(
             "w-full justify-between",
-            !value || (assetQuery.isLoading && "text-muted-foreground")
+            !value || assetQuery.isLoading ? "text-muted-foreground" : ""
           )}
         >
           <TruncateHover>
