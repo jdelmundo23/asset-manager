@@ -4,7 +4,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import { Check, ChevronsUpDown, Pencil, X } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "./shadcn-ui/input";
 import { Column, RowSelectionState } from "@tanstack/react-table";
 import { z, ZodObject, ZodRawShape } from "zod";
@@ -37,7 +37,6 @@ import {
   showLoadingToast,
   showSuccessToast,
 } from "@/lib/toasts";
-import AssetContext from "@/context/AssetContext";
 import axiosApi from "@/lib/axios";
 
 export const EditCell = <T,>({
@@ -51,7 +50,6 @@ export const EditCell = <T,>({
   ID: number | string;
   schema: ZodObject<ZodRawShape>;
 }) => {
-  const { fetcher } = useContext(AssetContext);
   const [isOpen, setIsOpen] = useState(false);
 
   const cellOnlySchema = schema.pick({ [column.id]: true });
@@ -86,7 +84,6 @@ export const EditCell = <T,>({
 
         setIsOpen(false);
         try {
-          await fetcher?.load(`/app/assets`);
           showSuccessToast(loadingToast, "Edited cell");
         } catch {
           showListUpdateErrorToast(loadingToast);

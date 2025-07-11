@@ -12,12 +12,12 @@ import {
 import { Input } from "@/components/shadcn-ui/input";
 import { LoaderCircle } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
-import AssetContext from "@/context/AssetContext";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { Asset, AssetRow, assetSchema } from "@shared/schemas";
 import FormCombobox from "@/components/FormCombobox";
 import { useHandleAction } from "@/lib/Actions";
 import CalendarPopover from "@/components/CalendarPopover";
+import { useAssets } from "@/context/AssetContext";
 
 interface BaseProps {
   closeDialog: () => void;
@@ -41,8 +41,7 @@ export default function AssetForm({
   asset,
 }: AssetFormProps) {
   const { handleAction } = useHandleAction<Asset, unknown>();
-  const { types, models, locations, departments, users } =
-    useContext(AssetContext);
+  const { types, models, locations, departments, users } = useAssets();
 
   const form = useForm<Asset>({
     resolver: zodResolver(assetSchema),

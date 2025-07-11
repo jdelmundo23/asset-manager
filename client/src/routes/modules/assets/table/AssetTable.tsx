@@ -8,11 +8,11 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { Dispatch, SetStateAction, useContext, useState } from "react";
-import AssetContext from "@/context/AssetContext";
+import { Dispatch, SetStateAction, useState } from "react";
 import { getColumns } from "./AssetColumns";
 import { AssetRow, assetSchema } from "@shared/schemas";
 import TableRenderer from "@/components/TableRenderer";
+import { useAssets } from "@/context/AssetContext";
 
 interface DataTableProps {
   assets: AssetRow[] | undefined;
@@ -45,7 +45,7 @@ export function DataTable({
     useState<VisibilityState>(result);
 
   const data = assets;
-  const contextData = useContext(AssetContext);
+  const contextData = useAssets();
   const columns = getColumns(
     contextData.locations,
     contextData.departments,
