@@ -278,7 +278,7 @@ router.patch("/", async function (req, res) {
     console.log(error);
     if (
       error instanceof sql.RequestError &&
-      error.message.includes("WarrantyExp")
+      error.message.includes("warranty")
     ) {
       res
         .status(500)

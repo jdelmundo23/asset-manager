@@ -58,6 +58,9 @@ CREATE TABLE Assets (
     warrantyExp DATETIME,
     cost DECIMAL(6,2),
     note NVARCHAR(255)
+    CONSTRAINT chk_warranty_after_purchase CHECK (
+        warrantyExp IS NULL OR purchaseDate IS NULL OR warrantyExp > purchaseDate
+    )
 );
 
 CREATE TABLE Subnets (

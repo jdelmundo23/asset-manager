@@ -19,7 +19,10 @@ export function handleError(error: unknown, loadingToastId?: string | number) {
         "You don't have permission to perform this action."
       );
     } else if (status === 500) {
-      showErrorToast(toastId, "Server error. Please try again later.");
+      showErrorToast(
+        toastId,
+        errorMsg ?? "Server error. Please try again later."
+      );
     } else {
       showErrorToast(toastId, `Unexpected error (${status}).`);
     }
