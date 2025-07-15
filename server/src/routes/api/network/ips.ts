@@ -69,7 +69,8 @@ router.get("/all", async function (req, res) {
 
     res.json(parse.data);
   } catch (err) {
-    res.status(500).json({ error: "Failed to retrieve ip data:" + err });
+    console.error(err);
+    res.status(500).json({ error: "Failed to retrieve ip data" });
   }
 });
 
@@ -79,13 +80,20 @@ router.get("/by-asset/:assetID", async function (req, res) {
     res.status(400).json({ error: "Asset ID is required" });
     return;
   }
-
   try {
     const pool = await getPool();
     const result = await pool
       .request()
       .input("assetID", sql.Int, assetID)
-      .query(`SELECT * FROM IpAddresses WHERE assetID = @assetID`);
+      .query(
+        `SELECT 
+        IpAddresses.*, 
+        Assets.name AS assetName,
+        Subnets.subnetPrefix
+      FROM IpAddresses
+      LEFT JOIN Assets ON IpAddresses.assetID = Assets.ID
+      LEFT JOIN Subnets ON IpAddresses.subnetID = Subnets.ID WHERE assetID = @assetID`
+      );
 
     if (result.recordset.length < 1) {
       res.json([]);
@@ -102,7 +110,8 @@ router.get("/by-asset/:assetID", async function (req, res) {
 
     res.json(parse.data);
   } catch (err) {
-    res.status(500).json({ error: "Failed to retrieve ip data:" + err });
+    console.error(err);
+    res.status(500).json({ error: "Failed to retrieve ip data" });
   }
 });
 
