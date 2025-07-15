@@ -14,9 +14,9 @@ import { LoaderCircle } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import { useEffect } from "react";
 import { Asset, AssetRow, assetSchema } from "@shared/schemas";
-import FormCombobox from "@/components/FormCombobox";
-import { useHandleAction } from "@/lib/Actions";
-import CalendarPopover from "@/components/CalendarPopover";
+import FormCombobox from "@/components/fields/FormCombobox";
+import { useHandleAction } from "@/lib/actions";
+import CalendarPopover from "@/components/fields/CalendarPopover";
 import { useAssets } from "@/context/AssetContext";
 
 interface BaseProps {

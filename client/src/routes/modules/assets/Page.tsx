@@ -1,11 +1,11 @@
 import { DataTable } from "./table/AssetTable";
 import { AddAsset } from "./components/ActionDialogs";
-import TableToolbar from "@/components/TableToolbar";
+import TableToolbar from "@/components/table/TableToolbar";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
-import BulkActionDropdown from "../../../components/BulkActionDropdown";
+import BulkActionDropdown from "../../../components/table/BulkActionDropdown";
 import { AssetProvider, useAssets } from "@/context/AssetContext";
-import { TableConfigProvider } from "@/context/TableConfigProvider";
+import { TableConfigProvider } from "@/context/TableConfigContext";
 
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});

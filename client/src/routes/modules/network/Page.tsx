@@ -1,13 +1,13 @@
 import { IPProvider, useIPs } from "@/context/IPContext";
 import { IPRow, SubnetRow } from "@shared/schemas";
 import { DataTable } from "./table/NetworkTable";
-import TableToolbar from "@/components/TableToolbar";
+import TableToolbar from "@/components/table/TableToolbar";
 import AddIP from "./components/ips/AddIP";
 import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
-import BulkActionDropdown from "@/components/BulkActionDropdown";
+import BulkActionDropdown from "@/components/table/BulkActionDropdown";
 import SubnetComboxbox from "./components/subnets/SubnetCombobox";
-import { TableConfigProvider } from "@/context/TableConfigProvider";
+import { TableConfigProvider } from "@/context/TableConfigContext";
 
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});

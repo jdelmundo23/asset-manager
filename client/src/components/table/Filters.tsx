@@ -16,7 +16,7 @@ import {
 import { Column } from "@tanstack/react-table";
 import { X } from "lucide-react";
 import { useState } from "react";
-import CalendarPopover from "@/components/CalendarPopover";
+import CalendarPopover from "../fields/CalendarPopover";
 
 export const FilterBox = <T,>({
   type,

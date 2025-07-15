@@ -24,7 +24,7 @@ import { FieldPathValue, Path, UseFormReturn } from "react-hook-form";
 import { Asset, Subnet } from "@shared/schemas";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { TruncateHover } from "./TruncateHover";
+import { TruncateHover } from "../TruncateHover";
 
 type SupportedFormType = Asset | Subnet;
 

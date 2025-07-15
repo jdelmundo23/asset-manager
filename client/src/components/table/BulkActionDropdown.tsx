@@ -1,4 +1,4 @@
-import { useBulkAction } from "@/lib/BulkActions";
+import { useBulkAction } from "@/lib/bulkActions";
 import { buttonVariants } from "@/components/shadcn-ui/button";
 import {
   DropdownMenu,

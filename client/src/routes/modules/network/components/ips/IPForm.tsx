@@ -14,9 +14,9 @@ import { Button } from "@/components/shadcn-ui/button";
 import { LoaderCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
-import { useHandleAction } from "@/lib/Actions";
+import { useHandleAction } from "@/lib/actions";
 import axios from "axios";
-import { AssetTableSheet } from "@/components/TableSheets";
+import { AssetTableSheet } from "@/components/fields/TableSheets";
 
 interface BaseProps {
   closeDialog: () => void;

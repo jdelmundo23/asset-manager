@@ -6,12 +6,12 @@ import {
   DialogContent,
   DialogTitle,
   DialogHeader,
-} from "./shadcn-ui/dialog";
+} from "../shadcn-ui/dialog";
 import { IPRow } from "@shared/schemas";
 import { useState, useEffect } from "react";
-import { Skeleton } from "./shadcn-ui/skeleton";
-import { TruncateHover } from "./TruncateHover";
-import { ScrollArea } from "./shadcn-ui/scroll-area";
+import { Skeleton } from "../shadcn-ui/skeleton";
+import { TruncateHover } from "../TruncateHover";
+import { ScrollArea } from "../shadcn-ui/scroll-area";
 import { formatIP } from "@/lib/utils";
 
 interface IPViewProps {

@@ -4,7 +4,7 @@ import z from "zod";
 import axiosApi from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { handleError } from "@/lib/handleError";
-import { useTableConfig } from "./TableConfigProvider";
+import { useTableConfig } from "./TableConfigContext";
 interface IPContextType {
   ips: IPRow[];
 }

@@ -11,7 +11,7 @@ import {
 import { Dispatch, SetStateAction, useState } from "react";
 import { getColumns } from "./AssetColumns";
 import { AssetRow, assetSchema } from "@shared/schemas";
-import TableRenderer from "@/components/TableRenderer";
+import TableRenderer from "@/components/table/TableRenderer";
 import { useAssets } from "@/context/AssetContext";
 
 interface DataTableProps {

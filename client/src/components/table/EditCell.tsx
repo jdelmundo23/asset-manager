@@ -5,7 +5,7 @@ import {
 } from "@/components/shadcn-ui/dropdown-menu";
 import { Check, ChevronsUpDown, Pencil, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Input } from "./shadcn-ui/input";
+import { Input } from "../shadcn-ui/input";
 import { Column, RowSelectionState } from "@tanstack/react-table";
 import { z, ZodObject, ZodRawShape } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,10 +16,10 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from "./shadcn-ui/form";
+} from "../shadcn-ui/form";
 import { cn } from "@/lib/utils";
-import { Button } from "./shadcn-ui/button";
-import { PopoverContent, PopoverTrigger } from "./shadcn-ui/popover";
+import { Button } from "../shadcn-ui/button";
+import { PopoverContent, PopoverTrigger } from "../shadcn-ui/popover";
 import { Popover } from "@radix-ui/react-popover";
 import {
   Command,
@@ -28,12 +28,12 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "./shadcn-ui/command";
-import CalendarPopover from "./CalendarPopover";
-import { AssetTableSheet } from "./TableSheets";
+} from "../shadcn-ui/command";
+import CalendarPopover from "../fields/CalendarPopover";
+import { AssetTableSheet } from "../fields/TableSheets";
 import { handleError } from "@/lib/handleError";
 import axiosApi from "@/lib/axios";
-import { useTableConfig } from "@/context/TableConfigProvider";
+import { useTableConfig } from "@/context/TableConfigContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 

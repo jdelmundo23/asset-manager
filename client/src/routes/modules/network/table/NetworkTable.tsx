@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { Dispatch, SetStateAction, useState } from "react";
 import { getColumns } from "./NetworkColumns";
-import TableRenderer from "@/components/TableRenderer";
+import TableRenderer from "@/components/table/TableRenderer";
 import { ipInputSchema, IPRow } from "@shared/schemas";
 
 interface DataTableProps {

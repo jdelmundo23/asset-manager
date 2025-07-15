@@ -1,5 +1,5 @@
 import { ChevronsUpDown } from "lucide-react";
-import { Button } from "./shadcn-ui/button";
+import { Button } from "../shadcn-ui/button";
 import {
   Sheet,
   SheetClose,
@@ -7,12 +7,12 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "./shadcn-ui/sheet";
+} from "../shadcn-ui/sheet";
 import { DataTable } from "@/routes/modules/assets/table/AssetTable";
 import { useEffect, useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
-import { TruncateHover } from "./TruncateHover";
+import { TruncateHover } from "../TruncateHover";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
 import { useQuery } from "@tanstack/react-query";

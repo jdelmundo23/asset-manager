@@ -6,8 +6,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./shadcn-ui/table";
-import { FilterBox } from "@/components/Filters";
+} from "../shadcn-ui/table";
+import { FilterBox } from "@/components/table/Filters";
 import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from "lucide-react";
 import { ZodObject, ZodRawShape } from "zod";
 import { EditCell } from "./EditCell";

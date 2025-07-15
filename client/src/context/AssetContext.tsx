@@ -4,7 +4,7 @@ import axiosApi from "@/lib/axios";
 import z from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { handleError } from "@/lib/handleError";
-import { useTableConfig } from "./TableConfigProvider";
+import { useTableConfig } from "./TableConfigContext";
 interface AssetContextType {
   assets: AssetRow[];
   locations: Preset[];

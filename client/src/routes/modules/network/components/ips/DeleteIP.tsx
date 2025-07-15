@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/shadcn-ui/alert-dialog";
-import { useHandleAction } from "@/lib/Actions";
+import { useHandleAction } from "@/lib/actions";
 import { IPRow } from "@shared/schemas";
 
 interface DeleteIPProps {

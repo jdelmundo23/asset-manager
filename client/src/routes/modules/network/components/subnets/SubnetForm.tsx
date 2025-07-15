@@ -1,4 +1,4 @@
-import FormCombobox from "@/components/FormCombobox";
+import FormCombobox from "@/components/fields/FormCombobox";
 import { Button } from "@/components/shadcn-ui/button";
 import {
   Form,
@@ -9,7 +9,7 @@ import {
   FormMessage,
 } from "@/components/shadcn-ui/form";
 import { Input } from "@/components/shadcn-ui/input";
-import { useHandleAction } from "@/lib/Actions";
+import { useHandleAction } from "@/lib/actions";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
 import { zodResolver } from "@hookform/resolvers/zod";

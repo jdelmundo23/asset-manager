@@ -20,7 +20,7 @@ import {
   DeleteAsset,
 } from "../components/ActionDialogs";
 import { useState } from "react";
-import IPView from "@/components/IPView";
+import IPView from "@/components/table/IPView";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";
