@@ -32,12 +32,10 @@ import {
 import CalendarPopover from "./CalendarPopover";
 import { AssetTableSheet } from "./TableSheets";
 import { handleError } from "@/lib/handleError";
-import {
-  showListUpdateErrorToast,
-  showLoadingToast,
-  showSuccessToast,
-} from "@/lib/toasts";
 import axiosApi from "@/lib/axios";
+import { useTableConfig } from "@/context/TableConfigProvider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const EditCell = <T,>({
   column,
@@ -50,7 +48,23 @@ export const EditCell = <T,>({
   ID: number | string;
   schema: ZodObject<ZodRawShape>;
 }) => {
+  const { endpoint, queryKey } = useTableConfig();
   const [isOpen, setIsOpen] = useState(false);
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (values: CellType) =>
+      axiosApi.patch(endpoint, {
+        value: values[column.id],
+        column: column.id,
+        ID: ID,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKey,
+      });
+    },
+  });
 
   const cellOnlySchema = schema.pick({ [column.id]: true });
   type CellType = z.infer<typeof cellOnlySchema>;
@@ -72,26 +86,23 @@ export const EditCell = <T,>({
   };
 
   async function onSubmit(values: CellType) {
-    if (values[column.id] !== currentValue) {
-      const loadingToast = showLoadingToast("Editing cell");
+    const toastReturn = toast.promise(mutation.mutateAsync(values), {
+      loading: `Editing ${column.columnDef.header}`,
+      success: `Edited ${column.columnDef.header}`,
+    });
 
-      try {
-        await axiosApi.patch("/api/assets", {
-          value: values[column.id],
-          column: column.id,
-          ID: ID,
-        });
+    const toastID =
+      typeof toastReturn === "string" || typeof toastReturn === "number"
+        ? toastReturn
+        : undefined;
 
-        setIsOpen(false);
-        try {
-          showSuccessToast(loadingToast, "Edited cell");
-        } catch {
-          showListUpdateErrorToast(loadingToast);
-        }
-      } catch (error) {
-        handleError(error, loadingToast);
-      }
-    }
+    toastReturn
+      .unwrap()
+      .then((response) => response)
+      .catch((error) => {
+        handleError(error, toastID);
+        throw error;
+      });
   }
 
   let editField: JSX.Element = <></>;

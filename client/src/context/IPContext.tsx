@@ -4,6 +4,7 @@ import z from "zod";
 import axiosApi from "@/lib/axios";
 import { useQuery } from "@tanstack/react-query";
 import { handleError } from "@/lib/handleError";
+import { useTableConfig } from "./TableConfigProvider";
 interface IPContextType {
   ips: IPRow[];
 }
@@ -15,8 +16,10 @@ interface IPProviderProps {
 const IPContext = createContext<IPContextType | undefined>(undefined);
 
 export function IPProvider({ children }: IPProviderProps) {
+  const { queryKey } = useTableConfig();
+
   const ipQuery = useQuery({
-    queryKey: ["ipData"],
+    queryKey: queryKey,
     queryFn: async () => {
       const response = await axiosApi.get(`/api/ips/all`);
       return z.array(ipRowSchema).parse(response.data);

@@ -5,18 +5,21 @@ import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "../../../components/BulkActionDropdown";
 import { AssetProvider, useAssets } from "@/context/AssetContext";
+import { TableConfigProvider } from "@/context/TableConfigProvider";
 
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   return (
     <div className="container mx-auto flex w-11/12 flex-col gap-2 py-10">
-      <AssetProvider>
-        <AssetPageContent
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-        />
-      </AssetProvider>
+      <TableConfigProvider endpoint="/api/assets" queryKey={["assetData"]}>
+        <AssetProvider>
+          <AssetPageContent
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+          />
+        </AssetProvider>
+      </TableConfigProvider>
     </div>
   );
 }

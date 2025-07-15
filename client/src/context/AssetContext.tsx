@@ -4,6 +4,7 @@ import axiosApi from "@/lib/axios";
 import z from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { handleError } from "@/lib/handleError";
+import { useTableConfig } from "./TableConfigProvider";
 interface AssetContextType {
   assets: AssetRow[];
   locations: Preset[];
@@ -42,8 +43,10 @@ const getAssetData = async () => {
 const AssetContext = createContext<AssetContextType | undefined>(undefined);
 
 export function AssetProvider({ children }: AssetProviderProps) {
+  const { queryKey } = useTableConfig();
+
   const assetQuery = useQuery({
-    queryKey: ["assetData"],
+    queryKey: queryKey,
     queryFn: getAssetData,
   });
 

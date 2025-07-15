@@ -45,13 +45,13 @@ export function DataTable({
     useState<VisibilityState>(result);
 
   const data = assets;
-  const contextData = useAssets();
+  const contextData = singleSelect ? undefined : useAssets();
   const columns = getColumns(
-    contextData.locations,
-    contextData.departments,
-    contextData.types,
-    contextData.models,
-    contextData.users
+    contextData?.locations,
+    contextData?.departments,
+    contextData?.types,
+    contextData?.models,
+    contextData?.users
   );
 
   const table = useReactTable({

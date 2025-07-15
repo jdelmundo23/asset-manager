@@ -7,6 +7,7 @@ import { useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "@/components/BulkActionDropdown";
 import SubnetComboxbox from "./components/subnets/SubnetCombobox";
+import { TableConfigProvider } from "@/context/TableConfigProvider";
 
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
@@ -14,14 +15,16 @@ function Page() {
 
   return (
     <div className="container mx-auto flex w-1/2 flex-col gap-2 py-10">
-      <IPProvider>
-        <IPPageContent
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-          selectedSubnet={selectedSubnet}
-          setSelectedSubnet={setSelectedSubnet}
-        />
-      </IPProvider>
+      <TableConfigProvider endpoint="/api/ips" queryKey={["ipData"]}>
+        <IPProvider>
+          <IPPageContent
+            selectedRows={selectedRows}
+            setSelectedRows={setSelectedRows}
+            selectedSubnet={selectedSubnet}
+            setSelectedSubnet={setSelectedSubnet}
+          />
+        </IPProvider>
+      </TableConfigProvider>
     </div>
   );
 }
