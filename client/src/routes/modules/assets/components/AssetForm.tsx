@@ -124,13 +124,13 @@ export default function AssetForm({
               }}
               onSelect={async (val, fieldName, newVal) => {
                 if (val === newVal.ID) {
-                  form.resetField(fieldName);
+                  form.setValue(fieldName, null);
                   if (form.getValues("modelID")) {
-                    form.resetField("modelID");
+                    form.setValue("modelID", null);
                   }
                 } else {
                   if (form.getValues("modelID")) {
-                    form.resetField("modelID");
+                    form.setValue("modelID", null);
                   }
                   form.setValue(fieldName, newVal.ID);
                   await form.trigger(fieldName);
@@ -154,7 +154,7 @@ export default function AssetForm({
               }}
               onSelect={async (val, fieldName, newVal) => {
                 if (val === newVal.ID) {
-                  form.resetField(fieldName);
+                  form.setValue(fieldName, null);
                 } else {
                   form.setValue(fieldName, newVal.ID);
                   await form.trigger(fieldName);
