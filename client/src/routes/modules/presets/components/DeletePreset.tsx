@@ -12,13 +12,14 @@ import {
 import PresetContext from "@/context/PresetContext";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
+import { PresetRow } from "@shared/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import { useContext, useState } from "react";
 import { toast } from "sonner";
 
 interface DeletePresetProps {
-  presetName: string;
+  preset: PresetRow;
 }
 
 const deletePresetMutation = () => {
@@ -27,12 +28,12 @@ const deletePresetMutation = () => {
   return useMutation({
     mutationFn: ({
       tableName,
-      presetName,
+      presetID,
     }: {
       tableName: string;
-      presetName: string;
+      presetID: number;
     }) => {
-      return axiosApi.delete(`/api/presets/${tableName}/${presetName}`);
+      return axiosApi.delete(`/api/presets/${tableName}/${presetID}`);
     },
 
     onSuccess: (_, variables) => {
@@ -47,7 +48,7 @@ const deletePresetMutation = () => {
   });
 };
 
-function DeletePreset({ presetName }: DeletePresetProps) {
+function DeletePreset({ preset }: DeletePresetProps) {
   const { activePreset } = useContext(PresetContext);
   const [open, setOpen] = useState(false);
   const mutation = deletePresetMutation();
@@ -55,7 +56,7 @@ function DeletePreset({ presetName }: DeletePresetProps) {
   async function onConfirm() {
     const variables = {
       tableName: activePreset.tableName,
-      presetName,
+      presetID: preset.ID,
     };
 
     toast
@@ -83,7 +84,7 @@ function DeletePreset({ presetName }: DeletePresetProps) {
           </AlertDialogTitle>
           <AlertDialogDescription>
             This action will delete{" "}
-            <span className="font-semibold text-zinc-200">{presetName}</span>{" "}
+            <span className="font-semibold text-zinc-200">{preset.name}</span>{" "}
             from the{" "}
             <span className="font-semibold text-zinc-200">
               {activePreset.displayName}

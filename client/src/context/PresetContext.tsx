@@ -1,11 +1,11 @@
+import { PresetRow } from "@shared/schemas";
 import { createContext } from "react";
 interface PresetContextType {
   activePreset: {
     displayName: string;
     tableName: string;
   };
-  presetData: [];
-  typeData: [];
+  presetData: PresetRow[];
 }
 
 const PresetContext = createContext<PresetContextType>({
@@ -14,7 +14,6 @@ const PresetContext = createContext<PresetContextType>({
     tableName: "",
   },
   presetData: [],
-  typeData: [],
 });
 
 export default PresetContext;

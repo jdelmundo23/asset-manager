@@ -18,12 +18,8 @@ import { Skeleton } from "@/components/shadcn-ui/skeleton";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { PresetRow } from "@shared/schemas";
 
-interface tableRow {
-  ID: number;
-  name: string;
-  typeID?: number;
-}
 const presets = [
   { displayName: "Types", tableName: "assettypes" },
   { displayName: "Departments", tableName: "departments" },
@@ -42,27 +38,11 @@ function Page() {
     enabled: !!table?.tableName,
   });
 
-  const typeQuery = useQuery({
-    queryKey: ["types"],
-    queryFn: () =>
-      axiosApi.get(`/api/presets/assettypes`).then((res) => res.data),
-    enabled: tabValue === "Models",
-  });
-
   useEffect(() => {
     if (presetQuery.isError) {
       handleError(presetQuery.error);
-    } else if (typeQuery.isError) {
-      handleError(typeQuery.error);
     }
-  }, [
-    presetQuery.isError,
-    presetQuery.error,
-    typeQuery.isError,
-    typeQuery.error,
-  ]);
-
-  const isLoading = presetQuery.isLoading || typeQuery.isLoading;
+  }, [presetQuery.isError, presetQuery.error]);
 
   const navigate = useNavigate();
 
@@ -109,13 +89,12 @@ function Page() {
                 tableName: preset.tableName,
               },
               presetData: presetQuery.data,
-              typeData: typeQuery.data,
             }}
           >
             <TabsContent value={preset.displayName}>
               <Card className="h-96">
                 <ScrollArea className="h-full w-full rounded-md font-medium">
-                  {isLoading ? (
+                  {presetQuery.isLoading ? (
                     <div className="flex flex-col space-y-3 p-4">
                       <Skeleton className="h-8 w-full rounded-xl" />
                       <Skeleton className="h-8 w-full rounded-xl" />
@@ -123,8 +102,8 @@ function Page() {
                     </div>
                   ) : (
                     <div className="animate-fade-in flex flex-col space-y-3 p-4 duration-150">
-                      {presetQuery?.data?.map((row: tableRow) => (
-                        <Row key={row.ID} row={row} />
+                      {presetQuery?.data?.map((row: PresetRow) => (
+                        <Row key={row.ID} preset={row} />
                       ))}
 
                       <AddPreset />

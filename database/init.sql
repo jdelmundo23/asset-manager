@@ -41,9 +41,11 @@ CREATE TABLE AssetTypes (
 
 CREATE TABLE AssetModels (
     ID INT IDENTITY(100,1) PRIMARY KEY,
-    typeID INT NULL FOREIGN KEY REFERENCES AssetTypes(ID) ON DELETE SET NULL,
+    typeID INT NOT NULL,
     name VARCHAR(100) NOT NULL UNIQUE,
-    vendor VARCHAR(100)
+    vendor VARCHAR(100),
+    CONSTRAINT FK_AssetModels_AssetTypes FOREIGN KEY (typeID)
+        REFERENCES AssetTypes(ID)
 );
 
 CREATE TABLE Assets (
@@ -57,7 +59,7 @@ CREATE TABLE Assets (
     purchaseDate DATETIME,
     warrantyExp DATETIME,
     cost DECIMAL(6,2),
-    note NVARCHAR(255)
+    note NVARCHAR(255),
     CONSTRAINT chk_warranty_after_purchase CHECK (
         warrantyExp IS NULL OR purchaseDate IS NULL OR warrantyExp > purchaseDate
     )

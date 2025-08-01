@@ -4,42 +4,36 @@ import DeletePreset from "./DeletePreset";
 import EditPreset from "./EditPreset";
 import MissingAlert from "./MissingAlert";
 import { Card } from "@/components/shadcn-ui/card";
-import { Preset } from "@shared/schemas";
+import { PresetRow } from "@shared/schemas";
 
 interface RowProps {
-  row: Preset;
+  preset: PresetRow;
 }
 
-function Row({ row }: RowProps) {
-  const { typeData, activePreset } = useContext(PresetContext);
-  const type =
-    (
-      typeData?.find((typeRow: Preset) => typeRow.ID === row.typeID) as
-        | Preset
-        | undefined
-    )?.name || "";
+function Row({ preset }: RowProps) {
+  const { activePreset } = useContext(PresetContext);
 
   return (
     <div>
       <Card className="bg-foreground border-muted px-2 py-1 font-semibold text-black">
         <div className="group flex items-center justify-between">
           <p
-            title={row.name}
+            title={preset.name}
             className="w-5/6 max-w-[200px] truncate lg:max-w-[300px]"
           >
-            {row.name}
-            {activePreset.displayName === "Models" ? (
-              <p className="text-sm font-medium">{type}</p>
+            {preset.name}
+            {preset.typeName ? (
+              <p className="text-sm font-medium">{preset.typeName}</p>
             ) : (
               ""
             )}
           </p>
           <div className="relative flex items-center space-x-2">
             <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
-              <EditPreset presetName={row.name} presetType={type} />
-              <DeletePreset presetName={row.name} />
+              <EditPreset preset={preset} />
+              <DeletePreset preset={preset} />
             </div>
-            {activePreset.displayName === "Models" && !type ? (
+            {activePreset.displayName === "Models" && !preset.typeID ? (
               <MissingAlert message={"Missing asset type"} />
             ) : (
               ""

@@ -9,13 +9,13 @@ import { Pencil } from "lucide-react";
 import PresetForm from "./PresetForm";
 import { useContext, useState } from "react";
 import PresetContext from "@/context/PresetContext";
+import { PresetRow } from "@shared/schemas";
 
 interface EditPresetProps {
-  presetName: string;
-  presetType: string;
+  preset: PresetRow;
 }
 
-function EditPreset({ presetName, presetType }: EditPresetProps) {
+function EditPreset({ preset }: EditPresetProps) {
   const { activePreset } = useContext(PresetContext);
   const [open, setOpen] = useState(false);
   return (
@@ -25,12 +25,11 @@ function EditPreset({ presetName, presetType }: EditPresetProps) {
       </AlertDialogTrigger>
       <AlertDialogContent className="">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-white">{`Edit ${activePreset.displayName} Preset - ${presetName}`}</AlertDialogTitle>
+          <AlertDialogTitle className="text-white">{`Edit ${activePreset.displayName} Preset - ${preset.name}`}</AlertDialogTitle>
         </AlertDialogHeader>
         <PresetForm
-          operation="edit"
-          oldPresetName={presetName}
-          oldPresetType={presetType}
+          mode="edit"
+          preset={preset}
           closeDialog={() => setOpen(false)}
         />
       </AlertDialogContent>

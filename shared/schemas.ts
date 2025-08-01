@@ -1,24 +1,30 @@
 import { z } from "zod";
-export interface Preset {
-  ID: number;
-  name: string;
-  typeID?: number;
-}
 
 export interface User {
   ID: string;
   name: string;
 }
 
+export const presetSchema = z.object({
+  ID: z.number().optional(),
+  name: z.string().min(2).max(50),
+  typeID: z.number().nullish(),
+  typeName: z.string().min(2).max(50).nullish(),
+});
+
+export const presetRowSchema = presetSchema.extend({
+  ID: z.number(),
+});
+
 export const assetSchema = z
   .object({
     ID: z.number().optional(),
     name: z.string().min(2).max(100),
-    identifier: z.string().min(2).max(100).nullable(),
-    typeID: z.number().nullable(),
-    modelID: z.number().nullable(),
-    locationID: z.number().nullable(),
-    departmentID: z.number().nullable(),
+    identifier: z.string().min(2).max(100).nullish(),
+    typeID: z.number().nullish(),
+    modelID: z.number().nullish(),
+    locationID: z.number().nullish(),
+    departmentID: z.number().nullish(),
     assignedTo: z.string().nullish(),
     purchaseDate: z.coerce.date().nullish(),
     warrantyExp: z.coerce.date().nullish(),
@@ -111,6 +117,10 @@ export const subnetSchema = z.object({
 export const subnetRowSchema = subnetSchema.extend({
   ID: z.number(),
 });
+
+export type Preset = z.infer<typeof presetSchema>;
+
+export type PresetRow = z.infer<typeof presetRowSchema>;
 
 export type Asset = z.infer<typeof assetSchema>;
 

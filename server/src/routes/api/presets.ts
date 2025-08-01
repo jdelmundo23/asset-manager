@@ -1,14 +1,12 @@
+import { Preset, presetRowSchema, presetSchema } from "@shared/schemas";
 import { getPool } from "../../sql";
 import express, { RequestHandler, Request } from "express";
 import sql from "mssql";
+import z from "zod";
+import { parseInputReq, recordExists } from "../../utils";
 
 interface TableRequest extends Request {
   tableName?: string;
-  body: {
-    name?: string;
-    oldName?: string;
-    type?: string;
-  };
 }
 
 const validTables: { [key: string]: string } = {
@@ -18,19 +16,29 @@ const validTables: { [key: string]: string } = {
   assettypes: "assettypes",
 };
 
-const getTypeID = async (typeName: string): Promise<number | undefined> => {
-  try {
-    const pool = await getPool();
+const inputDefinitions = [
+  { name: "ID", type: sql.Int },
+  { name: "name", type: sql.VarChar(50) },
+  { name: "typeID", type: sql.Int },
+] as const;
 
-    const modelID = await pool
-      .request()
-      .input("name", sql.VarChar(50), typeName)
-      .query(`SELECT id FROM AssetTypes WHERE name = @name`);
-    return modelID.recordset[0].id;
-  } catch (err) {
-    console.error(err);
-    return undefined;
+const inputs = (preset: Partial<Preset> = {}) =>
+  inputDefinitions.map((def) => ({
+    ...def,
+    value: preset[def.name as keyof Preset],
+  }));
+
+const appendInputs = (
+  request: sql.Request,
+  preset: Preset,
+  exclusions: string[] = []
+) => {
+  for (const input of inputs(preset)) {
+    if (!exclusions.includes(input.name)) {
+      request.input(input.name, input.type, input.value);
+    }
   }
+  return request;
 };
 
 const validateTable: RequestHandler = (req: TableRequest, res, next) => {
@@ -46,154 +54,145 @@ const validateTable: RequestHandler = (req: TableRequest, res, next) => {
   next();
 };
 
-const checkExistingPreset: RequestHandler = async (
-  req: TableRequest,
-  res,
-  next
-) => {
-  if (!req.body) {
-    return next();
-  }
-
-  const { name, oldName } = req.body;
-
-  try {
-    const pool = await getPool();
-
-    const existingPreset = await pool
-      .request()
-      .input("name", sql.VarChar(255), name)
-      .query(
-        `SELECT COUNT(*) AS count FROM ${req.tableName} WHERE name = @name`
-      );
-
-    if (existingPreset.recordset[0].count > 0 && name !== oldName) {
-      res.status(400).json({ error: "Preset already exists" });
-      return;
-    }
-
-    next();
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to retreive existing presets" });
-  }
-};
-
 const router = express.Router();
 
 router.use("/:tableName", validateTable);
-router.use("/:tableName", checkExistingPreset);
 
-router.get("/:tableName", async function (req: TableRequest, res) {
+router.get("/:tableName", async function (req, res) {
+  const { tableName } = req.params;
+
   try {
     const pool = await getPool();
-    const result = await pool.request().query(`SELECT * FROM ${req.tableName}`);
-    res.json(result.recordset);
+
+    const query =
+      tableName === "assetmodels"
+        ? `SELECT 
+            AssetModels.*, 
+            AssetTypes.name AS typeName 
+           FROM AssetModels 
+           LEFT JOIN AssetTypes ON AssetModels.typeID = AssetTypes.ID`
+        : `SELECT * FROM ${tableName}`;
+    const result = await pool.request().query(query);
+
+    const parse = z.array(presetRowSchema).safeParse(result.recordset);
+
+    if (parse.error) {
+      console.error(parse.error);
+      res.status(500).json({ error: "Failed to parse database records" });
+      return;
+    }
+
+    res.json(parse.data);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to retrieve preset data" });
   }
 });
 
-router.post("/:tableName", async function (req: TableRequest, res) {
-  const { name, type } = req.body;
+router.post("/:tableName", async function (req, res) {
+  const { tableName } = req.params;
+  const isModels = tableName === "assetmodels";
 
-  let typeID;
-  if (req.tableName === "assetmodels") {
-    if (!type) {
-      res.status(400).json({ error: "Asset type is required" });
-      return;
-    } else {
-      typeID = await getTypeID(type);
-    }
+  const preset = parseInputReq(presetSchema, req.body);
+  if (!preset) {
+    res.status(400).json({ error: "Invalid request body" });
+    return;
   }
 
-  if (!name) {
-    res.status(400).json({ error: "Preset name is required" });
+  if (isModels && !preset.typeID) {
+    res.status(400).json({ error: "Missing Type ID" });
     return;
   }
 
   try {
     const pool = await getPool();
 
-    if (req.tableName === "assetmodels") {
-      const query = `INSERT INTO ${req.tableName} (name, typeID) VALUES (@name, @typeID)`;
-      await pool
-        .request()
-        .input("name", sql.VarChar(255), name)
-        .input("typeID", sql.Int, typeID)
-        .query(query);
-    } else {
-      const query = `INSERT INTO ${req.tableName} (name) VALUES (@name)`;
-      await pool.request().input("name", sql.VarChar(50), name).query(query);
+    const check = await recordExists(pool, tableName, { name: preset.name });
+    if (check.error) {
+      res.status(500).json({ error: "Failed to check if preset exists" });
+      return;
+    }
+    if (check.exists) {
+      res.status(400).json({ error: "Preset already exists" });
+      return;
     }
 
-    res.status(201).json({ message: "Preset added successfully" });
+    const appendedRequest = isModels
+      ? appendInputs(pool.request(), preset)
+      : appendInputs(pool.request(), preset, ["typeID"]);
+
+    await appendedRequest.query(`INSERT INTO ${tableName} (
+      name
+      ${isModels ? ",typeID" : ""}
+    )
+      VALUES (
+      @name
+      ${isModels ? ",@typeID" : ""})`);
+    res.status(200).json({ message: "Data inserted successfully!" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to add preset" });
+    res.status(500).json({ error: "Failed to add data" });
   }
 });
 
-router.put("/:tableName", async function (req: TableRequest, res) {
-  const { name, type, oldName } = req.body;
+router.put("/:tableName", async function (req, res) {
+  const { tableName } = req.params;
+  const isModels = tableName === "assetmodels";
 
-  let typeID;
-  if (req.tableName === "assetmodels") {
-    if (!type) {
-      res.status(400).json({ error: "Asset type is required" });
-      return;
-    } else {
-      typeID = await getTypeID(type);
-    }
+  const preset = parseInputReq(presetRowSchema, req.body);
+  if (!preset) {
+    res.status(400).json({ error: "Invalid request body" });
+    return;
   }
 
-  if (!name || !oldName) {
-    res
-      .status(400)
-      .json({ error: "Old preset name and new preset name is required" });
+  if (isModels && !preset.typeID) {
+    res.status(400).json({ error: "Missing Type ID" });
     return;
   }
 
   try {
     const pool = await getPool();
 
-    if (req.tableName === "assetmodels") {
-      const query = `UPDATE ${req.tableName} SET name = @name, typeID = @typeID WHERE name = @oldName`;
-      await pool
-        .request()
-        .input("name", sql.VarChar(255), name)
-        .input("typeID", sql.Int, typeID)
-        .input("oldName", sql.VarChar(255), oldName)
-        .query(query);
-    } else {
-      const query = `UPDATE ${req.tableName} SET name = @name WHERE name = @oldName`;
-      await pool
-        .request()
-        .input("name", sql.VarChar(50), name)
-        .input("oldName", sql.VarChar(50), oldName)
-        .query(query);
+    const check = await recordExists(pool, tableName, { name: preset.name });
+    if (check.error) {
+      res.status(500).json({ error: "Failed to check if preset exists" });
+      return;
+    }
+    if (check.exists) {
+      res.status(400).json({ error: "Preset already exists" });
+      return;
     }
 
-    res.status(200).json({ message: "Preset updated successfully" });
+    const appendedRequest = isModels
+      ? appendInputs(pool.request(), preset)
+      : appendInputs(pool.request(), preset, ["typeID"]);
+
+    await appendedRequest.query(`UPDATE ${tableName}
+        SET
+          name = @name
+          ${isModels ? ",typeID = @typeID" : ""}
+        WHERE ID = @ID`);
+    res.status(200).json({ message: "Data updated successfully!" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to update preset" });
+    res.status(500).json({ error: "Failed to update data" });
   }
 });
 
-router.delete("/:tableName/:name", async function (req: TableRequest, res) {
-  const { name } = req.params;
+router.delete("/:tableName/:presetID", async function (req, res) {
+  const { tableName, presetID } = req.params;
 
-  if (!name) {
-    res.status(400).json({ error: "Preset name is required" });
+  if (!presetID) {
+    res.status(400).json({ error: "Preset ID is required" });
     return;
   }
 
   try {
     const pool = await getPool();
-    const query = `DELETE FROM ${req.tableName} WHERE name = @name`;
-    await pool.request().input("name", sql.VarChar(255), name).query(query);
+    await pool
+      .request()
+      .input("ID", sql.Int, presetID)
+      .query(`DELETE FROM ${tableName} WHERE ID = @ID`);
     res.status(200).json({ message: "Preset deleted successfully" });
   } catch (err) {
     console.error(err);
