@@ -16,6 +16,7 @@ import Menu from "./routes/app/components/Menu";
 import Presets from "./routes/modules/presets/Page";
 import Assets from "./routes/modules/assets/Page";
 import Network from "./routes/modules/network/Page";
+import Users from "./routes/modules/users/Page";
 import AuthContext, { AuthContextType } from "./context/AuthContext";
 import RedirectRoot from "./routes/RedirectRoot";
 import { Toaster } from "sonner";
@@ -41,6 +42,7 @@ const router = createBrowserRouter(
           <Route path="presets" element={<Presets />}></Route>
           <Route path="assets" element={<Assets />}></Route>
           <Route path="network" element={<Network />}></Route>
+          <Route path="users" element={<Users />}></Route>
         </Route>
       </Route>
     </>

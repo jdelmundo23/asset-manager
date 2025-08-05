@@ -1,4 +1,4 @@
-import { Monitor, NotepadText, Phone, Wifi } from "lucide-react";
+import { Monitor, NotepadText, Phone, User, Wifi } from "lucide-react";
 
 export const modules = [
   {
@@ -24,5 +24,11 @@ export const modules = [
     title: "Network",
     description: "View and manage network IPs",
     icon: Wifi,
+  },
+  {
+    link: "/app/users",
+    title: "Users",
+    description: "View and manage synced users",
+    icon: User,
   },
 ];
