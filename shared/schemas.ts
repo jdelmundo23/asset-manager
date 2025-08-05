@@ -16,6 +16,42 @@ export const presetRowSchema = presetSchema.extend({
   ID: z.number(),
 });
 
+export const assetImportSchema = z
+  .object({
+    Name: z.string().min(2).max(100),
+    Identifier: z.string().min(2).max(100).nullish(),
+    Type: z.string().min(2).max(50),
+    Model: z.string().min(2).max(50),
+    Location: z.string().min(2).max(50),
+    Department: z.string().min(2).max(50),
+    "Assigned To": z.string().nullish(),
+    "Purchase Date": z.coerce.date().nullish(),
+    "Warranty Exp": z.coerce.date().nullish(),
+    Cost: z
+      .union([
+        z.string().transform((x) => x.replace(/[^0-9.-]+/g, "")),
+        z.number(),
+      ])
+      .pipe(z.coerce.number().min(0.01).max(9999))
+      .transform((num) => num.toString()),
+    note: z.string().nullish(),
+  })
+  .refine(
+    (data) => {
+      if (data["Warranty Exp"]) {
+        return (
+          data["Purchase Date"] != null &&
+          data["Purchase Date"] < data["Warranty Exp"]
+        );
+      }
+      return true;
+    },
+    {
+      message: "Must be after purchase date",
+      path: ["warrantyExp"],
+    }
+  );
+
 export const assetSchema = z
   .object({
     ID: z.number().optional(),
@@ -121,6 +157,8 @@ export const subnetRowSchema = subnetSchema.extend({
 export type Preset = z.infer<typeof presetSchema>;
 
 export type PresetRow = z.infer<typeof presetRowSchema>;
+
+export type assetImport = z.infer<typeof assetImportSchema>;
 
 export type Asset = z.infer<typeof assetSchema>;
 

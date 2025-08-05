@@ -42,8 +42,8 @@ CREATE TABLE AssetTypes (
 CREATE TABLE AssetModels (
     ID INT IDENTITY(100,1) PRIMARY KEY,
     typeID INT NOT NULL,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    vendor VARCHAR(100),
+    name VARCHAR(50) NOT NULL UNIQUE,
+    vendor VARCHAR(50),
     CONSTRAINT FK_AssetModels_AssetTypes FOREIGN KEY (typeID)
         REFERENCES AssetTypes(ID)
 );

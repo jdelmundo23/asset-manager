@@ -7,6 +7,8 @@ import BulkActionDropdown from "../../../components/table/BulkActionDropdown";
 import { AssetProvider, useAssets } from "@/context/AssetContext";
 import { TableConfigProvider } from "@/context/TableConfigContext";
 
+import FileUpload from "./components/FileUpload";
+
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
@@ -37,6 +39,7 @@ function AssetPageContent({
     <>
       <TableToolbar tableTitle="Assets">
         <div className="flex w-full justify-end gap-x-1">
+          <FileUpload />
           <BulkActionDropdown
             entity={"asset"}
             selectedRows={selectedRows}

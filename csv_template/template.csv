@@ -1,0 +1,2 @@
+Name,Identifier,Location,Department,Model,Type,Assigned To,Purchase Date,Warranty Exp,Cost,Note
+Office Laptop 1,LT-001,Main Office,IT Department,ThinkPad T14,Laptop,jdoe@example.com,1/15/2024,1/15/2027,1500.00,Assigned to John Doe for development use.
