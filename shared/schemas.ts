@@ -1,9 +1,11 @@
 import { z } from "zod";
 
-export interface User {
-  ID: string;
-  name: string;
-}
+export const userSchema = z.object({
+  ID: z.string().uuid(),
+  name: z.string().max(255),
+  last_sync: z.coerce.date(),
+  active: z.boolean(),
+});
 
 export const presetSchema = z.object({
   ID: z.number().optional(),
@@ -153,6 +155,8 @@ export const subnetSchema = z.object({
 export const subnetRowSchema = subnetSchema.extend({
   ID: z.number(),
 });
+
+export type User = z.infer<typeof userSchema>;
 
 export type Preset = z.infer<typeof presetSchema>;
 

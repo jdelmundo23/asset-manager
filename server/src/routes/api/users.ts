@@ -1,8 +1,12 @@
 import express from "express";
 import axios from "axios";
 import { GRAPH_ENDPOINT } from "../../authConfig";
-import { User } from "@microsoft/microsoft-graph-types";
+import { User, Group } from "@microsoft/microsoft-graph-types";
 import { mockUserData } from "../../../tests/mockdata/mockusers";
+import { getPool } from "./../../sql";
+import sql from "mssql";
+import { userSchema } from "@shared/schemas";
+import z from "zod";
 const devMode = process.env.DEV_MODE === "true";
 
 const router = express.Router();
@@ -15,6 +19,105 @@ router.get("/all", async function (req, res) {
     return;
   }
 
+  try {
+    const pool = await getPool();
+
+    const result = await pool.request().query("SELECT * FROM Users");
+
+    const parse = z.array(userSchema).safeParse(result.recordset);
+
+    if (parse.error) {
+      console.error(parse.error);
+      res.status(500).json({ error: "Failed to parse database records" });
+      return;
+    }
+
+    res.json(parse.data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to retrieve user data" });
+  }
+});
+
+router.post("/sync-users", async function (req, res) {
+  if (devMode) {
+    return res.status(200).json({ message: "Sync skipped in dev mode" });
+  }
+
+  const options = {
+    headers: {
+      Authorization: `Bearer ${req.session.accessToken}`,
+    },
+  };
+
+  const syncTime = new Date().toISOString();
+
+  try {
+    const response = await axios.get(
+      `${GRAPH_ENDPOINT}groups/${group_id}/members`,
+      options
+    );
+    const users: User[] = await response.data.value;
+
+    const pool = await getPool();
+    const transaction = new sql.Transaction(pool);
+    try {
+      await transaction.begin();
+      const request = new sql.Request(transaction);
+
+      await request.query(`TRUNCATE TABLE StagingUsers;`);
+
+      const tempTable = new sql.Table("StagingUsers");
+      tempTable.columns.add("ID", sql.UniqueIdentifier, { nullable: false });
+      tempTable.columns.add("name", sql.VarChar(255), { nullable: false });
+      tempTable.columns.add("last_sync", sql.DateTime2, { nullable: false });
+      tempTable.columns.add("active", sql.Bit, { nullable: false });
+
+      users.forEach((user) => {
+        tempTable.rows.add(user.id, user.displayName, syncTime, true);
+      });
+
+      const bulkRequest = new sql.Request(transaction);
+      await bulkRequest.bulk(tempTable);
+
+      await request.query(`
+        MERGE INTO Users AS target
+        USING StagingUsers AS source
+        ON target.ID = source.ID
+        WHEN MATCHED THEN
+          UPDATE SET
+            name = source.name,
+            last_sync = source.last_sync,
+            active = 1
+        WHEN NOT MATCHED THEN
+          INSERT (ID, name, last_sync, active)
+          VALUES (source.ID, source.name, source.last_sync, 1);
+
+        UPDATE Users
+        SET active = 0
+        WHERE ID NOT IN (SELECT ID FROM StagingUsers);
+      `);
+
+      await transaction.commit();
+      res.status(200).json({ message: "Users synced successfully" });
+    } catch (err) {
+      await transaction.rollback();
+      console.error(err);
+      res.status(500).json({ error: "Failed to sync users" });
+      return;
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to retrieve users externally" });
+  }
+});
+
+router.get("/group-name", async function (req, res) {
+  if (devMode) {
+    res.json({ name: "Mock Group" });
+    return;
+  }
+
   const options = {
     headers: {
       Authorization: `Bearer ${req.session.accessToken}`,
@@ -23,19 +126,14 @@ router.get("/all", async function (req, res) {
 
   try {
     const response = await axios.get(
-      `${GRAPH_ENDPOINT}groups/${group_id}/members`,
+      `${GRAPH_ENDPOINT}groups/${group_id}`,
       options
     );
-    const data = await response.data;
-    res.json(
-      data.value.map((user: User) => ({
-        ID: user.id,
-        name: user.displayName,
-      }))
-    );
+    const data: Group = await response.data;
+    res.json(data.displayName);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to retrieve user data" });
+    res.status(500).json({ error: "Failed to retrieve group name" });
   }
 });
 
