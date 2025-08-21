@@ -63,7 +63,7 @@ export const assetSchema = z
     modelID: z.number().nullish(),
     locationID: z.number().nullish(),
     departmentID: z.number().nullish(),
-    assignedTo: z.string().nullish(),
+    assignedTo: z.string().uuid().nullish(),
     purchaseDate: z.coerce.date().nullish(),
     warrantyExp: z.coerce.date().nullish(),
     cost: z

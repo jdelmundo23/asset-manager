@@ -69,7 +69,7 @@ CREATE TABLE Assets (
     locationID INT NULL FOREIGN KEY REFERENCES Locations(ID) ON DELETE SET NULL,
     departmentID INT NULL FOREIGN KEY REFERENCES Departments(ID) ON DELETE SET NULL,
     modelID INT NULL FOREIGN KEY REFERENCES AssetModels(ID) ON DELETE SET NULL,
-    assignedTo VARCHAR(75),
+    assignedTo UNIQUEIDENTIFIER NULL FOREIGN KEY REFERENCES Users(ID) ON DELETE SET NULL,
     purchaseDate DATETIME,
     warrantyExp DATETIME,
     cost DECIMAL(6,2),
@@ -82,7 +82,7 @@ CREATE TABLE Assets (
 CREATE TABLE Subnets (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     subnetPrefix VARCHAR(11) NOT NULL UNIQUE,
-    locationID INT NULL FOREIGN KEY REFERENCES Locations(ID) ON DELETE SET NULL,
+    locationID INT NULL FOREIGN KEY REFERENCES Locations(ID) ON DELETE SET NULL
 );
 
 CREATE TABLE IPAddresses (
@@ -128,6 +128,15 @@ VALUES (
     ''Lenovo''
 );
 
+INSERT INTO Users (ID, name, last_sync, active)
+VALUES (
+    ''ffffffff-ffff-ffff-ffff-ffffffffffff'', 
+    ''Test User'',
+    GETUTCDATE(),
+    0                                       
+);
+
+
 INSERT INTO Assets (
     name,
     identifier,
@@ -146,11 +155,11 @@ VALUES (
     (SELECT ID FROM Locations WHERE name = ''Main Office''),
     (SELECT ID FROM Departments WHERE name = ''IT Department''),
     (SELECT ID FROM AssetModels WHERE name = ''ThinkPad T14''),
-    ''jdoe@example.com'',
+    ''ffffffff-ffff-ffff-ffff-ffffffffffff'',
     ''2024-01-15'',
     ''2027-01-15'',
     1500.00,
-    ''Assigned to John Doe for development use.''
+    ''Assigned to Test User for development use.''
 );
 
 

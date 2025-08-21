@@ -7,6 +7,7 @@ import {
 } from "@/components/shadcn-ui/tooltip";
 import { User } from "@shared/schemas";
 import { AlertTriangle, Info } from "lucide-react";
+import DeleteUser from "./DeleteUser";
 
 interface UserRowProps {
   user: User;
@@ -39,6 +40,7 @@ export default function UserRow({ user }: UserRowProps) {
             {/* <Badge className="h-5 cursor-pointer text-nowrap font-medium opacity-0 transition-opacity duration-100 ease-out group-hover:opacity-100">
               View Assets
             </Badge> */}
+            {!user.active && <DeleteUser user={user} />}
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>

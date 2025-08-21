@@ -137,4 +137,41 @@ router.get("/group-name", async function (req, res) {
   }
 });
 
+router.delete("/:userID", async function (req, res) {
+  const { userID } = req.params;
+
+  if (!userID) {
+    res.status(400).json({ error: "User ID is required" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+
+    const result = await pool
+      .request()
+      .input("ID", sql.UniqueIdentifier, userID)
+      .query(`SELECT active FROM Users WHERE ID = @ID`);
+
+    if (result.recordset.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = result.recordset[0];
+    if (user.active) {
+      return res.status(400).json({ error: "Cannot delete an active user" });
+    }
+
+    await pool
+      .request()
+      .input("ID", sql.UniqueIdentifier, userID)
+      .query(`DELETE FROM Users WHERE ID = @ID`);
+
+    res.status(200).json({ message: "User deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to delete user" });
+  }
+});
+
 export default router;
