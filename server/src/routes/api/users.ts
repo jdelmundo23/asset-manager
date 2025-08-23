@@ -5,7 +5,7 @@ import { User, Group } from "@microsoft/microsoft-graph-types";
 import { mockUserData } from "../../../tests/mockdata/mockusers";
 import { getPool } from "./../../sql";
 import sql from "mssql";
-import { userSchema } from "@shared/schemas";
+import { assetSummarySchema, userSchema } from "@shared/schemas";
 import z from "zod";
 const devMode = process.env.DEV_MODE === "true";
 
@@ -36,6 +36,77 @@ router.get("/all", async function (req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to retrieve user data" });
+  }
+});
+
+router.get("/group-name", async function (req, res) {
+  if (devMode) {
+    res.json({ name: "Mock Group" });
+    return;
+  }
+
+  const options = {
+    headers: {
+      Authorization: `Bearer ${req.session.accessToken}`,
+    },
+  };
+
+  try {
+    const response = await axios.get(
+      `${GRAPH_ENDPOINT}groups/${group_id}`,
+      options
+    );
+    const data: Group = await response.data;
+    res.json(data.displayName);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to retrieve group name" });
+  }
+});
+
+router.get("/:userID/assets", async function (req, res) {
+  const { userID } = req.params;
+
+  if (!userID) {
+    res.status(400).json({ error: "User ID is required" });
+    return;
+  }
+
+  try {
+    const pool = await getPool();
+    const result = await pool
+      .request()
+      .input("userID", sql.UniqueIdentifier, userID).query(`
+        SELECT 
+          Assets.ID,
+          Assets.name,
+          Assets.identifier,
+          AssetTypes.name AS typeName,
+          AssetModels.name AS modelName,
+          Locations.name AS locationName
+        FROM Assets
+        LEFT JOIN Locations ON Assets.locationID = Locations.ID
+        LEFT JOIN AssetModels ON Assets.modelID = AssetModels.ID
+        LEFT JOIN AssetTypes on AssetModels.typeID = AssetTypes.ID
+        WHERE Assets.assignedTo = @userID`);
+
+    if (result.recordset.length < 1) {
+      res.json([]);
+      return;
+    }
+
+    const parse = z.array(assetSummarySchema).safeParse(result.recordset);
+
+    if (parse.error) {
+      console.error(parse.error);
+      res.status(500).json({ error: "Failed to parse database records" });
+      return;
+    }
+
+    res.json(parse.data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to retrieve user assets" });
   }
 });
 
@@ -109,31 +180,6 @@ router.post("/sync-users", async function (req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to retrieve users externally" });
-  }
-});
-
-router.get("/group-name", async function (req, res) {
-  if (devMode) {
-    res.json({ name: "Mock Group" });
-    return;
-  }
-
-  const options = {
-    headers: {
-      Authorization: `Bearer ${req.session.accessToken}`,
-    },
-  };
-
-  try {
-    const response = await axios.get(
-      `${GRAPH_ENDPOINT}groups/${group_id}`,
-      options
-    );
-    const data: Group = await response.data;
-    res.json(data.displayName);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to retrieve group name" });
   }
 });
 

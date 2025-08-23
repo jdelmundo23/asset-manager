@@ -89,6 +89,15 @@ export const assetSchema = z
     }
   );
 
+export const assetSummarySchema = z.object({
+  ID: z.number(),
+  name: z.string().min(2).max(100),
+  identifier: z.string().min(2).max(100).nullish(),
+  typeName: z.string().min(2).max(50).nullish(),
+  modelName: z.string().min(2).max(50).nullish(),
+  locationName: z.string().min(2).max(50).nullish(),
+});
+
 export const assetRowSchema = assetSchema.innerType().extend({
   ID: z.number(),
 });
@@ -165,6 +174,8 @@ export type PresetRow = z.infer<typeof presetRowSchema>;
 export type assetImport = z.infer<typeof assetImportSchema>;
 
 export type Asset = z.infer<typeof assetSchema>;
+
+export type AssetSummary = z.infer<typeof assetSummarySchema>;
 
 export type AssetRow = z.infer<typeof assetRowSchema>;
 

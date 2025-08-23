@@ -6,23 +6,25 @@ import {
   TooltipTrigger,
 } from "@/components/shadcn-ui/tooltip";
 
-interface TruncateHoverProps {
-  children: string;
-}
-
-export function TruncateHover({ children }: TruncateHoverProps) {
+export function TruncateHover({
+  children,
+}: {
+  children: string | null | undefined;
+}) {
   const textRef = useRef<HTMLDivElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
 
   useEffect(() => {
     const el = textRef.current;
-    if (el) {
-      const timeout = setTimeout(() => {
-        setIsTruncated(el.scrollWidth > el.clientWidth);
-      }, 50);
+    if (!el) return;
 
-      return () => clearTimeout(timeout);
-    }
+    const observer = new ResizeObserver(() => {
+      setIsTruncated(el.scrollWidth > el.clientWidth);
+    });
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
   }, [children]);
 
   return (
