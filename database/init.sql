@@ -15,15 +15,35 @@ BEGIN
 END';
 EXEC sp_executesql @sql;
 
--- Switch to the new database dynamically
-SET @sql = N'USE [' + @dbName + N'];';
-EXEC sp_executesql @sql;
-
--- Execute table creation and login/user setup
+-- Create login and user for the database
 SET @sql = N'
 USE [' + @dbName + N'];
 
+IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N''' + @loginName + N''')
+BEGIN
+    CREATE LOGIN [' + @loginName + N'] WITH PASSWORD = N''' + @loginPassword + N''';
+END
+ELSE
+BEGIN
+    RAISERROR (''=== WARNING: Login [' + @loginName + N'] already exists. Password may differ. ==='', 10, 1);
+END
+
+IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N''' + @loginName + N''')
+BEGIN
+    CREATE USER [' + @loginName + N'] FOR LOGIN [' + @loginName + N'];
+    ALTER ROLE db_owner ADD MEMBER [' + @loginName + N'];
+END
+ELSE
+BEGIN
+    PRINT ''Database user [' + @loginName + N'] already exists in database [' + @dbName + N'].'';
+END
+';
+EXEC sp_executesql @sql;
+
 -- Create Tables
+SET @sql = N'
+USE [' + @dbName + N'];
+
 CREATE TABLE Locations (
     ID INT IDENTITY(1,1) PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
@@ -95,28 +115,13 @@ CREATE TABLE IPAddresses (
     subnetID INT NOT NULL FOREIGN KEY REFERENCES Subnets(ID) ON DELETE CASCADE,
     UNIQUE (hostNumber, subnetID)
 );
-
--- Create login and user for the database
-IF NOT EXISTS (SELECT * FROM sys.server_principals WHERE name = N''' + @loginName + N''')
-BEGIN
-    CREATE LOGIN [' + @loginName + N'] WITH PASSWORD = N''' + @loginPassword + N''';
-END
-ELSE
-BEGIN
-    RAISERROR (''=== WARNING: Login [' + @loginName + N'] already exists. Password may differ. ==='', 10, 1);
-END
-
-IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N''' + @loginName + N''')
-BEGIN
-    CREATE USER [' + @loginName + N'] FOR LOGIN [' + @loginName + N'];
-    ALTER ROLE db_owner ADD MEMBER [' + @loginName + N'];
-END
-ELSE
-BEGIN
-    PRINT ''Database user [' + @loginName + N'] already exists in database [' + @dbName + N'].'';
-END
+';
+EXEC sp_executesql @sql;
 
 -- Insert seed data
+SET @sql = N'
+USE [' + @dbName + N'];
+
 INSERT INTO Locations (name) VALUES (''Main Office'');
 INSERT INTO Departments (name) VALUES (''IT Department'');
 INSERT INTO AssetTypes (name) VALUES (''Laptop'');
@@ -181,8 +186,5 @@ VALUES (
     ''Static IP for laptop'',
     (SELECT ID FROM Subnets WHERE subnetPrefix = ''192.168.1'')
 );
-
-
 ';
-
 EXEC sp_executesql @sql;
