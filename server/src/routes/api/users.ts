@@ -14,11 +14,6 @@ const router = express.Router();
 const group_id = process.env.ENTRA_USER_GROUP_ID;
 
 router.get("/all", async function (req, res) {
-  if (devMode) {
-    res.json(mockUserData);
-    return;
-  }
-
   try {
     const pool = await getPool();
 
@@ -41,7 +36,7 @@ router.get("/all", async function (req, res) {
 
 router.get("/group-name", async function (req, res) {
   if (devMode) {
-    res.json({ name: "Mock Group" });
+    res.json({ groupName: "Mock Group" });
     return;
   }
 
@@ -57,7 +52,7 @@ router.get("/group-name", async function (req, res) {
       options
     );
     const data: Group = await response.data;
-    res.json(data.displayName);
+    res.json({ groupName: data.displayName });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to retrieve group name" });

@@ -55,7 +55,7 @@ export default function Page() {
         />
         <h1 className="text-center text-2xl font-medium">Users</h1>
       </div>
-      <SyncMsg groupName={groupNameQuery?.data} />
+      <SyncMsg groupName={groupNameQuery?.data?.groupName} />
 
       <Separator className="animate-fade-in my-4 mt-0" />
       <SelectBox setSelected={setSelected} />
