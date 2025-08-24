@@ -6,8 +6,7 @@ import { Button } from "@/components/shadcn-ui/button";
 import { LoaderCircle } from "lucide-react";
 import { handleError } from "@/lib/handleError";
 import axiosApi from "@/lib/axios";
-
-const serverUrl = import.meta.env.VITE_BACKEND_URL;
+import { getServerUrl } from "@/lib/utils";
 
 function Signin() {
   const [redirecting, setRedirecting] = useState<boolean>(false);
@@ -25,7 +24,7 @@ function Signin() {
       });
 
       if (response.status === 200 && response.data.status === "ok") {
-        window.location.href = `${serverUrl}/auth/signin`;
+        window.location.href = `${getServerUrl()}/auth/signin`;
       }
     } catch (error) {
       handleError(error);

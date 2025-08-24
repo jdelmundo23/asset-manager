@@ -30,6 +30,9 @@ export function handleError(error: unknown, loadingToastId?: string | number) {
     return errorMsg;
   } else {
     console.error("Unexpected error:", error);
-    showErrorToast(toastId, "An unexpected error occurred.");
+    showErrorToast(
+      toastId,
+      "An unexpected error has occurred. Please check the console for more details."
+    );
   }
 }

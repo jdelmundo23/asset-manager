@@ -112,7 +112,8 @@ router.get("/:userID/assets", async function (req, res) {
 
 router.post("/sync-users", async function (req, res) {
   if (devMode) {
-    return res.status(200).json({ message: "Sync skipped in dev mode" });
+    res.status(200).json({ message: "Sync skipped in dev mode" });
+    return;
   }
 
   const options = {
@@ -200,12 +201,14 @@ router.delete("/:userID", async function (req, res) {
       .query(`SELECT active FROM Users WHERE ID = @ID`);
 
     if (result.recordset.length === 0) {
-      return res.status(404).json({ error: "User not found" });
+      res.status(404).json({ error: "User not found" });
+      return;
     }
 
     const user = result.recordset[0];
     if (user.active) {
-      return res.status(400).json({ error: "Cannot delete an active user" });
+      res.status(400).json({ error: "Cannot delete an active user" });
+      return;
     }
 
     await pool

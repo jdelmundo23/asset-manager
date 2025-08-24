@@ -1,8 +1,22 @@
 import axios from "axios";
+import { getServerUrl } from "./utils";
+
+const serverUrl = getServerUrl();
 
 const axiosApi = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: serverUrl,
   withCredentials: true,
+});
+
+axiosApi.interceptors.request.use((config) => {
+  if (serverUrl === window.location.origin) {
+    return Promise.reject(
+      new Error(
+        "VITE_BACKEND_URL is misconfigured: it points to the frontend origin."
+      )
+    );
+  }
+  return config;
 });
 
 export default axiosApi;

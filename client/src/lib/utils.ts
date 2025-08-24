@@ -2,6 +2,10 @@ import { IPRow } from "@shared/schemas";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+export function getServerUrl(): string {
+  return import.meta.env.VITE_BACKEND_URL;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

@@ -7,11 +7,9 @@ import {
 } from "./shadcn-ui/dropdown-menu";
 import { Link } from "react-router";
 import { buttonVariants } from "./shadcn-ui/button";
-import { cn } from "@/lib/utils";
+import { cn, getServerUrl } from "@/lib/utils";
 import { handleError } from "@/lib/handleError";
 import axiosApi from "@/lib/axios";
-
-const serverUrl = import.meta.env.VITE_BACKEND_URL;
 
 interface UserBadgeProps {
   authenticated: boolean;
@@ -26,7 +24,7 @@ const logOut = async () => {
     });
 
     if (response.status === 200 && response.data.status === "ok") {
-      window.location.href = `${serverUrl}/auth/signout`;
+      window.location.href = `${getServerUrl()}/auth/signout`;
     }
   } catch (error) {
     handleError(error);

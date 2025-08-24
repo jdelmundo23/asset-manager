@@ -5,6 +5,15 @@ import tailwindcss from "tailwindcss";
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
+
+  const backendUrl = env.VITE_BACKEND_URL;
+
+  if (!backendUrl) {
+    throw new Error(
+      "VITE_BACKEND_URL is missing. Set it in your `.env` file before building."
+    );
+  }
+
   return {
     plugins: [react()],
     css: {
