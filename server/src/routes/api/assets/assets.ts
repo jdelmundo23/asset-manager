@@ -145,7 +145,13 @@ router.post("/", async function (req, res) {
     res.status(200).json({ message: "Data inserted successfully!" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Failed to add data" });
+    if (err instanceof sql.RequestError && err.message.includes("identifier")) {
+      res
+        .status(500)
+        .json({ error: "Identifier already exists for the asset model" });
+    } else {
+      res.status(500).json({ error: "Failed to add data" });
+    }
   }
 });
 

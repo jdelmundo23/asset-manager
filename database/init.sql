@@ -96,7 +96,8 @@ CREATE TABLE Assets (
     note NVARCHAR(255),
     CONSTRAINT chk_warranty_after_purchase CHECK (
         warrantyExp IS NULL OR purchaseDate IS NULL OR warrantyExp > purchaseDate
-    )
+    ),
+    CONSTRAINT uq_asset_model_identifier UNIQUE (modelID, identifier)
 );
 
 CREATE TABLE Subnets (
