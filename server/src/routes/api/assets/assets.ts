@@ -94,7 +94,7 @@ router.get("/all", async function (req, res) {
       Assets.purchaseDate,
       Assets.warrantyExp,
       Assets.cost,
-      Assets.note FROM Assets JOIN AssetModels ON Assets.modelID = AssetModels.ID`
+      Assets.note FROM Assets LEFT JOIN AssetModels ON Assets.modelID = AssetModels.ID`
     );
 
     const parse = z.array(assetSchema).safeParse(result.recordset);

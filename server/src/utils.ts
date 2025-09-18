@@ -1,6 +1,6 @@
 import { z, ZodRawShape, ZodTypeAny } from "zod";
 import sql, { ConnectionPool } from "mssql";
-import { subnetRowSchema } from "@shared/schemas";
+import { AssetImport, PresetTable, subnetRowSchema } from "@shared/schemas";
 
 export const parseInputReq = <T extends ZodTypeAny>(
   schema: T,
@@ -40,13 +40,17 @@ export const recordExists = async (
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
   const query = `SELECT 1 FROM ${table} ${whereClause}`;
 
-  let result;
   try {
-    result = await request.query(query);
-    return { exists: result.recordset.length > 0 };
+    const result = await request.query(query);
+    const ID = result.recordset[0]?.ID ?? null;
+    return {
+      exists: ID !== null,
+      ID: Number(ID),
+      error: false,
+    };
   } catch (error) {
     console.error(error);
-    return { exists: false, error: true };
+    return { exists: false, ID: null, error: true };
   }
 };
 
@@ -116,4 +120,92 @@ export function validateSingleField<T extends ZodRawShape>(
   if (!fieldSchema) return undefined;
 
   return fieldSchema.safeParse(value);
+}
+
+export async function detectMissingRows(
+  pool: ConnectionPool,
+  table: PresetTable,
+  column: string,
+  getValue: (asset: AssetImport) => string,
+  assets: AssetImport[]
+): Promise<string[]> {
+  if (table === "assetmodels") {
+    const map = new Map<string, number>();
+    const existing = await pool
+      .request()
+      .query(
+        `SELECT assetmodels.ID, assetmodels.name, assettypes.name as typeName FROM assetmodels LEFT JOIN assettypes ON assetmodels.typeID = assettypes.ID`
+      );
+    existing.recordset.forEach((row) =>
+      map.set(
+        `${row.name.trim().toLowerCase()}|${row.typeName.trim().toLowerCase()}`,
+        row.ID
+      )
+    );
+
+    const missingSet = new Set<string>();
+    for (const asset of assets) {
+      const modelName = asset.Model.trim().toLowerCase();
+      const typeName = asset.Type.trim().toLowerCase();
+
+      const key = `${modelName}|${typeName}`;
+
+      if (!map.has(key)) {
+        missingSet.add(`${asset.Model.trim()}|${asset.Type.trim()}`);
+      }
+    }
+    return Array.from(missingSet);
+  } else {
+    const map = new Map<string, number>();
+    const existing = await pool
+      .request()
+      .query(`SELECT ID, ${column} as name FROM ${table}`);
+    existing.recordset.forEach((row) =>
+      map.set(row.name.toLowerCase(), row.ID)
+    );
+
+    const missingSet = new Set<string>();
+    for (const asset of assets) {
+      const original = getValue(asset);
+      if (!original) continue;
+
+      const normalized = original.trim().toLowerCase();
+      if (!map.has(normalized)) {
+        missingSet.add(original.trim());
+      }
+    }
+
+    return Array.from(missingSet);
+  }
+}
+
+export async function addRows(
+  pool: ConnectionPool,
+  table: PresetTable,
+  column: string,
+  valuesToAdd: string[]
+): Promise<Map<string, number>> {
+  const addedValuesMap = new Map<string, number>();
+
+  if (valuesToAdd.length === 0) return addedValuesMap;
+
+  const request = pool.request();
+  const valuesList = valuesToAdd.map((_, i) => `(@val${i})`).join(", ");
+  valuesToAdd.forEach((val, i) => request.input(`val${i}`, val));
+
+  const query = `
+    INSERT INTO ${table} (${column})
+    VALUES ${valuesList};
+
+    SELECT ID, ${column} as name FROM ${table} WHERE ${column} IN (${valuesToAdd
+      .map((_, i) => `@val${i}`)
+      .join(", ")});
+  `;
+  const result = await request.query(query);
+
+  result.recordset.forEach((row) =>
+    addedValuesMap.set(row.name.toLowerCase(), row.ID)
+  );
+
+  return addedValuesMap;
 }

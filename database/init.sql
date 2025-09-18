@@ -62,8 +62,9 @@ CREATE TABLE AssetTypes (
 CREATE TABLE AssetModels (
     ID INT IDENTITY(100,1) PRIMARY KEY,
     typeID INT NOT NULL,
-    name VARCHAR(50) NOT NULL UNIQUE,
+    name VARCHAR(50) NOT NULL,
     vendor VARCHAR(50),
+    CONSTRAINT uq_model_type UNIQUE (name, typeID),
     CONSTRAINT FK_AssetModels_AssetTypes FOREIGN KEY (typeID)
         REFERENCES AssetTypes(ID)
 );
@@ -97,8 +98,11 @@ CREATE TABLE Assets (
     CONSTRAINT chk_warranty_after_purchase CHECK (
         warrantyExp IS NULL OR purchaseDate IS NULL OR warrantyExp > purchaseDate
     ),
-    CONSTRAINT uq_asset_model_identifier UNIQUE (modelID, identifier)
 );
+
+CREATE UNIQUE INDEX uq_asset_model_identifier_notnull
+    ON Assets (modelID, identifier)
+    WHERE identifier IS NOT NULL;
 
 CREATE TABLE Subnets (
     ID INT IDENTITY(1,1) PRIMARY KEY,

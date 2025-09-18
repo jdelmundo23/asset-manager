@@ -6,8 +6,7 @@ import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "../../../components/table/BulkActionDropdown";
 import { AssetProvider, useAssets } from "@/context/AssetContext";
 import { TableConfigProvider } from "@/context/TableConfigContext";
-
-import FileUpload from "./components/FileUpload";
+import FileUpload from "./components/ImportDialog";
 
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});

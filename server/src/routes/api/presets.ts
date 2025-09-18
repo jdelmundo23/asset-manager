@@ -1,4 +1,9 @@
-import { Preset, presetRowSchema, presetSchema } from "@shared/schemas";
+import {
+  Preset,
+  presetRowSchema,
+  presetSchema,
+  presetTableSchema,
+} from "@shared/schemas";
 import { getPool } from "../../sql";
 import express, { RequestHandler, Request } from "express";
 import sql from "mssql";
@@ -8,13 +13,6 @@ import { parseInputReq, recordExists } from "../../utils";
 interface TableRequest extends Request {
   tableName?: string;
 }
-
-const validTables: { [key: string]: string } = {
-  departments: "departments",
-  locations: "locations",
-  assetmodels: "assetmodels",
-  assettypes: "assettypes",
-};
 
 const inputDefinitions = [
   { name: "ID", type: sql.Int },
@@ -43,14 +41,14 @@ const appendInputs = (
 
 const validateTable: RequestHandler = (req: TableRequest, res, next) => {
   const { tableName } = req.params;
-  const sanitizedTable = validTables[tableName.toLowerCase()];
-  if (!sanitizedTable) {
+  const parse = presetTableSchema.safeParse(tableName.trim().toLowerCase());
+  if (parse.error) {
     console.error("Invalid table name:" + tableName);
     res.status(400).json({ error: "Invalid table name" });
     return;
   }
 
-  req.tableName = sanitizedTable;
+  req.tableName = parse.data;
   next();
 };
 

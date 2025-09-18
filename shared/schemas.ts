@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+export const presetTableSchema = z.enum([
+  "departments",
+  "locations",
+  "assetmodels",
+  "assettypes",
+]);
+
 export const userSchema = z.object({
   ID: z.string().uuid(),
   name: z.string().max(255),
@@ -16,6 +23,12 @@ export const presetSchema = z.object({
 
 export const presetRowSchema = presetSchema.extend({
   ID: z.number(),
+});
+
+export const missingPresetsSchema = z.object({
+  modelAndTypes: z.array(z.string()),
+  departments: z.array(z.string()),
+  locations: z.array(z.string()),
 });
 
 export const assetImportSchema = z
@@ -165,13 +178,17 @@ export const subnetRowSchema = subnetSchema.extend({
   ID: z.number(),
 });
 
+export type PresetTable = z.infer<typeof presetTableSchema>;
+
 export type User = z.infer<typeof userSchema>;
 
 export type Preset = z.infer<typeof presetSchema>;
 
 export type PresetRow = z.infer<typeof presetRowSchema>;
 
-export type assetImport = z.infer<typeof assetImportSchema>;
+export type MissingPresets = z.infer<typeof missingPresetsSchema>;
+
+export type AssetImport = z.infer<typeof assetImportSchema>;
 
 export type Asset = z.infer<typeof assetSchema>;
 
