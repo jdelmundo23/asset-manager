@@ -1,6 +1,6 @@
 import express from "express";
-import authProvider from "../../auth/AuthProvider";
-import { REDIRECT_URI } from "../../authConfig";
+import authProvider from "@server/src/auth/AuthProvider";
+import { REDIRECT_URI } from "@server/src/authConfig";
 
 const devMode = process.env.DEV_MODE === "true";
 const clientURL = process.env.CLIENT_ORIGIN ?? "http://localhost:3000/";

@@ -1,5 +1,5 @@
 import express, { RequestHandler } from "express";
-import { getPool } from "../../../sql";
+import { getPool } from "@server/src/sql";
 import { Asset, assetSchema } from "@shared/schemas";
 import sql from "mssql";
 import { z, ZodObject, ZodRawShape } from "zod";

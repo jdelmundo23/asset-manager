@@ -1,5 +1,5 @@
 import express from "express";
-import { getPool } from "../../../sql";
+import { getPool } from "@server/src/sql";
 import sql from "mssql";
 import { IPInsert, ipInputSchema, ipRowSchema } from "@shared/schemas";
 import { z } from "zod";
@@ -9,7 +9,7 @@ import {
   recordExists,
   splitIpAddress,
   validateSingleField,
-} from "../../../utils";
+} from "@server/src/utils";
 
 type InputField = {
   name: string;

@@ -4,11 +4,11 @@ import {
   presetSchema,
   presetTableSchema,
 } from "@shared/schemas";
-import { getPool } from "../../sql";
+import { getPool } from "@server/src/sql";
 import express, { RequestHandler, Request } from "express";
 import sql from "mssql";
 import z from "zod";
-import { parseInputReq, recordExists } from "../../utils";
+import { parseInputReq, recordExists } from "@server/src/utils";
 
 interface TableRequest extends Request {
   tableName?: string;

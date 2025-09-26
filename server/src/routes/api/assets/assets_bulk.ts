@@ -1,9 +1,6 @@
 import express, { RequestHandler } from "express";
-import { getPool } from "../../../sql";
+import { getPool } from "@server/src/sql";
 import sql from "mssql";
-import z from "zod";
-import { assetImportSchema } from "@shared/schemas";
-import { detectMissingRows, parseInputReq } from "../../../utils";
 
 const appendPlaceholderInputs = (request: sql.Request, ids: number[]) => {
   const placeholders: string = ids
@@ -30,49 +27,9 @@ const checkIds: RequestHandler = async (req, res, next) => {
 
 const router = express.Router();
 
-router.post("/import/check", async function (req, res) {
-  const assets = parseInputReq(z.array(assetImportSchema), req.body);
+router.use(checkIds);
 
-  if (!assets) {
-    res.status(400).json({ error: "Invalid request body" });
-    return;
-  }
-  try {
-    const pool = await getPool();
-
-    const modelsMap = await detectMissingRows(
-      pool,
-      "assetmodels",
-      "name",
-      (asset) => asset.Model,
-      assets
-    );
-    const locationsMap = await detectMissingRows(
-      pool,
-      "locations",
-      "name",
-      (asset) => asset.Location,
-      assets
-    );
-    const departmentsMap = await detectMissingRows(
-      pool,
-      "departments",
-      "name",
-      (asset) => asset.Department,
-      assets
-    );
-
-    res.json({
-      modelAndTypes: Array.from(modelsMap),
-      locations: Array.from(locationsMap),
-      departments: Array.from(departmentsMap),
-    });
-  } catch (err) {
-    console.log(err);
-  }
-});
-
-router.post("/delete", checkIds, async function (req, res) {
+router.post("/delete", async function (req, res) {
   const { ids } = req.body;
 
   try {
@@ -95,7 +52,7 @@ router.post("/delete", checkIds, async function (req, res) {
   }
 });
 
-router.post("/duplicate", checkIds, async function (req, res) {
+router.post("/duplicate", async function (req, res) {
   const { ids } = req.body;
 
   try {

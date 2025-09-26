@@ -1,9 +1,8 @@
 import express from "express";
 import axios from "axios";
-import { GRAPH_ENDPOINT } from "../../authConfig";
+import { GRAPH_ENDPOINT } from "@server/src/authConfig";
 import { User, Group } from "@microsoft/microsoft-graph-types";
-import { mockUserData } from "../../../tests/mockdata/mockusers";
-import { getPool } from "./../../sql";
+import { getPool } from "@server/src/sql";
 import sql from "mssql";
 import { assetSummarySchema, userSchema } from "@shared/schemas";
 import z from "zod";

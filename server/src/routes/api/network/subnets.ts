@@ -1,9 +1,9 @@
 import { subnetRowSchema, subnetSchema } from "@shared/schemas";
 import express from "express";
-import { getPool } from "../../../sql";
+import { getPool } from "@server/src/sql";
 import sql from "mssql";
 import { z } from "zod";
-import { parseInputReq, recordExists } from "../../../utils";
+import { parseInputReq, recordExists } from "@server/src/utils";
 const router = express.Router();
 
 router.get("/all", async function (req, res) {

@@ -1,7 +1,7 @@
 import authProvider from "../auth/AuthProvider";
 import express from "express";
 import { REDIRECT_URI, POST_LOGOUT_REDIRECT_URI } from "../authConfig";
-import { mockAuthData } from "../../tests/mockdata/mockauth";
+import { mockAuthData } from "@server/tests/mockdata/mockauth";
 
 const devMode = process.env.DEV_MODE === "true";
 const clientURL = process.env.CLIENT_ORIGIN ?? "http://localhost:3000/";

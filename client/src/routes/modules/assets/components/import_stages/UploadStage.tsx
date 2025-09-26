@@ -34,7 +34,7 @@ export default function UploadStage({
 
   const checkBulkImport = useMutation({
     mutationFn: (data: unknown) => {
-      return axiosApi.post("/api/assets/bulk/import/check", data);
+      return axiosApi.post("/api/import/check", data);
     },
     onSuccess: (result) => {
       const missingPresets = missingPresetsSchema.safeParse(result.data);

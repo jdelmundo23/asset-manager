@@ -21,6 +21,7 @@ import ipBulkRouter from "./routes/api/network/ips_bulk";
 import usersRouter from "./routes/api/users";
 import ipsRouter from "./routes/api/network/ips";
 import subnetRouter from "./routes/api/network/subnets";
+import importRouter from "./routes/api/assets/import";
 
 const corsOptions = {
   origin: process.env.CLIENT_ORIGIN,
@@ -57,6 +58,7 @@ app.use("/api/presets", presetRouter);
 app.use("/api/assets/bulk", assetBulkRouter);
 app.use("/api/ips/bulk", ipBulkRouter);
 app.use("/api/assets", assetRouter);
+app.use("/api/import", importRouter);
 app.use("/api/ips", ipsRouter);
 app.use("/api/subnets", subnetRouter);
 app.use("/api/users", usersRouter);
