@@ -20,7 +20,7 @@ export default function UploadStage({
   nextStage,
   closeDialog,
 }: UploadStageProps) {
-  const { setMissingPresets } = useImport();
+  const { setMissingPresets, setAssets } = useImport();
   const [file, setFile] = useState<File>();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [failedMsg, setFailedMsg] = useState<string | null>();
@@ -52,20 +52,30 @@ export default function UploadStage({
     const parse = z.array(assetImportSchema).safeParse(data);
 
     if (parse.error) {
-      console.log(
+      console.error(
         "Failed to parse CSV data. Ensure CSV is correctly formatted."
       );
       setFailedMsg("Invalid CSV format");
     } else {
+      const seen = new Set<string>();
+      const uniqueAssets = parse.data.filter((row) => {
+        const key = `${row.Model}-${row.Identifier}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+
       toast
-        .promise(checkBulkImport.mutateAsync(parse.data), {
+        .promise(checkBulkImport.mutateAsync(uniqueAssets), {
           loading: "Parsing rows...",
           success: "Successfully parsed rows",
         })
         .unwrap()
         .catch((err) => {
+          setFailedMsg("Failed to parse CSV");
           handleError(err);
         });
+      setAssets(uniqueAssets);
     }
   };
 
@@ -125,6 +135,7 @@ export default function UploadStage({
                 },
                 header: true,
                 skipEmptyLines: true,
+                dynamicTyping: false,
               });
             }
           }}

@@ -6,12 +6,18 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { useImport } from "@/context/ImportContext";
-
-import { MissingPresets } from "@shared/schemas";
+import axiosApi from "@/lib/axios";
+import { handleError } from "@/lib/handleError";
+import { AssetImport, MissingPresets } from "@shared/schemas";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import z from "zod";
 
 interface PreviewStageProps {
   previousStage: () => void;
+  nextStage: () => void;
 }
 
 const presetKeys: (keyof MissingPresets)[] = [
@@ -34,8 +40,25 @@ const getItemName = (key: keyof MissingPresets, preset: string) => {
   return preset;
 };
 
-export default function PreviewStage({ previousStage }: PreviewStageProps) {
-  const { missingPresets, setMissingPresets } = useImport();
+export default function PreviewStage({
+  previousStage,
+  nextStage,
+}: PreviewStageProps) {
+  const {
+    missingPresets,
+    setMissingPresets,
+    assets,
+    setImportedCount,
+    setSkippedCount,
+  } = useImport();
+
+  const [failedMsg, setFailedMsg] = useState<string | null>();
+
+  const queryClient = useQueryClient();
+
+  const missingPresetKeys = presetKeys.filter(
+    (presetKey) => missingPresets[presetKey].length > 0
+  );
 
   const excludeMissingPreset = (
     key: keyof MissingPresets,
@@ -47,16 +70,61 @@ export default function PreviewStage({ previousStage }: PreviewStageProps) {
     });
   };
 
-  const missingPresetKeys = presetKeys.filter(
-    (presetKey) => missingPresets[presetKey].length > 0
-  );
+  const importAssets = useMutation({
+    mutationFn: (data: {
+      assets: AssetImport[];
+      missingPresets: MissingPresets;
+    }) => {
+      return axiosApi.post("/api/import/confirm", data);
+    },
+    onSuccess: (result) => {
+      const importedCount = z.number().safeParse(result.data.importedCount);
+      const skippedCount = z.number().safeParse(result.data.skippedCount);
+
+      if (!importedCount.error) {
+        setImportedCount(importedCount.data);
+      } else {
+        console.error("Server did not return import count");
+        setImportedCount(-1);
+      }
+
+      if (!skippedCount.error) {
+        setSkippedCount(skippedCount.data);
+      } else {
+        console.error("Server did not return skipped count");
+        setSkippedCount(-1);
+      }
+
+      queryClient.invalidateQueries({
+        queryKey: ["assetData"],
+      });
+
+      nextStage();
+    },
+  });
+
+  const handleConfirm = async (data: {
+    assets: AssetImport[];
+    missingPresets: MissingPresets;
+  }) => {
+    toast
+      .promise(importAssets.mutateAsync(data), {
+        loading: "Importing assets...",
+        success: "Successfully imported assets",
+      })
+      .unwrap()
+      .catch((err) => {
+        setFailedMsg("Failed to import assets");
+        handleError(err);
+      });
+  };
 
   return (
-    <div className="flex w-full flex-col gap-y-2 text-white">
+    <div className="flex w-full flex-col gap-y-4 text-white">
       {missingPresetKeys.length > 0 ? (
         <>
           <p className="text-sm font-medium">
-            The following presets will be added with the assets: <br />
+            The following presets must be added with the assets: <br />
           </p>
           <ResizablePanelGroup
             className="min-h-[400px] rounded-lg py-0.5"
@@ -72,19 +140,35 @@ export default function PreviewStage({ previousStage }: PreviewStageProps) {
               />
             ))}
           </ResizablePanelGroup>
-          <p className="text-muted-foreground text-sm font-medium italic">
-            * Removing presets will exclude any dependent assets.
-          </p>
         </>
       ) : (
-        <p>No presets to be added. All parsed assets will be imported.</p>
+        <p>No presets will be added.</p>
       )}
-      <div className="flex justify-end gap-x-2">
+      <ul className="text-muted-foreground list-['*_'] px-3 text-sm font-medium italic">
+        {missingPresetKeys.length > 0 && (
+          <li>Removing presets will exclude any dependent assets </li>
+        )}
+        <li>Already existing assets will be excluded</li>
+        <li>All parsed assets with existing presets will be imported</li>
+        <li>
+          Only the first occurence of a duplicate model & identifier will be
+          imported
+        </li>
+      </ul>
+      <div className="flex items-center justify-end gap-x-2">
+        {failedMsg && <p className="font-medium text-red-700">{failedMsg}</p>}
         <Button variant={"secondary"} onClick={previousStage}>
           Go Back
         </Button>
-        <Button disabled>
-          {missingPresetKeys.length > 0 ? "Import" : "Import"}
+        <Button
+          onClick={async () =>
+            handleConfirm({
+              missingPresets: missingPresets,
+              assets: assets,
+            })
+          }
+        >
+          {missingPresetKeys.length > 0 ? "Import" : "Confirm"}
         </Button>
       </div>
     </div>
@@ -117,7 +201,7 @@ function MissingPresetList({
       </h2>
       <ResizablePanel key={presetKey}>
         <div className="flex h-full flex-col">
-          <ScrollArea className="h-full rounded-sm border border-white px-2 py-1">
+          <ScrollArea className="h-full rounded-sm border border-white py-1">
             <ul>
               {missingPresets[presetKey].map((missingPreset) => (
                 <PresetItem
@@ -155,11 +239,11 @@ function PresetItem({
   return (
     <li
       key={missingPreset}
-      className="group flex items-center justify-between text-sm"
+      className="group flex items-center justify-between rounded-sm px-2 text-sm transition-colors duration-100 hover:bg-zinc-800"
     >
       {getItemName(presetKey, missingPreset)}
       <X
-        className="text-muted-foreground h-5 w-5 cursor-pointer opacity-0 hover:text-white group-hover:opacity-100"
+        className="text-muted-foreground h-5 w-5 cursor-pointer opacity-0 transition-opacity duration-100 hover:text-white group-hover:opacity-100"
         onClick={() => excludeMissingPreset(presetKey, missingPreset)}
       />
     </li>

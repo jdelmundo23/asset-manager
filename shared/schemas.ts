@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const nullableDate = z.union([z.string(), z.null()]).transform((val) => {
+  if (val === null || val.trim() === "") return null;
+  return new Date(val);
+});
+
 export const presetTableSchema = z.enum([
   "departments",
   "locations",
@@ -40,30 +45,38 @@ export const assetImportSchema = z
     Location: z.string().min(2).max(50),
     Department: z.string().min(2).max(50),
     "Assigned To": z.string().nullish(),
-    "Purchase Date": z.coerce.date().nullish(),
-    "Warranty Exp": z.coerce.date().nullish(),
+    "Purchase Date": nullableDate,
+    "Warranty Exp": nullableDate,
     Cost: z
       .union([
-        z.string().transform((x) => x.replace(/[^0-9.-]+/g, "")),
+        z
+          .string()
+          .transform((x) =>
+            x.trim() === "" ? null : x.replace(/[^0-9.-]+/g, "")
+          ),
         z.number(),
+        z.null(),
       ])
-      .pipe(z.coerce.number().min(0.01).max(9999))
-      .transform((num) => num.toString()),
+      .pipe(
+        z.coerce
+          .number()
+          .min(0.01)
+          .max(9999)
+          .transform((val) => Math.ceil(val * 100) / 100)
+          .nullable()
+      ),
     note: z.string().nullish(),
   })
   .refine(
     (data) => {
-      if (data["Warranty Exp"]) {
-        return (
-          data["Purchase Date"] != null &&
-          data["Purchase Date"] < data["Warranty Exp"]
-        );
+      if (data["Warranty Exp"] && data["Purchase Date"]) {
+        return data["Purchase Date"] < data["Warranty Exp"];
       }
       return true;
     },
     {
       message: "Must be after purchase date",
-      path: ["warrantyExp"],
+      path: ["Warranty Exp"],
     }
   );
 
@@ -81,18 +94,23 @@ export const assetSchema = z
     warrantyExp: z.coerce.date().nullish(),
     cost: z
       .union([
-        z.string().transform((x) => x.replace(/[^0-9.-]+/g, "")),
+        z.string().transform((x) => {
+          const cleaned = x.replace(/[^0-9.-]+/g, "").trim();
+          return cleaned === "" ? 0 : Number(cleaned);
+        }),
         z.number(),
+        z.null(),
       ])
-      .pipe(z.coerce.number().min(0.01).max(9999))
-      .transform((num) => num.toString()),
+      .pipe(z.coerce.number())
+      .transform((num) => {
+        const safeNum = num ?? 0;
+        return Math.ceil(safeNum * 100) / 100;
+      }),
   })
   .refine(
     (data) => {
-      if (data.warrantyExp) {
-        return (
-          data.purchaseDate != null && data.purchaseDate < data.warrantyExp
-        );
+      if (data.warrantyExp && data.purchaseDate) {
+        return data.purchaseDate < data.warrantyExp;
       }
       return true;
     },

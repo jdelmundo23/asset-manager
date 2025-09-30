@@ -6,6 +6,10 @@ interface ImportContextType {
   setAssets: React.Dispatch<React.SetStateAction<AssetImport[]>>;
   missingPresets: MissingPresets;
   setMissingPresets: React.Dispatch<React.SetStateAction<MissingPresets>>;
+  importedCount: number;
+  setImportedCount: React.Dispatch<React.SetStateAction<number>>;
+  skippedCount: number;
+  setSkippedCount: React.Dispatch<React.SetStateAction<number>>;
 }
 
 interface ImportProviderProps {
@@ -21,6 +25,8 @@ export function ImportProvider({ children }: ImportProviderProps) {
     departments: [],
     locations: [],
   });
+  const [importedCount, setImportedCount] = useState<number>(0);
+  const [skippedCount, setSkippedCount] = useState<number>(0);
 
   return (
     <ImportContext.Provider
@@ -29,6 +35,10 @@ export function ImportProvider({ children }: ImportProviderProps) {
         setAssets,
         missingPresets,
         setMissingPresets,
+        importedCount,
+        setImportedCount,
+        skippedCount,
+        setSkippedCount,
       }}
     >
       {children}

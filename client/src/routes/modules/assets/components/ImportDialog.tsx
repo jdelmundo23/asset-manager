@@ -10,14 +10,14 @@ import { useState } from "react";
 import UploadStage from "./import_stages/UploadStage";
 import { ImportProvider } from "@/context/ImportContext";
 import PreviewStage from "./import_stages/PreviewStage";
+import ResultsStage from "./import_stages/ResultsStage";
 
-type Stage = "upload" | "preview" | "confirm" | "results";
+type Stage = "upload" | "preview" | "results";
 
 const stageTitles: Record<Stage, string> = {
   upload: "Import Assets",
   preview: "Required Presets",
-  confirm: "Confirm Submission",
-  results: "View Results",
+  results: "Import Results",
 };
 
 export default function FileUpload() {
@@ -46,7 +46,18 @@ export default function FileUpload() {
             />
           )}
           {currentStage === "preview" && (
-            <PreviewStage previousStage={() => setCurrentStage("upload")} />
+            <PreviewStage
+              previousStage={() => setCurrentStage("upload")}
+              nextStage={() => setCurrentStage("results")}
+            />
+          )}
+          {currentStage === "results" && (
+            <ResultsStage
+              endImport={() => {
+                setOpen(false);
+                setTimeout(() => setCurrentStage("upload"), 1000);
+              }}
+            />
           )}
         </ImportProvider>
       </AlertDialogContent>

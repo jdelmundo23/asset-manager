@@ -102,7 +102,7 @@ CREATE TABLE Assets (
 
 CREATE UNIQUE INDEX uq_asset_model_identifier_notnull
     ON Assets (modelID, identifier)
-    WHERE identifier IS NOT NULL;
+    WHERE identifier IS NOT NULL AND modelID IS NOT NULL;
 
 CREATE TABLE Subnets (
     ID INT IDENTITY(1,1) PRIMARY KEY,

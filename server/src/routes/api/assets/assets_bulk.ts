@@ -109,7 +109,7 @@ router.post("/duplicate", async function (req, res) {
 
     res.json({
       message: "Assets duplicated successfully",
-      deleted: ids.length,
+      duplicated: ids.length,
     });
   } catch (err) {
     console.error(err);
