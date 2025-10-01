@@ -2,6 +2,7 @@ import {
   ColumnFiltersState,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   RowSelectionState,
   SortingState,
@@ -66,6 +67,13 @@ export function DataTable({
     onRowSelectionChange: onRowSelect,
     enableMultiRowSelection: !singleSelect,
     getRowId: (row) => row.ID.toString(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageIndex: 0,
+        pageSize: 10,
+      },
+    },
     state: {
       sorting,
       columnFilters,

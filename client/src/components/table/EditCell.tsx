@@ -4,12 +4,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import { Check, ChevronsUpDown, Pencil, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Input } from "../shadcn-ui/input";
 import { Column, RowSelectionState } from "@tanstack/react-table";
 import { z, ZodObject, ZodRawShape } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { FieldValues, useForm, UseFormReturn } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -37,17 +37,19 @@ import { useTableConfig } from "@/context/TableConfigContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export const EditCell = <T,>({
-  column,
-  currentValue,
-  ID,
-  schema,
-}: {
+interface EditCellProps<T> {
   column: Column<T, unknown>;
   currentValue: unknown;
   ID: number | string;
   schema: ZodObject<ZodRawShape>;
-}) => {
+}
+
+const EditCellInner = memo(function EditCell<T>({
+  column,
+  currentValue,
+  ID,
+  schema,
+}: EditCellProps<T>) {
   const { endpoint, queryKey } = useTableConfig();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -145,19 +147,57 @@ export const EditCell = <T,>({
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
-      <DropdownMenuTrigger>
-        <Pencil
-          className={`h-4 w-4 cursor-pointer opacity-0 transition-opacity duration-100 group-first:hidden group-last:hidden group-hover:opacity-100 ${isOpen && "opacity-100"}`}
+      <MemoizedDropdownMenuTrigger isOpen={isOpen} />
+      {isOpen && (
+        <MemoizedDropdownMenuContent
+          form={form}
+          onSubmit={onSubmit}
+          editField={editField}
         />
-      </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>{editField}</form>
-        </Form>
-      </DropdownMenuContent>
+      )}
     </DropdownMenu>
   );
-};
+});
+
+export const EditCell = memo(EditCellInner) as <T>(
+  props: EditCellProps<T>
+) => JSX.Element;
+
+const MemoizedDropdownMenuTrigger = memo(function MemoizedDropdownMenuTrigger({
+  isOpen,
+}: {
+  isOpen: boolean;
+}) {
+  return (
+    <DropdownMenuTrigger>
+      <Pencil
+        className={`h-4 w-4 cursor-pointer opacity-0 group-first:hidden group-last:hidden group-hover:opacity-100 ${
+          isOpen && "opacity-100"
+        }`}
+      />
+    </DropdownMenuTrigger>
+  );
+});
+
+const MemoizedDropdownMenuContent = memo(function MemoizedDropdownMenuContent<
+  T extends FieldValues,
+>({
+  form,
+  onSubmit,
+  editField,
+}: {
+  form: UseFormReturn<T>;
+  onSubmit: (values: T) => void;
+  editField: JSX.Element;
+}) {
+  return (
+    <DropdownMenuContent>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>{editField}</form>
+      </Form>
+    </DropdownMenuContent>
+  );
+});
 
 const TextEditor = <T,>({
   column,

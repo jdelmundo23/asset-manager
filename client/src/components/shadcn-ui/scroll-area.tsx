@@ -3,10 +3,16 @@ import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
 import { cn } from "@/lib/utils";
 
+type ScrollAreaProps = React.ComponentPropsWithoutRef<
+  typeof ScrollAreaPrimitive.Root
+> & {
+  barPadding?: { top?: number; bottom?: number; left?: number; right?: number };
+};
+
 const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
->(({ className, children, ...props }, ref) => (
+  ScrollAreaProps
+>(({ className, children, barPadding, ...props }, ref) => (
   <ScrollAreaPrimitive.Root
     ref={ref}
     className={cn("relative flex flex-col overflow-hidden", className)}
@@ -15,7 +21,14 @@ const ScrollArea = React.forwardRef<
     <ScrollAreaPrimitive.Viewport className="w-full grow rounded-[inherit]">
       {children}
     </ScrollAreaPrimitive.Viewport>
-    <ScrollBar />
+    <ScrollBar
+      style={{
+        paddingTop: `${barPadding?.top}px`,
+        paddingBottom: `${barPadding?.bottom}px`,
+        paddingLeft: `${barPadding?.left}px`,
+        paddingRight: `${barPadding?.right}px`,
+      }}
+    />
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
 ));

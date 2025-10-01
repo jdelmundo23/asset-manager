@@ -267,7 +267,10 @@ export const getColumns = (
         return <div className="">{formatted}</div>;
       },
       sortingFn: (rowA, rowB) => {
-        return parseFloat(rowA.original.cost) - parseFloat(rowB.original.cost);
+        return (
+          parseFloat(String(rowA.original.cost)) -
+          parseFloat(String(rowB.original.cost))
+        );
       },
     },
     {
