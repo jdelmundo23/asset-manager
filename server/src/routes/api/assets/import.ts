@@ -79,22 +79,22 @@ const addAssets = async (
       request.input(
         `locationID${index}`,
         sql.Int,
-        maps.locations.get(row.Location.toLowerCase().trim()) ?? null
+        maps.locations.get(row.Location.toLowerCase()) ?? null
       );
       request.input(
         `departmentID${index}`,
         sql.Int,
-        maps.departments.get(row.Department.toLowerCase().trim()) ?? null
+        maps.departments.get(row.Department.toLowerCase()) ?? null
       );
       request.input(
         `modelID${index}`,
         sql.Int,
-        maps.models.get(row.Model.toLowerCase().trim()) ?? null
+        maps.models.get(row.Model.toLowerCase()) ?? null
       );
       request.input(
         `assignedTo${index}`,
         sql.VarChar,
-        maps.users.get(row["Assigned To"]?.toLowerCase().trim() ?? "") ?? null
+        maps.users.get(row["Assigned To"]?.toLowerCase() ?? "") ?? null
       );
       request.input(`purchaseDate${index}`, sql.DateTime, row["Purchase Date"]);
       request.input(`warrantyExp${index}`, sql.DateTime, row["Warranty Exp"]);
@@ -144,7 +144,7 @@ const getModelsToAdd = async (
   const types = Array.from(
     new Set(
       missingPresets.modelAndTypes.map((modelAndType) => {
-        return modelAndType.split("|").map((str) => str.trim())[1];
+        return modelAndType.split("|")[1];
       })
     )
   );
@@ -152,7 +152,7 @@ const getModelsToAdd = async (
   const models = Array.from(
     new Set(
       missingPresets.modelAndTypes.map((modelAndType) => {
-        const [model, type] = modelAndType.split("|").map((str) => str.trim());
+        const [model, type] = modelAndType.split("|");
         return { model: model, type: type };
       })
     )
@@ -166,11 +166,11 @@ const getModelsToAdd = async (
 
   const existingTypesMap = new Map<string, number>();
   existingTypesResult.recordset.forEach((r) =>
-    existingTypesMap.set(r.name.toLowerCase().trim(), r.ID)
+    existingTypesMap.set(r.name.toLowerCase(), r.ID)
   );
 
   const typesToAdd = types.filter(
-    (type) => !existingTypesMap.has(type.toLowerCase().trim())
+    (type) => !existingTypesMap.has(type.toLowerCase())
   );
 
   const addedTypesMap = await addGenericRows(
@@ -232,17 +232,14 @@ router.post("/confirm", async function (req, res) {
         FROM users
       `);
     const usersMap: Map<string, string> = new Map(
-      allUsersResult.recordset.map((row) => [
-        row.name.toLowerCase().trim(),
-        row.ID,
-      ])
+      allUsersResult.recordset.map((row) => [row.name.toLowerCase(), row.ID])
     );
 
     const assetsToAdd = assets.filter((asset) => {
       return (
-        departmentsMap.has(asset.Department.toLowerCase().trim()) &&
-        locationsMap.has(asset.Location.toLowerCase().trim()) &&
-        modelsMap.has(asset.Model.toLowerCase().trim())
+        departmentsMap.has(asset.Department.toLowerCase()) &&
+        locationsMap.has(asset.Location.toLowerCase()) &&
+        modelsMap.has(asset.Model.toLowerCase())
       );
     });
 

@@ -12,6 +12,12 @@ export const presetTableSchema = z.enum([
   "assettypes",
 ]);
 
+const trimmedString = (min: number, max: number) =>
+  z.preprocess(
+    (val) => (typeof val === "string" ? val.trim() : val),
+    z.string().min(min).max(max)
+  );
+
 export const userSchema = z.object({
   ID: z.string().uuid(),
   name: z.string().max(255),
@@ -21,7 +27,7 @@ export const userSchema = z.object({
 
 export const presetSchema = z.object({
   ID: z.number().optional(),
-  name: z.string().min(2).max(50),
+  name: trimmedString(2, 50),
   typeID: z.number().nullish(),
   typeName: z.string().min(2).max(50).nullish(),
 });
@@ -38,13 +44,13 @@ export const missingPresetsSchema = z.object({
 
 export const assetImportSchema = z
   .object({
-    Name: z.string().min(2).max(100),
-    Identifier: z.string().min(2).max(100).nullish(),
-    Type: z.string().min(2).max(50),
-    Model: z.string().min(2).max(50),
-    Location: z.string().min(2).max(50),
-    Department: z.string().min(2).max(50),
-    "Assigned To": z.string().nullish(),
+    Name: trimmedString(2, 100),
+    Identifier: trimmedString(2, 100).nullish(),
+    Type: trimmedString(2, 50),
+    Model: trimmedString(2, 50),
+    Location: trimmedString(2, 50),
+    Department: trimmedString(2, 50),
+    "Assigned To": trimmedString(0, 255).nullish(),
     "Purchase Date": nullableDate,
     "Warranty Exp": nullableDate,
     Cost: z

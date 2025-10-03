@@ -34,7 +34,7 @@ const labels: Record<keyof MissingPresets, string> = {
 
 const getItemName = (key: keyof MissingPresets, preset: string) => {
   if (key === "modelAndTypes") {
-    const [model, type] = preset.split("|").map((str) => str.trim());
+    const [model, type] = preset.split("|");
     return `${model} - ${type}`;
   }
   return preset;

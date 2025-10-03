@@ -21,14 +21,14 @@ export async function detectMissingRows(
         );
       existing.recordset.forEach((row) =>
         map.set(
-          `${row.name.trim().toLowerCase()}|${row.typeName.trim().toLowerCase()}`,
+          `${row.name.toLowerCase()}|${row.typeName.toLowerCase()}`,
           row.ID
         )
       );
 
       for (const asset of assets) {
-        const modelName = asset.Model.trim();
-        const typeName = asset.Type.trim();
+        const modelName = asset.Model;
+        const typeName = asset.Type;
 
         const key = `${modelName.toLowerCase()}|${typeName.toLowerCase()}`;
 
@@ -48,10 +48,10 @@ export async function detectMissingRows(
         const original = getValue(asset);
         if (!original) continue;
 
-        const normalized = original.trim().toLowerCase();
-        const key = original.trim().toLowerCase();
+        const normalized = original.toLowerCase();
+        const key = original.toLowerCase();
         if (!map.has(normalized)) {
-          missingMap.set(key, original.trim());
+          missingMap.set(key, original);
         }
       }
     }
