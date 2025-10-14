@@ -3,13 +3,17 @@ import { useImport } from "@/context/ImportContext";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
 import { formatFileSize } from "@/lib/utils";
-import { assetImportSchema, missingPresetsSchema } from "@shared/schemas";
+import {
+  AssetImport,
+  assetImportSchema,
+  missingPresetsSchema,
+  SkippedRow,
+} from "@shared/schemas";
 import { useMutation } from "@tanstack/react-query";
 import { Upload } from "lucide-react";
 import Papa from "papaparse";
 import { ChangeEvent, useRef, useState } from "react";
 import { toast } from "sonner";
-import z from "zod";
 
 interface UploadStageProps {
   nextStage: () => void;
@@ -20,7 +24,7 @@ export default function UploadStage({
   nextStage,
   closeDialog,
 }: UploadStageProps) {
-  const { setMissingPresets, setAssets } = useImport();
+  const { setMissingPresets, setAssets, setSkippedRows } = useImport();
   const [file, setFile] = useState<File>();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [failedMsg, setFailedMsg] = useState<string | null>();
@@ -49,24 +53,48 @@ export default function UploadStage({
   });
 
   const handleParsedData = async (data: unknown) => {
-    const parse = z.array(assetImportSchema).safeParse(data);
-
-    if (parse.error) {
-      console.error(
-        "Failed to parse CSV data. Ensure CSV is correctly formatted."
-      );
+    if (!Array.isArray(data)) {
       setFailedMsg("Invalid CSV format");
-    } else {
-      const seen = new Set<string>();
-      const uniqueAssets = parse.data.filter((row) => {
-        const key = `${row.Model}-${row.Identifier}`;
-        if (seen.has(key)) return false;
-        seen.add(key);
-        return true;
+      return;
+    }
+    const validRows: AssetImport[] = [];
+    const skippedRows: SkippedRow[] = [];
+    const seen = new Set<string>();
+
+    data.forEach((row, index) => {
+      const rowNumber = index + 2;
+      const result = assetImportSchema.safeParse({
+        rowNumber: index + 2,
+        ...row,
       });
 
+      if (!result.success) {
+        skippedRows.push({
+          rowNumber,
+          identifier: row?.Identifier,
+          reason: "Format error in column",
+        });
+        return;
+      }
+
+      const key = `${row.Model}-${row.Identifier}`;
+      if (seen.has(key)) {
+        skippedRows.push({
+          rowNumber,
+          identifier: result.data.Identifier,
+          reason: "Duplicate model + identifier in CSV",
+        });
+        return;
+      }
+
+      seen.add(key);
+      validRows.push(result.data);
+      setSkippedRows(skippedRows);
+    });
+
+    if (validRows.length > 0) {
       toast
-        .promise(checkBulkImport.mutateAsync(uniqueAssets), {
+        .promise(checkBulkImport.mutateAsync(validRows), {
           loading: "Parsing rows...",
           success: "Successfully parsed rows",
         })
@@ -75,7 +103,9 @@ export default function UploadStage({
           setFailedMsg("Failed to parse CSV");
           handleError(err);
         });
-      setAssets(uniqueAssets);
+      setAssets(validRows);
+    } else {
+      setFailedMsg("No valid rows in CSV");
     }
   };
 

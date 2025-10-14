@@ -55,7 +55,7 @@ export default function FileUpload() {
             <ResultsStage
               endImport={() => {
                 setOpen(false);
-                setTimeout(() => setCurrentStage("upload"), 1000);
+                setTimeout(() => setCurrentStage("upload"), 200);
               }}
             />
           )}

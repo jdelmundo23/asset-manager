@@ -1,4 +1,4 @@
-import { AssetImport, MissingPresets } from "@shared/schemas";
+import { AssetImport, MissingPresets, SkippedRow } from "@shared/schemas";
 import { createContext, useContext, useState, ReactNode } from "react";
 
 interface ImportContextType {
@@ -8,8 +8,8 @@ interface ImportContextType {
   setMissingPresets: React.Dispatch<React.SetStateAction<MissingPresets>>;
   importedCount: number;
   setImportedCount: React.Dispatch<React.SetStateAction<number>>;
-  skippedCount: number;
-  setSkippedCount: React.Dispatch<React.SetStateAction<number>>;
+  skippedRows: SkippedRow[];
+  setSkippedRows: React.Dispatch<React.SetStateAction<SkippedRow[]>>;
 }
 
 interface ImportProviderProps {
@@ -26,7 +26,7 @@ export function ImportProvider({ children }: ImportProviderProps) {
     locations: [],
   });
   const [importedCount, setImportedCount] = useState<number>(0);
-  const [skippedCount, setSkippedCount] = useState<number>(0);
+  const [skippedRows, setSkippedRows] = useState<SkippedRow[]>([]);
 
   return (
     <ImportContext.Provider
@@ -37,8 +37,8 @@ export function ImportProvider({ children }: ImportProviderProps) {
         setMissingPresets,
         importedCount,
         setImportedCount,
-        skippedCount,
-        setSkippedCount,
+        skippedRows,
+        setSkippedRows,
       }}
     >
       {children}

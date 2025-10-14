@@ -44,6 +44,7 @@ export const missingPresetsSchema = z.object({
 
 export const assetImportSchema = z
   .object({
+    rowNumber: z.number(),
     Name: trimmedString(2, 100),
     Identifier: trimmedString(2, 100).nullish(),
     Type: trimmedString(2, 50),
@@ -86,6 +87,12 @@ export const assetImportSchema = z
     }
   );
 
+export const skippedRowSchema = z.object({
+  rowNumber: z.number(),
+  identifier: z.string().min(2).max(100).nullish(),
+  reason: z.string().min(1),
+});
+
 export const assetSchema = z
   .object({
     ID: z.number().optional(),
@@ -98,6 +105,7 @@ export const assetSchema = z
     assignedTo: z.string().uuid().nullish(),
     purchaseDate: z.coerce.date().nullish(),
     warrantyExp: z.coerce.date().nullish(),
+    note: z.string().nullish(),
     cost: z
       .union([
         z.string().transform((x) => {
@@ -201,6 +209,8 @@ export const subnetSchema = z.object({
 export const subnetRowSchema = subnetSchema.extend({
   ID: z.number(),
 });
+
+export type SkippedRow = z.infer<typeof skippedRowSchema>;
 
 export type PresetTable = z.infer<typeof presetTableSchema>;
 

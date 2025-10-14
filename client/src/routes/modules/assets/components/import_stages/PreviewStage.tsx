@@ -8,7 +8,7 @@ import {
 import { useImport } from "@/context/ImportContext";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";
-import { AssetImport, MissingPresets } from "@shared/schemas";
+import { AssetImport, MissingPresets, skippedRowSchema } from "@shared/schemas";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
 import { useState } from "react";
@@ -49,7 +49,8 @@ export default function PreviewStage({
     setMissingPresets,
     assets,
     setImportedCount,
-    setSkippedCount,
+    skippedRows,
+    setSkippedRows,
   } = useImport();
 
   const [failedMsg, setFailedMsg] = useState<string | null>();
@@ -79,7 +80,10 @@ export default function PreviewStage({
     },
     onSuccess: (result) => {
       const importedCount = z.number().safeParse(result.data.importedCount);
-      const skippedCount = z.number().safeParse(result.data.skippedCount);
+
+      const skippedAssets = z
+        .array(skippedRowSchema)
+        .safeParse(result.data.skippedRows);
 
       if (!importedCount.error) {
         setImportedCount(importedCount.data);
@@ -88,11 +92,10 @@ export default function PreviewStage({
         setImportedCount(-1);
       }
 
-      if (!skippedCount.error) {
-        setSkippedCount(skippedCount.data);
+      if (!skippedAssets.error) {
+        setSkippedRows([...skippedAssets.data, ...skippedRows]);
       } else {
-        console.error("Server did not return skipped count");
-        setSkippedCount(-1);
+        console.error("Server did not return skipped rows");
       }
 
       queryClient.invalidateQueries({

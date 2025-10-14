@@ -1,15 +1,17 @@
 import {
   AssetImport,
   assetImportSchema,
-  MissingPresets,
   missingPresetsSchema,
+  SkippedRow,
 } from "@shared/schemas";
 import express from "express";
 import { getPool } from "@server/src/sql";
 import {
+  addAssets,
   addGenericRows,
   addModelRows,
   detectMissingRows,
+  getModelsToAdd,
 } from "@server/src/importUtils";
 import z from "zod";
 import sql from "mssql";
@@ -60,136 +62,6 @@ router.post("/check", async function (req, res) {
   }
 });
 
-const addAssets = async (
-  pool: sql.ConnectionPool,
-  assets: AssetImport[],
-  maps: {
-    locations: Map<string, number>;
-    departments: Map<string, number>;
-    models: Map<string, number>;
-    users: Map<string, string>;
-  }
-) => {
-  const request = pool.request();
-
-  try {
-    assets.forEach((row, index) => {
-      request.input(`name${index}`, sql.VarChar, row.Name);
-      request.input(`identifier${index}`, sql.VarChar, row.Identifier);
-      request.input(
-        `locationID${index}`,
-        sql.Int,
-        maps.locations.get(row.Location.toLowerCase()) ?? null
-      );
-      request.input(
-        `departmentID${index}`,
-        sql.Int,
-        maps.departments.get(row.Department.toLowerCase()) ?? null
-      );
-      request.input(
-        `modelID${index}`,
-        sql.Int,
-        maps.models.get(row.Model.toLowerCase()) ?? null
-      );
-      request.input(
-        `assignedTo${index}`,
-        sql.VarChar,
-        maps.users.get(row["Assigned To"]?.toLowerCase() ?? "") ?? null
-      );
-      request.input(`purchaseDate${index}`, sql.DateTime, row["Purchase Date"]);
-      request.input(`warrantyExp${index}`, sql.DateTime, row["Warranty Exp"]);
-      request.input(`cost${index}`, sql.Decimal(6, 2), row.Cost);
-      request.input(`note${index}`, sql.NVarChar, row.note);
-    });
-
-    const valuesClause = assets
-      .map(
-        (_, i) =>
-          `(@name${i}, @identifier${i}, @locationID${i}, @departmentID${i}, @modelID${i}, @assignedTo${i}, @purchaseDate${i}, @warrantyExp${i}, @cost${i}, @note${i})`
-      )
-      .join(", ");
-
-    const insertQuery = `
-      INSERT INTO Assets (
-        name, identifier, locationID, departmentID, modelID,
-        assignedTo, purchaseDate, warrantyExp, cost, note
-      )
-      SELECT *
-      FROM (VALUES ${valuesClause}) AS temp
-        (name, identifier, locationID, departmentID, modelID, assignedTo, purchaseDate, warrantyExp, cost, note)
-      WHERE NOT EXISTS (
-        SELECT 1
-        FROM Assets a
-        WHERE a.modelID = temp.modelID
-          AND a.identifier = temp.identifier
-      )
-    `;
-
-    const result = await request.query(insertQuery);
-
-    return {
-      rowsAffected: result.rowsAffected[0],
-      rowsSkipped: assets.length - result.rowsAffected[0],
-    };
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-const getModelsToAdd = async (
-  pool: sql.ConnectionPool,
-  missingPresets: MissingPresets
-) => {
-  const types = Array.from(
-    new Set(
-      missingPresets.modelAndTypes.map((modelAndType) => {
-        return modelAndType.split("|")[1];
-      })
-    )
-  );
-
-  const models = Array.from(
-    new Set(
-      missingPresets.modelAndTypes.map((modelAndType) => {
-        const [model, type] = modelAndType.split("|");
-        return { model: model, type: type };
-      })
-    )
-  );
-
-  const request = pool.request();
-
-  const existingTypesResult = await request.query(
-    `SELECT ID, name FROM assettypes`
-  );
-
-  const existingTypesMap = new Map<string, number>();
-  existingTypesResult.recordset.forEach((r) =>
-    existingTypesMap.set(r.name.toLowerCase(), r.ID)
-  );
-
-  const typesToAdd = types.filter(
-    (type) => !existingTypesMap.has(type.toLowerCase())
-  );
-
-  const addedTypesMap = await addGenericRows(
-    pool,
-    "assettypes",
-    "name",
-    typesToAdd
-  );
-
-  const typeMap = new Map([...existingTypesMap, ...addedTypesMap]);
-
-  const modelsToAdd = models.map(({ model, type }) => ({
-    modelName: model,
-    typeID: typeMap.get(type.toLowerCase()),
-  }));
-
-  return modelsToAdd;
-};
-
 router.post("/confirm", async function (req, res) {
   const missingPresets = parseInputReq(
     missingPresetsSchema,
@@ -235,12 +107,24 @@ router.post("/confirm", async function (req, res) {
       allUsersResult.recordset.map((row) => [row.name.toLowerCase(), row.ID])
     );
 
-    const assetsToAdd = assets.filter((asset) => {
-      return (
+    const assetsToAdd: AssetImport[] = [];
+
+    const skippedAssets: SkippedRow[] = [];
+
+    assets.forEach((asset) => {
+      if (
         departmentsMap.has(asset.Department.toLowerCase()) &&
         locationsMap.has(asset.Location.toLowerCase()) &&
         modelsMap.has(asset.Model.toLowerCase())
-      );
+      ) {
+        assetsToAdd.push(asset);
+      } else {
+        skippedAssets.push({
+          rowNumber: asset.rowNumber,
+          identifier: asset.Identifier,
+          reason: "Required department, location, or model was not added",
+        });
+      }
     });
 
     if (assetsToAdd.length > 0) {
@@ -252,14 +136,15 @@ router.post("/confirm", async function (req, res) {
       });
 
       res.json({
-        message: "Assets imported successfully",
+        message: "Asset import successful",
         importedCount: result.rowsAffected,
-        skippedCount: result.rowsSkipped,
+        skippedRows: [...result.rowsSkipped, ...skippedAssets],
       });
     } else {
       res.json({
         message: "No assets were imported",
         importedCount: 0,
+        skippedRows: skippedAssets,
       });
     }
   } catch (err) {
