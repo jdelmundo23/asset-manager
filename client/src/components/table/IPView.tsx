@@ -15,11 +15,12 @@ import { ScrollArea } from "../shadcn-ui/scroll-area";
 import { formatIP } from "@/lib/utils";
 
 interface IPViewProps {
+  children: JSX.Element;
   assetID: number;
   assetName: string;
 }
 
-export default function IPView({ assetID, assetName }: IPViewProps) {
+export default function IPView({ children, assetID, assetName }: IPViewProps) {
   const [ips, setIps] = useState<IPRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -44,11 +45,7 @@ export default function IPView({ assetID, assetName }: IPViewProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger>
-        <button className="whitespace-nowrap text-blue-600 underline">
-          View
-        </button>
-      </DialogTrigger>
+      <DialogTrigger>{children}</DialogTrigger>
       <DialogContent className="h-44 max-w-lg text-white transition-all">
         <DialogHeader>
           <DialogTitle>{assetName}</DialogTitle>

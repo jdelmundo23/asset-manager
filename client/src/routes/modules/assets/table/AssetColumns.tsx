@@ -1,7 +1,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { AssetRow, Preset, User } from "@shared/schemas";
 
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, NotebookText, Plus, Wifi } from "lucide-react";
 
 import { Button } from "@/components/shadcn-ui/button";
 import {
@@ -21,6 +21,7 @@ import {
 } from "../components/ActionDialogs";
 import { useState } from "react";
 import IPView from "@/components/table/IPView";
+import NoteView from "@/components/table/NoteView";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "N/A";
@@ -250,7 +251,11 @@ export const getColumns = (
       id: "ips",
       header: "IPs",
       cell: ({ row }) => (
-        <IPView assetID={row.original.ID} assetName={row.original.name} />
+        <div className="flex items-center hover:scale-110">
+          <IPView assetID={row.original.ID} assetName={row.original.name}>
+            <Wifi />
+          </IPView>
+        </div>
       ),
       meta: { canEdit: false },
     },
@@ -272,6 +277,29 @@ export const getColumns = (
           parseFloat(String(rowB.original.cost))
         );
       },
+    },
+
+    {
+      accessorKey: "note",
+      header: "Note",
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center hover:scale-110">
+            <NoteView
+              currentNote={row.original.note ?? ""}
+              ID={row.original.ID}
+            >
+              {row.original.note ? (
+                <NotebookText />
+              ) : (
+                <Plus className="opacity-0 group-hover:opacity-100" />
+              )}
+            </NoteView>
+          </div>
+        );
+      },
+      meta: { canEdit: false },
+      enableSorting: false,
     },
     {
       id: "actions",

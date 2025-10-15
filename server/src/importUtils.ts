@@ -234,7 +234,7 @@ export const addAssets = async (
         maps.users.get(row["Assigned To"]?.toLowerCase() ?? "") ?? null,
       purchaseDate: row["Purchase Date"],
       warrantyExp: row["Warranty Exp"],
-      note: row.note,
+      note: row.Note,
     },
   }));
 

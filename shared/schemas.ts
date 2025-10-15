@@ -72,7 +72,7 @@ export const assetImportSchema = z
           .transform((val) => Math.ceil(val * 100) / 100)
           .nullable()
       ),
-    note: z.string().nullish(),
+    Note: trimmedString(0, 255).nullish(),
   })
   .refine(
     (data) => {
@@ -105,7 +105,7 @@ export const assetSchema = z
     assignedTo: z.string().uuid().nullish(),
     purchaseDate: z.coerce.date().nullish(),
     warrantyExp: z.coerce.date().nullish(),
-    note: z.string().nullish(),
+    note: z.string().max(255).nullish(),
     cost: z
       .union([
         z.string().transform((x) => {

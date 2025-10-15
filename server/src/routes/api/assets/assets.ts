@@ -15,6 +15,7 @@ const inputDefinitions = [
   { name: "purchaseDate", type: sql.DateTime },
   { name: "warrantyExp", type: sql.DateTime },
   { name: "cost", type: sql.Decimal(6, 2) },
+  { name: "note", type: sql.NVarChar(255) },
 ] as const;
 
 const inputs = (asset: Partial<Asset> = {}) =>
@@ -267,7 +268,7 @@ router.patch("/", async function (req, res) {
     )?.type;
 
     if (!sqlType) {
-      res.status(400).json({ error: "Type not found due to invalid column" });
+      res.status(400).json({ error: "Invalid column" });
       return;
     }
 
