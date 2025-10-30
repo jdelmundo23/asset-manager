@@ -29,7 +29,7 @@ export default function FileUpload() {
       <AlertDialogTrigger>
         <Button variant={"secondary"} className="gap-x-1.5">
           Import
-          <Upload />
+          <Upload className="hidden sm:block" />
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col justify-center">

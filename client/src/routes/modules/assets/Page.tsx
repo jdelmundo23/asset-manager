@@ -12,7 +12,7 @@ function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
 
   return (
-    <div className="container mx-auto flex w-11/12 flex-col gap-2 py-10">
+    <div className="container mx-auto flex h-full w-11/12 flex-col gap-2 py-10">
       <TableConfigProvider endpoint="/api/assets" queryKey={["assetData"]}>
         <AssetProvider>
           <AssetPageContent

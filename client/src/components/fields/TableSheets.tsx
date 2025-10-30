@@ -93,7 +93,7 @@ export function AssetTableSheet({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="space-y-3">
+      <SheetContent className="flex flex-col space-y-3">
         <SheetHeader>
           <SheetTitle>Select an asset</SheetTitle>
         </SheetHeader>
@@ -111,6 +111,7 @@ export function AssetTableSheet({
             "cost",
             "actions",
             "ips",
+            "note",
           ]}
           selectedRow={selectedRow}
           onRowSelect={setSelectedRow}

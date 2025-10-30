@@ -14,7 +14,9 @@ function Main({ children }: MainProps) {
       }`}
     >
       <Header sidebarActive={sidebarActive} />
-      <div className={"h-full w-full"}>{children}</div>
+      <div className={"flex w-full flex-1 flex-col overflow-hidden"}>
+        {children}
+      </div>
     </main>
   );
 }

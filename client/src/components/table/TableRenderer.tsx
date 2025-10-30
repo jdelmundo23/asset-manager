@@ -76,7 +76,7 @@ export default function TableRenderer<T>({
   return (
     <>
       <ScrollArea
-        className={`${animated ? "animate-fade-in-up" : ""} max-h-[800px] rounded-md bg-white drop-shadow-md`}
+        className={`${animated ? "animate-fade-in-up" : ""} max-h-full rounded-md bg-white drop-shadow-md`}
         barPadding={{ top: 52, bottom: 10 }}
       >
         <Table>
@@ -158,7 +158,7 @@ export default function TableRenderer<T>({
         <ScrollBar orientation="horizontal" className="ml-[10px]" />
       </ScrollArea>
 
-      <div className="flex">
+      <div className="animate-fade-in-up flex">
         <div className="text-muted-foreground flex-1 text-sm">
           {table.getFilteredSelectedRowModel().rows.length > 0 && !singleSelect
             ? `${table.getFilteredSelectedRowModel().rows.length} of

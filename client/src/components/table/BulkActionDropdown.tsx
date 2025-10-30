@@ -39,7 +39,7 @@ export default function BulkActionDropdown({
           "gap-0 pl-3 transition-all"
         )}
       >
-        <ChevronsUpDown />
+        <ChevronsUpDown className="hidden sm:block" />
         Bulk Actions
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">

@@ -14,7 +14,7 @@ function Page() {
   const [selectedSubnet, setSelectedSubnet] = useState<SubnetRow | undefined>();
 
   return (
-    <div className="container mx-auto flex w-1/2 flex-col gap-2 py-10">
+    <div className="container mx-auto flex w-11/12 max-w-[800px] flex-col gap-2 py-10">
       <TableConfigProvider endpoint="/api/ips" queryKey={["ipData"]}>
         <IPProvider>
           <IPPageContent
@@ -52,10 +52,14 @@ function IPPageContent({
     <>
       <TableToolbar tableTitle="Network">
         <div className="ml-1 flex w-full justify-between">
-          <SubnetComboxbox
-            selectedSubnet={selectedSubnet}
-            setSelectedSubnet={setSelectedSubnet}
-          />
+          <div>
+            <div className="hidden w-40 sm:block">
+              <SubnetComboxbox
+                selectedSubnet={selectedSubnet}
+                setSelectedSubnet={setSelectedSubnet}
+              />
+            </div>
+          </div>
           <div className="flex gap-x-1">
             <BulkActionDropdown
               entity={"ip"}
@@ -67,6 +71,12 @@ function IPPageContent({
           </div>
         </div>
       </TableToolbar>
+      <div className="sm:hidden">
+        <SubnetComboxbox
+          selectedSubnet={selectedSubnet}
+          setSelectedSubnet={setSelectedSubnet}
+        />
+      </div>
       <DataTable
         ips={filteredIPs}
         selectedRow={selectedRows}
