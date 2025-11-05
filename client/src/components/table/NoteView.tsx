@@ -23,12 +23,6 @@ import axiosApi from "@/lib/axios";
 import { useTableConfig } from "@/context/TableConfigContext";
 import { toast } from "sonner";
 import { handleError } from "@/lib/handleError";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../shadcn-ui/tooltip";
 
 interface NoteViewProps {
   children: JSX.Element;
@@ -110,7 +104,7 @@ export default function NoteView({ children, currentNote, ID }: NoteViewProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>{children}</DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="gap-y-2 text-white">
         <DialogTitle className="">Note</DialogTitle>
         <Form {...form}>
@@ -135,29 +129,20 @@ export default function NoteView({ children, currentNote, ID }: NoteViewProps) {
                 </FormItem>
               )}
             />
-            <div className="absolute bottom-0 right-0 p-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    {editing ? (
-                      <Check
-                        className="h-5 w-5 cursor-pointer"
-                        onClick={form.handleSubmit(onSubmit)}
-                      />
-                    ) : (
-                      <Pencil
-                        className="h-5 w-5 cursor-pointer"
-                        onClick={() => {
-                          setEditing(true);
-                        }}
-                      />
-                    )}
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {editing ? "Confirm" : "Edit"}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+            <div className="absolute bottom-0 right-0 flex p-2">
+              <button
+                aria-label={editing ? "Confirm note" : "Edit note"}
+                type="button"
+                onClick={
+                  editing ? form.handleSubmit(onSubmit) : () => setEditing(true)
+                }
+              >
+                {editing ? (
+                  <Check className="h-5 w-5" />
+                ) : (
+                  <Pencil className="h-5 w-5" />
+                )}
+              </button>
             </div>
           </form>
         </Form>

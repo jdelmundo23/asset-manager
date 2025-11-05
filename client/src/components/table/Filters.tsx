@@ -15,7 +15,7 @@ import {
 } from "@/components/shadcn-ui/popover";
 import { Column } from "@tanstack/react-table";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import CalendarPopover from "../fields/CalendarPopover";
 
 export const FilterBox = <T,>({
@@ -42,11 +42,8 @@ export const FilterBox = <T,>({
   }
   return (
     <Popover>
-      <PopoverTrigger>{children}</PopoverTrigger>
-      <PopoverContent
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        className="rounded-xl p-0"
-      >
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
+      <PopoverContent className="rounded-xl p-0">
         {filterElement}
       </PopoverContent>
     </Popover>
@@ -54,18 +51,28 @@ export const FilterBox = <T,>({
 };
 
 const TextFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <>
       <Input
+        ref={inputRef}
         placeholder={`Filter by ${column.columnDef.header}`}
         value={(column?.getFilterValue() as string) ?? ""}
         onChange={(event) => column.setFilterValue(event.target.value)}
+        autoFocus
       />
       {column.getFilterValue() && (
-        <X
-          className="hover:bg-muted text-muted-foreground absolute inset-y-2 right-1 cursor-pointer rounded-sm"
-          onClick={() => column.setFilterValue("")}
-        />
+        <button
+          aria-label="Clear text filter"
+          className="flex"
+          onClick={() => {
+            column.setFilterValue("");
+            inputRef.current?.focus();
+          }}
+        >
+          <X className="hover:bg-muted text-muted-foreground absolute inset-y-2 right-1 cursor-pointer rounded-sm" />
+        </button>
       )}
     </>
   );

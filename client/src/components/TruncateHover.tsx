@@ -1,15 +1,22 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, ReactNode } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/shadcn-ui/tooltip";
+import { cn } from "@/lib/utils";
 
 export function TruncateHover({
   children,
+  className,
+  onTruncateChange,
+  tooltipContent,
 }: {
-  children: string | null | undefined;
+  children: string | null | undefined | JSX.Element | ReactNode;
+  className?: string | undefined;
+  onTruncateChange?: React.Dispatch<React.SetStateAction<boolean>>;
+  tooltipContent?: ReactNode;
 }) {
   const textRef = useRef<HTMLDivElement>(null);
   const [isTruncated, setIsTruncated] = useState(false);
@@ -19,7 +26,9 @@ export function TruncateHover({
     if (!el) return;
 
     const observer = new ResizeObserver(() => {
-      setIsTruncated(el.scrollWidth > el.clientWidth);
+      const truncated = el.scrollWidth > el.clientWidth;
+      setIsTruncated(truncated);
+      onTruncateChange?.(truncated);
     });
 
     observer.observe(el);
@@ -31,7 +40,13 @@ export function TruncateHover({
     <TooltipProvider disableHoverableContent={false}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <p ref={textRef} className="truncate">
+          <p
+            ref={textRef}
+            className={cn(
+              `truncate ${isTruncated ? "cursor-default" : ""}`,
+              className
+            )}
+          >
             {children}
           </p>
         </TooltipTrigger>
@@ -40,7 +55,7 @@ export function TruncateHover({
             className="pointer-events-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <p>{children}</p>
+            {tooltipContent || <p>{children}</p>}
           </TooltipContent>
         ) : (
           ""

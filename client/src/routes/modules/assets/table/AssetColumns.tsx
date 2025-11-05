@@ -104,12 +104,16 @@ export const getColumns = (
       ),
       enableSorting: false,
       enableHiding: false,
+      enableResizing: false,
+      size: 36,
+      meta: { memo: false },
     },
     {
       accessorKey: "name",
       header: "Name",
       sortingFn: "text",
       meta: { type: "text" },
+      size: 200,
     },
     {
       accessorKey: "identifier",
@@ -152,6 +156,7 @@ export const getColumns = (
         return selectFilterFn(row.getValue(columnId), filterValue, types);
       },
       meta: { type: "select", options: types, canEdit: false },
+      size: 100,
     },
     {
       accessorKey: "locationID",
@@ -173,6 +178,7 @@ export const getColumns = (
         return selectFilterFn(row.getValue(columnId), filterValue, locations);
       },
       meta: { type: "select", options: locations },
+      size: 100,
     },
     {
       accessorKey: "departmentID",
@@ -194,6 +200,7 @@ export const getColumns = (
         return selectFilterFn(row.getValue(columnId), filterValue, departments);
       },
       meta: { type: "select", options: departments },
+      size: 100,
     },
     {
       accessorKey: "assignedTo",
@@ -230,6 +237,8 @@ export const getColumns = (
         return dateFilterFn(row.getValue(columnId), filterValue);
       },
       meta: { type: "date" },
+      enableResizing: false,
+      size: 140,
     },
     {
       accessorKey: "warrantyExp",
@@ -246,6 +255,8 @@ export const getColumns = (
         return dateFilterFn(row.getValue(columnId), filterValue);
       },
       meta: { type: "date" },
+      enableResizing: false,
+      size: 140,
     },
     {
       id: "ips",
@@ -253,11 +264,13 @@ export const getColumns = (
       cell: ({ row }) => (
         <div className="flex items-center hover:scale-110">
           <IPView assetID={row.original.ID} assetName={row.original.name}>
-            <Wifi />
+            <Wifi className="h-5 w-5" />
           </IPView>
         </div>
       ),
       meta: { canEdit: false },
+      enableResizing: false,
+      size: 50,
     },
     {
       accessorKey: "cost",
@@ -277,6 +290,8 @@ export const getColumns = (
           parseFloat(String(rowB.original.cost))
         );
       },
+      size: 110,
+      enableResizing: false,
     },
 
     {
@@ -289,17 +304,24 @@ export const getColumns = (
               currentNote={row.original.note ?? ""}
               ID={row.original.ID}
             >
-              {row.original.note ? (
-                <NotebookText />
-              ) : (
-                <Plus className="opacity-0 group-hover:opacity-100" />
-              )}
+              <button
+                className="group/button"
+                aria-label={row.original.note ? "View note" : "Add note"}
+              >
+                {row.original.note ? (
+                  <NotebookText className="h-5 w-5" />
+                ) : (
+                  <Plus className="h-5 w-5 opacity-0 group-hover:opacity-100 group-focus-visible/button:!opacity-100" />
+                )}
+              </button>
             </NoteView>
           </div>
         );
       },
       meta: { canEdit: false },
       enableSorting: false,
+      enableResizing: false,
+      size: 50,
     },
     {
       id: "actions",
@@ -349,6 +371,8 @@ export const getColumns = (
           </DropdownMenu>
         );
       },
+      enableResizing: false,
+      size: 36,
     },
   ];
 };

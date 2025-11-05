@@ -7,5 +7,6 @@ declare module "@tanstack/react-table" {
     options?: Preset[] | User[];
     canEdit?: boolean;
     editTable?: "assets" | "network";
+    memo?: boolean;
   }
 }

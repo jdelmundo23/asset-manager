@@ -67,11 +67,11 @@ export const assetImportSchema = z
       .pipe(
         z.coerce
           .number()
-          .min(0.01)
-          .max(9999)
-          .transform((val) => Math.ceil(val * 100) / 100)
-          .nullable()
-      ),
+          .min(0.01, "Minimum cost is 0.01")
+          .refine((v) => v <= 9999.99, "Maximum cost is 9999.99")
+          .transform((v) => Math.trunc(v * 100) / 100)
+      )
+      .nullable(),
     Note: trimmedString(0, 255).nullish(),
   })
   .refine(
@@ -108,18 +108,22 @@ export const assetSchema = z
     note: z.string().max(255).nullish(),
     cost: z
       .union([
-        z.string().transform((x) => {
-          const cleaned = x.replace(/[^0-9.-]+/g, "").trim();
-          return cleaned === "" ? 0 : Number(cleaned);
-        }),
+        z
+          .string()
+          .transform((x) =>
+            x.trim() === "" ? null : x.replace(/[^0-9.-]+/g, "")
+          ),
         z.number(),
         z.null(),
       ])
-      .pipe(z.coerce.number())
-      .transform((num) => {
-        const safeNum = num ?? 0;
-        return Math.ceil(safeNum * 100) / 100;
-      }),
+      .pipe(
+        z.coerce
+          .number()
+          .min(0.0, "Minimum cost is 0.01")
+          .refine((v) => v <= 9999.99, "Maximum cost is 9999.99")
+          .transform((v) => Math.trunc(v * 100) / 100)
+      )
+      .nullable(),
   })
   .refine(
     (data) => {

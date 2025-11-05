@@ -39,6 +39,9 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
       ),
       enableSorting: false,
       enableHiding: false,
+      enableResizing: false,
+      size: 36,
+      meta: { memo: false },
     },
     {
       id: "ipAddress",
@@ -52,6 +55,8 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
           .toLowerCase()
           .includes(filterValue.toLowerCase()),
       meta: { type: "text" },
+      enableResizing: false,
+      size: 105,
     },
     {
       accessorKey: "name",
@@ -131,6 +136,8 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
           </DropdownMenu>
         );
       },
+      enableResizing: false,
+      size: 36,
     },
   ];
 };

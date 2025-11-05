@@ -1,24 +1,14 @@
-import {
-  Cell,
-  Column,
-  Table as DataTable,
-  flexRender,
-} from "@tanstack/react-table";
+import { Table as DataTable } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "../shadcn-ui/table";
-import { FilterBox } from "@/components/table/Filters";
-import { ArrowDown, ArrowUp, ArrowUpDown, Filter } from "lucide-react";
 import { ZodObject, ZodRawShape } from "zod";
-import { EditCell } from "./EditCell";
 import { ScrollArea, ScrollBar } from "../shadcn-ui/scroll-area";
 import { Button } from "../shadcn-ui/button";
-import { memo } from "react";
 import {
   Select,
   SelectContent,
@@ -26,37 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../shadcn-ui/select";
-
-const SortArrow = <T,>({ column }: { column: Column<T, unknown> }) => {
-  let arrow: JSX.Element = <></>;
-  switch (column.getIsSorted()) {
-    case false:
-      arrow = (
-        <ArrowUpDown
-          className={`hover:bg-muted h-4 w-4 cursor-pointer rounded-sm opacity-0 group-hover:opacity-100`}
-          onClick={() => column.toggleSorting(false)}
-        />
-      );
-      break;
-    case "asc":
-      arrow = (
-        <ArrowUp
-          className={`hover:bg-muted h-4 w-4 cursor-pointer rounded-sm`}
-          onClick={() => column.toggleSorting(true)}
-        />
-      );
-      break;
-    case "desc":
-      arrow = (
-        <ArrowDown
-          className={`hover:bg-muted h-4 w-4 cursor-pointer rounded-sm`}
-          onClick={() => column.toggleSorting(false)}
-        />
-      );
-      break;
-  }
-  return arrow;
-};
+import { MemoCell, MemoCellInner } from "./TableCell";
+import MyTableHead from "./TableHead";
 
 interface TableRendererProps<T> {
   table: DataTable<T>;
@@ -79,46 +40,17 @@ export default function TableRenderer<T>({
         className={`${animated ? "animate-fade-in-up" : ""} max-h-full rounded-md bg-white drop-shadow-md`}
         barPadding={{ top: 52, bottom: 10 }}
       >
-        <Table>
+        <Table className="min-w-full table-fixed text-xs">
           <TableHeader className="bg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
+                    <MyTableHead
                       key={header.id}
-                      className="group relative px-0 first:pl-0.5 last:w-0 last:pr-0.5"
-                    >
-                      <div className="relative rounded-sm px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-black hover:text-white group-last:pointer-events-none">
-                        <div className="flex items-center gap-x-0.5 whitespace-nowrap">
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                          <div className="flex flex-1 justify-between">
-                            {header.column.columnDef.meta?.type ? (
-                              <FilterBox
-                                type={header.column.columnDef.meta?.type}
-                                column={header.column}
-                              >
-                                <Filter
-                                  className={`h-4 w-4 cursor-pointer rounded-sm ${header.column.getIsFiltered() ? "" : "opacity-0"} hover:bg-muted group-hover:opacity-100`}
-                                />
-                              </FilterBox>
-                            ) : (
-                              <div></div>
-                            )}
-                            {header.column.getCanSort() ? (
-                              <SortArrow column={header.column} />
-                            ) : (
-                              <div></div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </TableHead>
+                      header={header}
+                      table={table}
+                    />
                   );
                 })}
               </TableRow>
@@ -130,19 +62,30 @@ export default function TableRenderer<T>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="h-[60px] border-b-2 border-zinc-100"
+                  className="h-[35px] border-b-2 border-zinc-100"
                   onClick={
                     singleSelect ? () => row.toggleSelected(true) : undefined
                   }
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <MemoCell
-                      key={cell.id}
-                      cell={cell}
-                      rowId={row.id}
-                      schema={schema}
-                    />
-                  ))}
+                  {row
+                    .getVisibleCells()
+                    .map((cell) =>
+                      cell.column.columnDef.meta?.memo === false ? (
+                        <MemoCellInner
+                          key={cell.id}
+                          cell={cell}
+                          rowId={row.id}
+                          schema={schema}
+                        />
+                      ) : (
+                        <MemoCell
+                          key={cell.id}
+                          cell={cell}
+                          rowId={row.id}
+                          schema={schema}
+                        />
+                      )
+                    )}
                 </TableRow>
               ))
             ) : (
@@ -204,35 +147,3 @@ export default function TableRenderer<T>({
     </>
   );
 }
-
-interface MemoCellProps<T> {
-  cell: Cell<T, unknown>;
-  rowId: string;
-  schema?: ZodObject<ZodRawShape>;
-}
-
-function MemoCellInner<T>({ cell, rowId, schema }: MemoCellProps<T>) {
-  return (
-    <TableCell className="group px-0 first:pl-0.5 last:py-0 hover:bg-slate-400/30">
-      <div className="flex items-center justify-between gap-x-2 px-2">
-        <p className="min-w-0 flex-1 break-words group-last:px-1">
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </p>
-        {schema && cell.column.columnDef.meta?.canEdit !== false ? (
-          <EditCell
-            column={cell.column}
-            currentValue={cell.getValue()}
-            ID={rowId}
-            schema={schema}
-          />
-        ) : (
-          <div className="h-4 w-4"></div>
-        )}
-      </div>
-    </TableCell>
-  );
-}
-
-export const MemoCell = memo(MemoCellInner) as <T>(
-  props: MemoCellProps<T>
-) => JSX.Element;

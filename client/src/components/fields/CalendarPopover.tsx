@@ -13,6 +13,7 @@ interface CalendarPopoverProps {
   placeHolder: string;
   useFormControl?: boolean;
   width?: number;
+  autoFocus?: boolean;
 }
 
 export default function CalendarPopover({
@@ -21,10 +22,12 @@ export default function CalendarPopover({
   placeHolder,
   useFormControl,
   width,
+  autoFocus = false,
 }: CalendarPopoverProps) {
   const [open, setOpen] = useState<boolean>(false);
   const trigger = (
     <Button
+      autoFocus={autoFocus}
       variant={"outline"}
       className={cn(
         `${width ? `w-[${width}px]` : "w-full"} pl-3 pr-2 text-left font-normal`,

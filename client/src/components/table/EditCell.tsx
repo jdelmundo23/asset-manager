@@ -3,8 +3,8 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
-import { Check, ChevronsUpDown, Pencil, X } from "lucide-react";
-import { memo, useEffect, useState } from "react";
+import { Check, ChevronsUpDown, X } from "lucide-react";
+import { memo, ReactNode, useEffect, useState } from "react";
 import { Input } from "../shadcn-ui/input";
 import { Column, RowSelectionState } from "@tanstack/react-table";
 import { z, ZodObject, ZodRawShape } from "zod";
@@ -38,6 +38,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 interface EditCellProps<T> {
+  children: (isOpen: boolean) => React.ReactNode;
   column: Column<T, unknown>;
   currentValue: unknown;
   ID: number | string;
@@ -45,6 +46,7 @@ interface EditCellProps<T> {
 }
 
 const EditCellInner = memo(function EditCell<T>({
+  children,
   column,
   currentValue,
   ID,
@@ -147,7 +149,9 @@ const EditCellInner = memo(function EditCell<T>({
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={handleOpenChange}>
-      <MemoizedDropdownMenuTrigger isOpen={isOpen} />
+      <MemoizedDropdownMenuTrigger isOpen={isOpen}>
+        {children(isOpen)}
+      </MemoizedDropdownMenuTrigger>
       {isOpen && (
         <MemoizedDropdownMenuContent
           form={form}
@@ -164,19 +168,12 @@ export const EditCell = memo(EditCellInner) as <T>(
 ) => JSX.Element;
 
 const MemoizedDropdownMenuTrigger = memo(function MemoizedDropdownMenuTrigger({
-  isOpen,
+  children,
 }: {
   isOpen: boolean;
+  children: ReactNode;
 }) {
-  return (
-    <DropdownMenuTrigger>
-      <Pencil
-        className={`h-4 w-4 cursor-pointer opacity-0 group-first:hidden group-last:hidden group-hover:opacity-100 ${
-          isOpen && "opacity-100"
-        }`}
-      />
-    </DropdownMenuTrigger>
-  );
+  return <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>;
 });
 
 const MemoizedDropdownMenuContent = memo(function MemoizedDropdownMenuContent<
@@ -209,26 +206,34 @@ const TextEditor = <T,>({
   currentValue: unknown;
 }) => {
   return (
-    <FormField
-      control={form.control}
-      name={column.id}
-      render={({ field }) => (
-        <FormItem className="relative flex w-60 flex-col bg-transparent">
-          <FormControl>
-            <Input type="text" {...field} autoFocus />
-          </FormControl>
-          <X
-            className="hover:bg-muted absolute right-1 top-1.5 flex cursor-pointer rounded-sm transition-colors"
-            style={{ marginTop: 0 }}
-            onClick={() => form.setValue(column.id, "")}
-          />
-          {field.value !== currentValue && (
-            <Button className="h-8">Confirm Edit</Button>
-          )}
-          <FormMessage className="text-center" />
-        </FormItem>
-      )}
-    />
+    <>
+      <FormField
+        control={form.control}
+        name={column.id}
+        render={({ field }) => (
+          <FormItem className="relative flex w-60 flex-col bg-transparent">
+            <div className="flex gap-x-1">
+              <FormControl>
+                <Input type="text" {...field} autoFocus />
+              </FormControl>
+              <button
+                type="button"
+                className="right-1 flex min-h-full items-center"
+              >
+                <X
+                  className="hover:bg-muted cursor-pointer rounded-sm transition-colors"
+                  onClick={() => form.setValue(column.id, "")}
+                />
+              </button>
+            </div>
+            {form.getValues(column.id) !== currentValue && (
+              <Button className="h-8">Confirm Edit</Button>
+            )}
+            <FormMessage className="text-center" />
+          </FormItem>
+        )}
+      />
+    </>
   );
 };
 
@@ -254,6 +259,8 @@ const SelectEditor = <T,>({
               <PopoverTrigger asChild>
                 <FormControl>
                   <Button
+                    aria-label="Select option"
+                    autoFocus
                     variant="outline"
                     role="combobox"
                     className={cn(
@@ -265,7 +272,7 @@ const SelectEditor = <T,>({
                       {field.value
                         ? options.find((choice) => choice.ID === field.value)
                             ?.name
-                        : `Select option`}
+                        : `Select ${column.columnDef.header}`}
                     </p>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
@@ -334,6 +341,7 @@ const DateEditor = <T,>({
       render={({ field }) => (
         <FormItem className="flex w-60 flex-col">
           <CalendarPopover
+            autoFocus
             value={field.value === null ? undefined : field.value}
             onChange={field.onChange}
             placeHolder="Pick a date"
