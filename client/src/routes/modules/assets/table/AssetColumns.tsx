@@ -290,6 +290,7 @@ export const getColumns = (
           parseFloat(String(rowB.original.cost))
         );
       },
+      meta: { type: "cost" },
       size: 110,
       enableResizing: false,
     },

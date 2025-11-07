@@ -322,26 +322,34 @@ export default function AssetForm({
         <FormField
           control={form.control}
           name="cost"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cost</FormLabel>
-              <FormControl>
-                <CurrencyInput
-                  id="cost"
-                  placeholder="$0.00"
-                  decimalsLimit={2}
-                  prefix="$"
-                  className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                  value={field.value}
-                  onValueChange={(value) => {
-                    field.onChange(value || "");
-                  }}
-                />
-              </FormControl>
+          render={({ field }) => {
+            useEffect(() => {
+              if (field.value !== null) {
+                field.onChange(Number(field.value).toFixed(2));
+              }
+            }, []);
 
-              <FormMessage />
-            </FormItem>
-          )}
+            return (
+              <FormItem>
+                <FormLabel>Cost</FormLabel>
+                <FormControl>
+                  <CurrencyInput
+                    id="cost"
+                    placeholder="$0.00"
+                    decimalsLimit={2}
+                    prefix="$"
+                    className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                    value={field.value ?? ""}
+                    onValueChange={(value) => {
+                      field.onChange(value?.replace(/[^0-9.]/g, "") || "");
+                    }}
+                  />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
         <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
           {form.formState.isSubmitting ? (

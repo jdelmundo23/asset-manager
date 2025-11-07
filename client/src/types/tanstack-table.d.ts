@@ -3,7 +3,7 @@ import { Preset, User } from "@shared/schemas";
 
 declare module "@tanstack/react-table" {
   interface ColumnMeta<> {
-    type?: "text" | "select" | "date";
+    type?: "text" | "select" | "date" | "cost";
     options?: Preset[] | User[];
     canEdit?: boolean;
     editTable?: "assets" | "network";
