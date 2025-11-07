@@ -9,7 +9,7 @@ function Main({ children }: MainProps) {
   const { sidebarActive } = useSidebar();
   return (
     <main
-      className={`flex h-full max-w-full flex-1 flex-col items-center transition-all duration-300 ${
+      className={`flex h-full max-w-full flex-1 flex-col items-center transition-all duration-500 ease-in-out ${
         sidebarActive ? "w-[calc(100%-250px)]" : "w-full"
       }`}
     >
