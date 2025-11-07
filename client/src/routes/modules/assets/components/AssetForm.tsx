@@ -13,7 +13,7 @@ import { Input } from "@/components/shadcn-ui/input";
 import { LoaderCircle } from "lucide-react";
 import CurrencyInput from "react-currency-input-field";
 import { useEffect } from "react";
-import { Asset, AssetRow, assetSchema } from "@shared/schemas";
+import { Asset, assetSchema } from "@shared/schemas";
 import FormCombobox from "@/components/fields/FormCombobox";
 import { useHandleAction } from "@/lib/actions";
 import CalendarPopover from "@/components/fields/CalendarPopover";
@@ -25,27 +25,25 @@ interface BaseProps {
 
 interface AddModeProps extends BaseProps {
   mode: "add";
-  asset?: never;
+  ID?: never;
 }
 
 interface EditModeProps extends BaseProps {
   mode: "edit";
-  asset: AssetRow;
+  ID: number;
 }
 
 type AssetFormProps = AddModeProps | EditModeProps;
 
-export default function AssetForm({
-  mode,
-  closeDialog,
-  asset,
-}: AssetFormProps) {
+export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
   const { handleAction } = useHandleAction<Asset, unknown>();
-  const { types, models, locations, departments, users } = useAssets();
+  const { types, models, locations, departments, users, assets } = useAssets();
+
+  const defaultAsset = assets.find((asset) => asset.ID === ID);
 
   const form = useForm<Asset>({
     resolver: zodResolver(assetSchema),
-    ...(mode === "edit" && asset ? { defaultValues: asset } : {}),
+    ...(mode === "edit" && ID ? { defaultValues: defaultAsset } : {}),
   });
 
   useEffect(() => {
@@ -376,7 +374,7 @@ export default function AssetForm({
             type="submit"
             disabled={
               mode === "edit" &&
-              JSON.stringify(asset) === JSON.stringify(form.getValues())
+              JSON.stringify(defaultAsset) === JSON.stringify(form.getValues())
             }
           >
             {mode === "add" ? "Add" : "Edit"}

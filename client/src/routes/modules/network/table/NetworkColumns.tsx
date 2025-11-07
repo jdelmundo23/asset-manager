@@ -122,16 +122,7 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
                 Delete IP
               </DropdownMenuItem>
             </DropdownMenuContent>
-            <EditIP
-              open={editOpen}
-              setOpen={setEditOpen}
-              ip={{
-                ...ip,
-                ipAddress: ip.subnetPrefix
-                  ? ip.subnetPrefix + "." + ip.hostNumber
-                  : "",
-              }}
-            />
+            <EditIP open={editOpen} setOpen={setEditOpen} ipID={ip.ID} />
             <DeleteIP open={deleteOpen} setOpen={setDeleteOpen} row={ip} />
           </DropdownMenu>
         );

@@ -78,10 +78,6 @@ export const CostEditor = <T,>({
   return (
     <FormField
       control={form.control}
-      rules={{
-        validate: (value) =>
-          value !== Number(currentValue).toFixed(2) || "Please confirm edits",
-      }}
       name={column.id}
       render={({ field }) => {
         const [localValue, setLocalValue] = useState(
@@ -109,9 +105,7 @@ export const CostEditor = <T,>({
               <Button
                 className="h-8"
                 onClick={() => {
-                  console.log(localValue);
-                  console.log(currentValue);
-                  field.onChange(localValue);
+                  field.onChange(parseFloat(localValue).toFixed(2));
                   setLocalValue(Number(localValue).toFixed(2));
                 }}
               >

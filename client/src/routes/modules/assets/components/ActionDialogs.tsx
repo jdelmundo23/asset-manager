@@ -80,10 +80,10 @@ export function AddAsset() {
 interface EditAssetProps {
   open: boolean;
   setOpen: (val: boolean) => void;
-  asset: AssetRow;
+  ID: number;
 }
 
-export function EditAsset({ open, setOpen, asset }: EditAssetProps) {
+export function EditAsset({ open, setOpen, ID }: EditAssetProps) {
   return (
     <GenericDialog
       open={open}
@@ -91,7 +91,7 @@ export function EditAsset({ open, setOpen, asset }: EditAssetProps) {
       title="Edit Asset"
       className="max-h-screen overflow-y-auto sm:max-w-2xl"
     >
-      <AssetForm mode="edit" closeDialog={() => setOpen(false)} asset={asset} />
+      <AssetForm mode="edit" closeDialog={() => setOpen(false)} ID={ID} />
     </GenericDialog>
   );
 }

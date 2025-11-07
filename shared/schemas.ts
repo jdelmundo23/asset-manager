@@ -69,7 +69,7 @@ export const assetImportSchema = z
           .number()
           .min(0.01, "Minimum cost is 0.01")
           .refine((v) => v <= 9999.99, "Maximum cost is 9999.99")
-          .transform((v) => Math.trunc(v * 100) / 100)
+          .transform((v) => parseFloat(v.toFixed(2)))
       )
       .nullable(),
     Note: trimmedString(0, 255).nullish(),
@@ -121,7 +121,7 @@ export const assetSchema = z
           .number()
           .min(0.0, "Minimum cost is 0.01")
           .refine((v) => v <= 9999.99, "Maximum cost is 9999.99")
-          .transform((v) => Math.trunc(v * 100) / 100)
+          .transform((v) => parseFloat(v.toFixed(2)))
       )
       .nullable(),
   })

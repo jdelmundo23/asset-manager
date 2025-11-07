@@ -358,7 +358,7 @@ export const getColumns = (
               </DropdownMenuItem>
             </DropdownMenuContent>
 
-            <EditAsset open={editOpen} setOpen={setEditOpen} asset={asset} />
+            <EditAsset open={editOpen} setOpen={setEditOpen} ID={asset.ID} />
             <DeleteAsset
               open={deleteOpen}
               setOpen={setDeleteOpen}

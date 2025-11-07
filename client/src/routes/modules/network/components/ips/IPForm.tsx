@@ -17,6 +17,7 @@ import { RowSelectionState } from "@tanstack/react-table";
 import { useHandleAction } from "@/lib/actions";
 import axios from "axios";
 import { AssetTableSheet } from "@/components/fields/TableSheets";
+import { useIPs } from "@/context/IPContext";
 
 interface BaseProps {
   closeDialog: () => void;
@@ -24,21 +25,34 @@ interface BaseProps {
 
 interface AddModeProps extends BaseProps {
   mode: "add";
-  ip?: never;
+  ipID?: number;
 }
 
 interface EditModeProps extends BaseProps {
   mode: "edit";
-  ip: IPInput;
+  ipID: number;
 }
 
 type IPFormProps = AddModeProps | EditModeProps;
 
-export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
+export default function IPForm({ mode, closeDialog, ipID }: IPFormProps) {
   const { handleAction } = useHandleAction<IPInput, unknown>();
+  const { ips } = useIPs();
+
+  const defaultIp = ips.find((ipRow) => ipID === ipRow.ID);
+  const defaultAddress = `${defaultIp?.subnetPrefix + "." + defaultIp?.hostNumber}`;
+  const defaultIpInput = {
+    ...defaultIp,
+    ipAddress: defaultAddress,
+  };
+
   const form = useForm<IPInput>({
     resolver: zodResolver(ipInputSchema),
-    ...(mode === "edit" && ip ? { defaultValues: ip } : {}),
+    ...(mode === "edit" && ipID
+      ? {
+          defaultValues: defaultIpInput,
+        }
+      : {}),
   });
 
   useEffect(() => {
@@ -187,7 +201,8 @@ export default function IPForm({ mode, closeDialog, ip }: IPFormProps) {
             type="submit"
             disabled={
               mode === "edit" &&
-              JSON.stringify(ip) === JSON.stringify(form.getValues())
+              JSON.stringify(defaultIpInput) ===
+                JSON.stringify(form.getValues())
             }
           >
             {mode === "add" ? "Add" : "Edit"}

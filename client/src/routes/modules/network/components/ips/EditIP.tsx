@@ -4,15 +4,14 @@ import {
 } from "@/components/shadcn-ui/alert-dialog";
 import IPForm from "./IPForm";
 import { X } from "lucide-react";
-import { IPInput } from "@shared/schemas";
 
 interface EditIPProps {
   open: boolean;
   setOpen: (val: boolean) => void;
-  ip: IPInput;
+  ipID: number;
 }
 
-function EditIP({ open, setOpen, ip }: EditIPProps) {
+function EditIP({ open, setOpen, ipID }: EditIPProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent className="max-h-screen overflow-y-auto sm:max-w-2xl">
@@ -22,7 +21,7 @@ function EditIP({ open, setOpen, ip }: EditIPProps) {
         >
           <X className="text-muted-foreground h-6 w-6" />
         </div>
-        <IPForm mode="edit" closeDialog={() => setOpen(false)} ip={ip} />
+        <IPForm mode="edit" closeDialog={() => setOpen(false)} ipID={ipID} />
       </AlertDialogContent>
     </AlertDialog>
   );
