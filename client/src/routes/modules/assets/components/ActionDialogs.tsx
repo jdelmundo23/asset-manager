@@ -10,10 +10,10 @@ import {
 } from "@/components/shadcn-ui/alert-dialog";
 import { useHandleAction } from "@/lib/actions";
 import { AssetRow } from "@shared/schemas";
-import { Button } from "@/components/shadcn-ui/button";
 import { useState } from "react";
 import AssetForm from "./AssetForm";
 import { X } from "lucide-react";
+import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 
 interface GenericDialogProps {
   open: boolean;
@@ -23,6 +23,7 @@ interface GenericDialogProps {
   children?: React.ReactNode;
   footerActions?: React.ReactNode;
   className?: string;
+  content: React.ReactNode;
 }
 
 export function GenericDialog({
@@ -33,9 +34,11 @@ export function GenericDialog({
   children,
   footerActions,
   className = "",
+  content,
 }: GenericDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent className={` ${className}`}>
         <div
           className="absolute right-4 top-4 cursor-pointer text-white"
@@ -49,7 +52,7 @@ export function GenericDialog({
             <AlertDialogDescription>{description}</AlertDialogDescription>
           )}
         </AlertDialogHeader>
-        {children}
+        {content}
         {footerActions && (
           <AlertDialogFooter>{footerActions}</AlertDialogFooter>
         )}
@@ -58,92 +61,106 @@ export function GenericDialog({
   );
 }
 
-export function AddAsset() {
+export function AddAsset({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant={"secondary"} onClick={() => setOpen(true)}>
-        Add Asset
-      </Button>
       <GenericDialog
+        content={<AssetForm mode="add" closeDialog={() => setOpen(false)} />}
         open={open}
         setOpen={setOpen}
         title="Add Asset"
         className="max-h-screen overflow-y-auto sm:max-w-2xl"
       >
-        <AssetForm mode="add" closeDialog={() => setOpen(false)} />
+        {children}
       </GenericDialog>
     </>
   );
 }
 
 interface EditAssetProps {
-  open: boolean;
-  setOpen: (val: boolean) => void;
+  children: React.ReactNode;
   ID: number;
 }
 
-export function EditAsset({ open, setOpen, ID }: EditAssetProps) {
+export function EditAsset({ children, ID }: EditAssetProps) {
+  const [open, setOpen] = useState(false);
+
   return (
     <GenericDialog
+      content={
+        <AssetForm mode="edit" closeDialog={() => setOpen(false)} ID={ID} />
+      }
       open={open}
       setOpen={setOpen}
       title="Edit Asset"
       className="max-h-screen overflow-y-auto sm:max-w-2xl"
     >
-      <AssetForm mode="edit" closeDialog={() => setOpen(false)} ID={ID} />
+      {children}
     </GenericDialog>
   );
 }
 
 interface DeleteAssetProps {
-  open: boolean;
-  setOpen: (val: boolean) => void;
+  children: React.ReactNode;
   row: AssetRow;
 }
 
-export function DeleteAsset({ open, setOpen, row }: DeleteAssetProps) {
+export function DeleteAsset({ children, row }: DeleteAssetProps) {
   const { handleAction } = useHandleAction<AssetRow, unknown>();
+  const [open, setOpen] = useState(false);
+
   return (
     <GenericDialog
+      content={
+        <AlertDialogFooter>
+          <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
+
+          <AlertDialogAction
+            className="bg-destructive text-destructive-foreground"
+            onClick={() => handleAction("asset", "delete", row)}
+          >
+            Delete
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      }
       open={open}
       setOpen={setOpen}
       title="Are you absolutely sure?"
       description="This action will permanently delete the item from the list."
     >
-      <AlertDialogFooter>
-        <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
-        <AlertDialogAction onClick={() => handleAction("asset", "delete", row)}>
-          Delete
-        </AlertDialogAction>
-      </AlertDialogFooter>
+      {children}
     </GenericDialog>
   );
 }
 
 interface DuplicateAssetProps {
-  open: boolean;
-  setOpen: (val: boolean) => void;
+  children: React.ReactNode;
   row: AssetRow;
 }
 
-export function DuplicateAsset({ open, setOpen, row }: DuplicateAssetProps) {
+export function DuplicateAsset({ children, row }: DuplicateAssetProps) {
   const { handleAction } = useHandleAction<AssetRow, unknown>();
+  const [open, setOpen] = useState(false);
+
   return (
     <GenericDialog
+      content={
+        <AlertDialogFooter>
+          <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => handleAction("asset", "duplicate", row)}
+          >
+            Duplicate
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      }
       open={open}
       setOpen={setOpen}
       title="Confirm Duplication"
       description="The name will be updated to include “- Copy”, and the identifier will be left blank."
     >
-      <AlertDialogFooter>
-        <AlertDialogCancel className="text-white">Cancel</AlertDialogCancel>
-        <AlertDialogAction
-          onClick={() => handleAction("asset", "duplicate", row)}
-        >
-          Duplicate
-        </AlertDialogAction>
-      </AlertDialogFooter>
+      {children}
     </GenericDialog>
   );
 }

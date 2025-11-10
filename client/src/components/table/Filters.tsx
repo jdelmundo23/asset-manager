@@ -23,7 +23,7 @@ export const FilterBox = <T,>({
   column,
   children,
 }: {
-  type: "text" | "select" | "date";
+  type: "text" | "select" | "date" | "cost";
   column: Column<T, unknown>;
   children: React.ReactNode;
 }) => {

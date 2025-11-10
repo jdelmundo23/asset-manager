@@ -7,6 +7,7 @@ import BulkActionDropdown from "../../../components/table/BulkActionDropdown";
 import { AssetProvider, useAssets } from "@/context/AssetContext";
 import { TableConfigProvider } from "@/context/TableConfigContext";
 import FileUpload from "./components/ImportDialog";
+import { Button } from "@/components/shadcn-ui/button";
 
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
@@ -46,7 +47,9 @@ function AssetPageContent({
             deleting
             duplicating
           />
-          <AddAsset />
+          <AddAsset>
+            <Button variant={"secondary"}>Add Asset</Button>
+          </AddAsset>
         </div>
       </TableToolbar>
       <DataTable

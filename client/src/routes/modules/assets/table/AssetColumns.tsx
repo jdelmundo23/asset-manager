@@ -19,7 +19,6 @@ import {
   EditAsset,
   DeleteAsset,
 } from "../components/ActionDialogs";
-import { useState } from "react";
 import IPView from "@/components/table/IPView";
 import NoteView from "@/components/table/NoteView";
 
@@ -329,10 +328,6 @@ export const getColumns = (
       cell: ({ row }) => {
         const asset = row.original;
 
-        const [editOpen, setEditOpen] = useState(false);
-        const [duplicateOpen, setDuplicateOpen] = useState(false);
-        const [deleteOpen, setDeleteOpen] = useState(false);
-
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -344,31 +339,26 @@ export const getColumns = (
             <DropdownMenuContent align="end" className="">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setEditOpen(true)}>
-                Edit Asset
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDuplicateOpen(true)}>
-                Duplicate Asset
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setDeleteOpen(true)}
-                className="text-red-600"
-              >
-                Delete Asset
-              </DropdownMenuItem>
-            </DropdownMenuContent>
 
-            <EditAsset open={editOpen} setOpen={setEditOpen} ID={asset.ID} />
-            <DeleteAsset
-              open={deleteOpen}
-              setOpen={setDeleteOpen}
-              row={asset}
-            />
-            <DuplicateAsset
-              open={duplicateOpen}
-              setOpen={setDuplicateOpen}
-              row={asset}
-            />
+              <EditAsset ID={asset.ID}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  Edit Asset
+                </DropdownMenuItem>
+              </EditAsset>
+              <DuplicateAsset row={asset}>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                  Duplicate Asset
+                </DropdownMenuItem>
+              </DuplicateAsset>
+              <DeleteAsset row={asset}>
+                <DropdownMenuItem
+                  className="text-red-600"
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  Delete Asset
+                </DropdownMenuItem>
+              </DeleteAsset>
+            </DropdownMenuContent>
           </DropdownMenu>
         );
       },
