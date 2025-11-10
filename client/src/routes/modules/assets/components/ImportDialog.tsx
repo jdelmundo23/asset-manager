@@ -4,8 +4,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/shadcn-ui/alert-dialog";
-import { Button } from "@/components/shadcn-ui/button";
-import { Upload } from "lucide-react";
 import { useState } from "react";
 import UploadStage from "./import_stages/UploadStage";
 import { ImportProvider } from "@/context/ImportContext";
@@ -20,18 +18,17 @@ const stageTitles: Record<Stage, string> = {
   results: "Import Results",
 };
 
-export default function FileUpload() {
+export default function FileUpload({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [currentStage, setCurrentStage] = useState<Stage>("upload");
   const [open, setOpen] = useState<boolean>(false);
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger>
-        <Button variant={"secondary"} className="gap-x-1.5">
-          Import
-          <Upload className="hidden sm:block" />
-        </Button>
-      </AlertDialogTrigger>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent className="flex flex-col justify-center">
         <AlertDialogTitle className="text-white">
           {stageTitles[currentStage]}

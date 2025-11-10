@@ -1,5 +1,4 @@
 import { useBulkAction } from "@/lib/bulkActions";
-import { buttonVariants } from "@/components/shadcn-ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,10 +6,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import { RowSelectionState } from "@tanstack/react-table";
-import { ChevronsUpDown, Copy, Pencil, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Copy, Pencil, Trash2 } from "lucide-react";
 
 interface BulkActionDropdownProps {
+  children: React.ReactNode;
   entity: "asset" | "ip";
   editing?: boolean;
   duplicating?: boolean;
@@ -20,6 +19,7 @@ interface BulkActionDropdownProps {
 }
 
 export default function BulkActionDropdown({
+  children,
   entity,
   editing,
   duplicating,
@@ -29,18 +29,13 @@ export default function BulkActionDropdown({
 }: BulkActionDropdownProps) {
   const { handleBulkAction } = useBulkAction();
   const ids = Object.keys(selectedRows).filter((key) => selectedRows[key]);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
+        asChild
         disabled={Object.keys(selectedRows).length === 0}
-        className={cn(
-          buttonVariants({ variant: "secondary" }),
-          "gap-0 pl-3 transition-all"
-        )}
       >
-        <ChevronsUpDown className="hidden sm:block" />
-        Bulk Actions
+        {children}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
         {editing && (
