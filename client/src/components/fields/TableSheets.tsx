@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "../shadcn-ui/sheet";
-import { DataTable } from "@/routes/modules/assets/table/AssetTable";
+import { useAssetTable } from "@/routes/modules/assets/table/AssetTable";
 import { useEffect, useState } from "react";
 import { RowSelectionState } from "@tanstack/react-table";
 import { cn } from "@/lib/utils";
@@ -58,6 +58,27 @@ export function AssetTableSheet({
 
   const assets = assetQuery.data;
 
+  const { tableRender } = useAssetTable({
+    assets,
+    hideColumns: [
+      "select",
+      "modelID",
+      "typeID",
+      "locationID",
+      "departmentID",
+      "assignedTo",
+      "purchaseDate",
+      "warrantyExp",
+      "cost",
+      "actions",
+      "ips",
+      "note",
+    ],
+    selectedRows: selectedRow,
+    onRowSelect: setSelectedRow,
+    singleSelect: true,
+  });
+
   return (
     <Sheet
       open={open}
@@ -97,26 +118,7 @@ export function AssetTableSheet({
         <SheetHeader>
           <SheetTitle>Select an asset</SheetTitle>
         </SheetHeader>
-        <DataTable
-          assets={assets}
-          hideColumns={[
-            "select",
-            "modelID",
-            "typeID",
-            "locationID",
-            "departmentID",
-            "assignedTo",
-            "purchaseDate",
-            "warrantyExp",
-            "cost",
-            "actions",
-            "ips",
-            "note",
-          ]}
-          selectedRow={selectedRow}
-          onRowSelect={setSelectedRow}
-          singleSelect={true}
-        />
+        {tableRender}
         <div className="flex justify-end space-x-2">
           <SheetClose asChild>
             <Button variant="secondary">Cancel</Button>

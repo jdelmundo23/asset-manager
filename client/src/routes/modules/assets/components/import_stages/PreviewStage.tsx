@@ -4,7 +4,7 @@ import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable";
+} from "@/components/shadcn-ui/resizable";
 import { useImport } from "@/context/ImportContext";
 import axiosApi from "@/lib/axios";
 import { handleError } from "@/lib/handleError";

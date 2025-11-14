@@ -16,27 +16,31 @@ import { AssetRow, assetSchema } from "@shared/schemas";
 import TableRenderer from "@/components/table/TableRenderer";
 import { useAssets } from "@/context/AssetContext";
 
-interface DataTableProps {
+interface AssetTableProps {
   assets: AssetRow[] | undefined;
   hideColumns?: string[];
-  selectedRow?: RowSelectionState;
+  selectedRows?: RowSelectionState;
   onRowSelect?: Dispatch<SetStateAction<RowSelectionState>>;
+  columnOrder?: string[];
+  setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>;
   singleSelect?: boolean;
   animated?: boolean;
 }
 
-export function DataTable({
+export function useAssetTable({
   assets = [],
   hideColumns = [],
-  selectedRow,
+  selectedRows,
   onRowSelect,
   singleSelect,
   animated,
-}: DataTableProps) {
+  columnOrder,
+  setColumnOrder,
+}: AssetTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnSizing, setColSizing] = useState<ColumnSizingState>({});
-  const rowSelection = selectedRow ?? {};
+  const rowSelection = selectedRows ?? {};
 
   type Key = (typeof hideColumns)[number];
   const result: Record<Key, boolean> = {} as Record<Key, boolean>;
@@ -73,6 +77,7 @@ export function DataTable({
     onColumnSizingChange: setColSizing,
     getRowId: (row) => row.ID.toString(),
     getPaginationRowModel: getPaginationRowModel(),
+    onColumnOrderChange: setColumnOrder,
     initialState: {
       pagination: {
         pageIndex: 0,
@@ -87,16 +92,20 @@ export function DataTable({
       columnVisibility,
       rowSelection,
       columnSizing,
+      columnOrder,
     },
   });
 
-  return (
-    <TableRenderer
-      table={table}
-      columnLength={columns.length}
-      singleSelect={singleSelect}
-      animated={animated}
-      schema={assetSchema.innerType()}
-    />
-  );
+  return {
+    table: table,
+    tableRender: (
+      <TableRenderer
+        table={table}
+        columnLength={columns.length}
+        singleSelect={singleSelect}
+        animated={animated}
+        schema={assetSchema.innerType()}
+      />
+    ),
+  };
 }
