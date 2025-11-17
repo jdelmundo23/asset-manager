@@ -27,6 +27,8 @@ export const FilterBox = <T,>({
   column: Column<T, unknown>;
   children: React.ReactNode;
 }) => {
+  if (type === "cost") return <div></div>;
+
   let filterElement: JSX.Element = <></>;
 
   switch (type) {
