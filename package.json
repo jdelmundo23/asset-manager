@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "lint": "eslint . --ext .js,.ts,.jsx,.tsx",
-    "start": "npm run lint && concurrently \"npm start --prefix client\" \"npm start --prefix server\""
+    "dev": "npm run lint && concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\""
   },
   "keywords": [],
   "author": "",
