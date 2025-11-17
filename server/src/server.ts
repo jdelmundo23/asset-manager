@@ -1,3 +1,4 @@
+import "module-alias/register";
 import * as dotenv from "dotenv";
 import express, { ErrorRequestHandler } from "express";
 import session from "express-session";
@@ -6,7 +7,6 @@ import createError from "http-errors";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from "cors";
-import "module-alias/register";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env.dev") });
 

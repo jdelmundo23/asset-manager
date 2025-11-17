@@ -37,7 +37,7 @@
     "mssql": "^11.0.1"
   },
   "_moduleAliases": {
-    "@shared": "../shared",
-    "@server": "../server"
+    "@server": "dist/server",
+    "@shared": "dist/shared"
   }
 }
