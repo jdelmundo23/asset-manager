@@ -15,7 +15,7 @@ const Header = ({ sidebarActive }: HeaderProps) => {
           className={`${sidebarActive ? "" : "md:w-9"} w-9 transition-[width] duration-500 ease-in-out md:w-0`}
         ></div>
         <Link to="/" className="flex h-full items-center">
-          Logo
+          Asset Manager
         </Link>
       </div>
       <UserBadge

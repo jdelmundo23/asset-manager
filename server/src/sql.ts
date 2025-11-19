@@ -17,7 +17,9 @@ let poolPromise: ConnectionPool | null = null;
 export const getPool = async (): Promise<ConnectionPool> => {
   if (!poolPromise) {
     poolPromise = await sql.connect(sqlConfig);
-    console.log(`Connection pool to database "${process.env.SQL_DB}" created.`);
+    console.log(
+      `[SQL] Connection pool to database "${process.env.SQL_DB}" created.`
+    );
   }
   return poolPromise;
 };

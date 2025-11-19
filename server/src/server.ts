@@ -8,7 +8,18 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from "cors";
 
-dotenv.config({ path: path.resolve(__dirname, "../.env.dev") });
+const envFile =
+  process.env.NODE_ENV === "production" ? "../.env.production" : "../.env.dev";
+
+const envPath = path.resolve(__dirname, envFile);
+
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+  console.error("[ENV] Failed to load .env file: " + envPath);
+} else {
+  console.log("[ENV] Loaded environment file: " + envPath);
+}
 
 import { getPool } from "./sql";
 
@@ -39,7 +50,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
     },
   })
 );
@@ -83,4 +94,6 @@ getPool()
     console.error("Error initializing connection pool", error);
   });
 
-app.listen(5000, () => console.log("Server started on Port 5000"));
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log("Server started on Port " + PORT));
