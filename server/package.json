@@ -27,6 +27,7 @@
   "dependencies": {
     "@azure/msal-node": "^2.16.2",
     "axios": "^1.7.8",
+    "connect-mssql-v2": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

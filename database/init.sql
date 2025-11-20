@@ -120,6 +120,12 @@ CREATE TABLE IPAddresses (
     subnetID INT NOT NULL FOREIGN KEY REFERENCES Subnets(ID) ON DELETE CASCADE,
     UNIQUE (hostNumber, subnetID)
 );
+
+CREATE TABLE Sessions (
+   sid NVARCHAR(255) NOT NULL PRIMARY KEY,
+   session NVARCHAR(MAX) NOT NULL,
+   expires DATETIME NOT NULL
+);
 ';
 EXEC sp_executesql @sql;
 

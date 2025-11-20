@@ -1,6 +1,6 @@
 import sql, { ConnectionPool } from "mssql";
 
-const sqlConfig = {
+export const sqlConfig = {
   user: process.env.SQL_USER,
   password: process.env.SQL_PWORD,
   server: process.env.SQL_SVR as string,

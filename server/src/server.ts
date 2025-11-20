@@ -7,6 +7,7 @@ import createError from "http-errors";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import cors from "cors";
+import MSSQLStore from "connect-mssql-v2";
 
 const envFile =
   process.env.NODE_ENV === "production" ? "../.env.production" : "../.env.dev";
@@ -21,8 +22,7 @@ if (result.error) {
   console.log("[ENV] Loaded environment file: " + envPath);
 }
 
-import { getPool } from "./sql";
-
+import { getPool, sqlConfig } from "./sql";
 import authRouter from "./routes/auth";
 import apiRouter from "./routes/api/middleware";
 import presetRouter from "./routes/api/presets";
@@ -43,14 +43,18 @@ const corsOptions = {
 const app = express();
 
 app.use(cors(corsOptions));
+
 app.use(
   session({
     secret: process.env.EXPRESS_SESSION_SECRET as string,
+    store: new MSSQLStore(sqlConfig, { table: "Sessions" }),
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "lax" : undefined,
       secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24,
     },
   })
 );
