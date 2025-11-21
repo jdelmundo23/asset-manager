@@ -9,8 +9,9 @@ import logger from "morgan";
 import cors from "cors";
 import MSSQLStore from "connect-mssql-v2";
 
-const envFile =
-  process.env.NODE_ENV === "production" ? "../.env.production" : "../.env.dev";
+const isProduction = process.env.NODE_ENV === "production";
+
+const envFile = isProduction ? "../.env.production" : "../.env.dev";
 
 const envPath = path.resolve(__dirname, envFile);
 
@@ -42,18 +43,24 @@ const corsOptions = {
 
 const app = express();
 
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
+
 app.use(cors(corsOptions));
 
 app.use(
   session({
     secret: process.env.EXPRESS_SESSION_SECRET as string,
-    store: new MSSQLStore(sqlConfig, { table: "Sessions" }),
+    store: new MSSQLStore(sqlConfig, { table: "Sessions", autoRemove: true }),
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 1000 * 60 * 60 * 24,
+      sameSite: isProduction ? "none" : undefined,
+      secure: isProduction,
+      maxAge: 1000 * 60 * 15,
     },
   })
 );
