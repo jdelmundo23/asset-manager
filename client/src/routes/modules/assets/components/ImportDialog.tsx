@@ -9,6 +9,7 @@ import UploadStage from "./import_stages/UploadStage";
 import { ImportProvider } from "@/context/ImportContext";
 import PreviewStage from "./import_stages/PreviewStage";
 import ResultsStage from "./import_stages/ResultsStage";
+import { Button } from "@/components/shadcn-ui/button";
 
 type Stage = "upload" | "preview" | "results";
 
@@ -29,9 +30,16 @@ export default function FileUpload({
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
-      <AlertDialogContent className="flex flex-col justify-center">
-        <AlertDialogTitle className="text-white">
+      <AlertDialogContent className="flex flex-col justify-center gap-y-1">
+        <AlertDialogTitle className="flex items-center justify-between text-white">
           {stageTitles[currentStage]}
+          {currentStage === "upload" && (
+            <a href="/api/import/template" download>
+              <Button variant="secondary" size="sm" className="h-6 px-2">
+                Download Template
+              </Button>
+            </a>
+          )}
         </AlertDialogTitle>
         <ImportProvider>
           {currentStage === "upload" && (

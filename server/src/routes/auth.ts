@@ -9,7 +9,7 @@ const clientURL = process.env.CLIENT_ORIGIN ?? "http://localhost:3000/";
 const router = express.Router();
 
 router.get("/signin", (req, res, next) => {
-  if (devMode) {
+  if (devMode || req.session.account) {
     return res.redirect(clientURL);
   }
 

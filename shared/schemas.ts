@@ -63,11 +63,12 @@ export const assetImportSchema = z
           ),
         z.number(),
         z.null(),
+        z.undefined(),
       ])
       .pipe(
         z.coerce
           .number()
-          .min(0.01, "Minimum cost is 0.01")
+          .min(0.0, "Minimum cost is 0.00")
           .refine((v) => v <= 9999.99, "Maximum cost is 9999.99")
           .transform((v) => parseFloat(v.toFixed(2)))
       )
@@ -115,11 +116,12 @@ export const assetSchema = z
           ),
         z.number(),
         z.null(),
+        z.undefined(),
       ])
       .pipe(
         z.coerce
           .number()
-          .min(0.0, "Minimum cost is 0.01")
+          .min(0.0, "Minimum cost is 0.00")
           .refine((v) => v <= 9999.99, "Maximum cost is 9999.99")
           .transform((v) => parseFloat(v.toFixed(2)))
       )

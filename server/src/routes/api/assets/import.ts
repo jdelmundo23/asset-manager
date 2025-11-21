@@ -16,8 +16,18 @@ import {
 import z from "zod";
 import sql from "mssql";
 import { parseInputReq } from "@server/src/utils";
+import path from "path";
 
 const router = express.Router();
+
+router.get("/template", async function (req, res) {
+  const templatePath = path.join(
+    process.cwd(),
+    "templates",
+    "asset_import.csv"
+  );
+  res.download(templatePath, "asset_import.csv");
+});
 
 router.post("/check", async function (req, res) {
   const assets = parseInputReq(z.array(assetImportSchema), req.body);
