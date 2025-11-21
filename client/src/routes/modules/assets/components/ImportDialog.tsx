@@ -10,6 +10,7 @@ import { ImportProvider } from "@/context/ImportContext";
 import PreviewStage from "./import_stages/PreviewStage";
 import ResultsStage from "./import_stages/ResultsStage";
 import { Button } from "@/components/shadcn-ui/button";
+import { getServerUrl } from "@/lib/utils";
 
 type Stage = "upload" | "preview" | "results";
 
@@ -34,7 +35,7 @@ export default function FileUpload({
         <AlertDialogTitle className="flex items-center justify-between text-white">
           {stageTitles[currentStage]}
           {currentStage === "upload" && (
-            <a href="/api/import/template" download>
+            <a href={`${getServerUrl()}/api/import/template`} download>
               <Button variant="secondary" size="sm" className="h-6 px-2">
                 Download Template
               </Button>
