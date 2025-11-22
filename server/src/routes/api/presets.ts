@@ -11,7 +11,7 @@ import z from "zod";
 import { parseInputReq, recordExists } from "@server/src/utils";
 
 interface TableRequest extends Request {
-  tableName?: string;
+  sanitizedTable?: string;
 }
 
 const inputDefinitions = [
@@ -48,154 +48,173 @@ const validateTable: RequestHandler = (req: TableRequest, res, next) => {
     return;
   }
 
-  req.tableName = parse.data;
+  req.sanitizedTable = parse.data;
   next();
 };
 
 const router = express.Router();
 
-router.use("/:tableName", validateTable);
+router.get(
+  "/:tableName",
+  validateTable,
+  async function (req: TableRequest, res) {
+    const sanitizedTable = req.sanitizedTable!;
 
-router.get("/:tableName", async function (req, res) {
-  const { tableName } = req.params;
+    try {
+      const pool = await getPool();
 
-  try {
-    const pool = await getPool();
-
-    const query =
-      tableName === "assetmodels"
-        ? `SELECT 
+      const query =
+        sanitizedTable === "assetmodels"
+          ? `SELECT 
             AssetModels.*, 
             AssetTypes.name AS typeName 
            FROM AssetModels 
            LEFT JOIN AssetTypes ON AssetModels.typeID = AssetTypes.ID`
-        : `SELECT * FROM ${tableName}`;
-    const result = await pool.request().query(query);
+          : `SELECT * FROM ${sanitizedTable}`;
+      const result = await pool.request().query(query);
 
-    const parse = z.array(presetRowSchema).safeParse(result.recordset);
+      const parse = z.array(presetRowSchema).safeParse(result.recordset);
 
-    if (parse.error) {
-      console.error(parse.error);
-      res.status(500).json({ error: "Failed to parse database records" });
+      if (parse.error) {
+        console.error(parse.error);
+        res.status(500).json({ error: "Failed to parse database records" });
+        return;
+      }
+
+      res.json(parse.data);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to retrieve preset data" });
+    }
+  }
+);
+
+router.post(
+  "/:tableName",
+  validateTable,
+  async function (req: TableRequest, res) {
+    const sanitizedTable = req.sanitizedTable!;
+    const isModels = sanitizedTable === "assetmodels";
+
+    const preset = parseInputReq(presetSchema, req.body);
+    if (!preset) {
+      res.status(400).json({ error: "Invalid request body" });
       return;
     }
 
-    res.json(parse.data);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to retrieve preset data" });
-  }
-});
-
-router.post("/:tableName", async function (req, res) {
-  const { tableName } = req.params;
-  const isModels = tableName === "assetmodels";
-
-  const preset = parseInputReq(presetSchema, req.body);
-  if (!preset) {
-    res.status(400).json({ error: "Invalid request body" });
-    return;
-  }
-
-  if (isModels && !preset.typeID) {
-    res.status(400).json({ error: "Missing Type ID" });
-    return;
-  }
-
-  try {
-    const pool = await getPool();
-
-    const check = await recordExists(pool, tableName, { name: preset.name });
-    if (check.error) {
-      res.status(500).json({ error: "Failed to check if preset exists" });
-      return;
-    }
-    if (check.exists) {
-      res.status(400).json({ error: "Preset already exists" });
+    if (isModels && !preset.typeID) {
+      res.status(400).json({ error: "Missing Type ID" });
       return;
     }
 
-    const appendedRequest = isModels
-      ? appendInputs(pool.request(), preset)
-      : appendInputs(pool.request(), preset, ["typeID"]);
+    try {
+      const pool = await getPool();
 
-    await appendedRequest.query(`INSERT INTO ${tableName} (
+      const check = await recordExists(pool, sanitizedTable, {
+        name: preset.name,
+      });
+      if (check.error) {
+        res.status(500).json({ error: "Failed to check if preset exists" });
+        return;
+      }
+      if (check.exists) {
+        res.status(400).json({ error: "Preset already exists" });
+        return;
+      }
+
+      const appendedRequest = isModels
+        ? appendInputs(pool.request(), preset)
+        : appendInputs(pool.request(), preset, ["typeID"]);
+
+      await appendedRequest.query(`INSERT INTO ${sanitizedTable} (
       name
       ${isModels ? ",typeID" : ""}
     )
       VALUES (
       @name
       ${isModels ? ",@typeID" : ""})`);
-    res.status(200).json({ message: "Data inserted successfully!" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to add data" });
-  }
-});
-
-router.put("/:tableName", async function (req, res) {
-  const { tableName } = req.params;
-  const isModels = tableName === "assetmodels";
-
-  const preset = parseInputReq(presetRowSchema, req.body);
-  if (!preset) {
-    res.status(400).json({ error: "Invalid request body" });
-    return;
-  }
-
-  if (isModels && !preset.typeID) {
-    res.status(400).json({ error: "Missing Type ID" });
-    return;
-  }
-
-  try {
-    const pool = await getPool();
-
-    const check = await recordExists(pool, tableName, { name: preset.name });
-    if (check.error) {
-      res.status(500).json({ error: "Failed to check if preset exists" });
-      return;
+      res.status(200).json({ message: "Data inserted successfully!" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to add data" });
     }
-    if (check.exists) {
-      res.status(400).json({ error: "Preset already exists" });
+  }
+);
+
+router.put(
+  "/:tableName",
+  validateTable,
+  async function (req: TableRequest, res) {
+    const sanitizedTable = req.sanitizedTable!;
+    const isModels = sanitizedTable === "assetmodels";
+
+    const preset = parseInputReq(presetRowSchema, req.body);
+    if (!preset) {
+      res.status(400).json({ error: "Invalid request body" });
       return;
     }
 
-    const appendedRequest = isModels
-      ? appendInputs(pool.request(), preset)
-      : appendInputs(pool.request(), preset, ["typeID"]);
+    if (isModels && !preset.typeID) {
+      res.status(400).json({ error: "Missing Type ID" });
+      return;
+    }
 
-    await appendedRequest.query(`UPDATE ${tableName}
+    try {
+      const pool = await getPool();
+
+      const check = await recordExists(pool, sanitizedTable, {
+        name: preset.name,
+      });
+      if (check.error) {
+        res.status(500).json({ error: "Failed to check if preset exists" });
+        return;
+      }
+      if (check.exists) {
+        res.status(400).json({ error: "Preset already exists" });
+        return;
+      }
+
+      const appendedRequest = isModels
+        ? appendInputs(pool.request(), preset)
+        : appendInputs(pool.request(), preset, ["typeID"]);
+
+      await appendedRequest.query(`UPDATE ${sanitizedTable}
         SET
           name = @name
           ${isModels ? ",typeID = @typeID" : ""}
         WHERE ID = @ID`);
-    res.status(200).json({ message: "Data updated successfully!" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to update data" });
+      res.status(200).json({ message: "Data updated successfully!" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to update data" });
+    }
   }
-});
+);
 
-router.delete("/:tableName/:presetID", async function (req, res) {
-  const { tableName, presetID } = req.params;
+router.delete(
+  "/:tableName/:presetID",
+  validateTable,
+  async function (req: TableRequest, res) {
+    const { presetID } = req.params;
+    const sanitizedTable = req.sanitizedTable!;
 
-  if (!presetID) {
-    res.status(400).json({ error: "Preset ID is required" });
-    return;
+    if (!presetID) {
+      res.status(400).json({ error: "Preset ID is required" });
+      return;
+    }
+
+    try {
+      const pool = await getPool();
+      await pool
+        .request()
+        .input("ID", sql.Int, presetID)
+        .query(`DELETE FROM ${sanitizedTable} WHERE ID = @ID`);
+      res.status(200).json({ message: "Preset deleted successfully" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to delete preset" });
+    }
   }
-
-  try {
-    const pool = await getPool();
-    await pool
-      .request()
-      .input("ID", sql.Int, presetID)
-      .query(`DELETE FROM ${tableName} WHERE ID = @ID`);
-    res.status(200).json({ message: "Preset deleted successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to delete preset" });
-  }
-});
+);
 
 export default router;
