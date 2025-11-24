@@ -1,6 +1,6 @@
 import { subnetRowSchema, subnetSchema } from "@shared/schemas";
 import express from "express";
-import { getPool } from "@server/src/sql";
+import { getPool, withTransaction } from "@server/src/sql";
 import sql from "mssql";
 import { z } from "zod";
 import { parseInputReq, recordExists } from "@server/src/utils";
@@ -50,18 +50,19 @@ router.post("/", async function (req, res) {
       return;
     }
 
-    const result = await pool
-      .request()
-      .input("subnetPrefix", sql.VarChar(11), subnet.subnetPrefix)
-      .input("locationID", sql.Int, subnet.locationID)
-      .query(
-        `
+    const insertedRow = await withTransaction(async (request) => {
+      const result = await request
+        .input("subnetPrefix", sql.VarChar(11), subnet.subnetPrefix)
+        .input("locationID", sql.Int, subnet.locationID)
+        .query(
+          `
         INSERT INTO Subnets (subnetPrefix, locationID) 
         OUTPUT INSERTED.*
         VALUES (@subnetPrefix, @locationID)`
-      );
+        );
 
-    const insertedRow = result.recordset[0];
+      return result.recordset[0];
+    });
 
     res
       .status(200)
@@ -80,12 +81,10 @@ router.put("/", async function (req, res) {
   }
 
   try {
-    const pool = await getPool();
-
-    const result = await pool
-      .request()
-      .input("ID", sql.Int, subnet.ID)
-      .input("locationID", sql.Int, subnet.locationID).query(`
+    const updatedRow = await withTransaction(async (request) => {
+      const result = await request
+        .input("ID", sql.Int, subnet.ID)
+        .input("locationID", sql.Int, subnet.locationID).query(`
         UPDATE Subnets
         SET 
           locationID = @locationID
@@ -93,7 +92,8 @@ router.put("/", async function (req, res) {
         WHERE ID = @ID
       `);
 
-    const updatedRow = result.recordset[0];
+      return result.recordset[0];
+    });
 
     res
       .status(200)
@@ -113,11 +113,12 @@ router.delete("/:subnetID", async function (req, res) {
   }
 
   try {
-    const pool = await getPool();
-    await pool
-      .request()
-      .input("ID", sql.Int, subnetID)
-      .query(`DELETE FROM Subnets WHERE ID = @ID`);
+    await withTransaction(async (request) => {
+      await request
+        .input("ID", sql.Int, subnetID)
+        .query(`DELETE FROM Subnets WHERE ID = @ID`);
+    });
+
     res.status(200).json({ message: "Subnet deleted successfully" });
   } catch (err) {
     console.error(err);

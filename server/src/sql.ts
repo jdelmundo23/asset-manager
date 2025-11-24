@@ -23,3 +23,24 @@ export const getPool = async (): Promise<ConnectionPool> => {
   }
   return poolPromise;
 };
+
+export async function withTransaction<T>(
+  callback: (request: sql.Request) => Promise<T>
+) {
+  const pool = await sql.connect(sqlConfig);
+  const transaction = new sql.Transaction(pool);
+
+  try {
+    await transaction.begin();
+
+    const request = new sql.Request(transaction);
+
+    const result = await callback(request);
+
+    await transaction.commit();
+    return result;
+  } catch (err) {
+    await transaction.rollback();
+    throw err;
+  }
+}

@@ -100,14 +100,18 @@ export default function SubnetForm({
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField
-          disabled={mode === "edit"}
           control={form.control}
           name="subnetPrefix"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Subnet Prefix</FormLabel>
               <FormControl>
-                <Input placeholder="ex: 192.168.1" type="text" {...field} />
+                <Input
+                  placeholder="ex: 192.168.1"
+                  type="text"
+                  {...field}
+                  disabled={mode === "edit"}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
