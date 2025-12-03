@@ -280,19 +280,23 @@ router.patch("/", async function (req, res) {
         SET ${columnName} = @${columnName} 
         WHERE ID = @ID`);
 
-    res.status(200).json({ message: "Cell edited successfully!" });
+    res.status(200).json({ message: "Asset edited successfully!" });
   } catch (error) {
     console.log(error);
-    if (
-      error instanceof sql.RequestError &&
-      error.message.includes("warranty")
-    ) {
-      res
-        .status(500)
-        .json({ error: "Warranty expiration must be after purchase date." });
-    } else {
-      res.status(500).json({ error: "Failed to edit cell" });
+    if (error instanceof sql.RequestError) {
+      if (error.message.includes("warranty")) {
+        res
+          .status(500)
+          .json({ error: "Warranty expiration must be after purchase date." });
+        return;
+      } else if (error.message.includes("identifier")) {
+        res.status(500).json({
+          error: "Identifier already exists for model.",
+        });
+        return;
+      }
     }
+    res.status(500).json({ error: "Failed to edit asset" });
   }
 });
 

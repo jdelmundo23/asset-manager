@@ -34,8 +34,8 @@ export default function SyncMsg({ groupName }: SyncMsgProps) {
         : undefined;
 
     toastReturn.unwrap().catch((error) => {
-      handleError(error, toastID);
-      throw error;
+      const errorMsg = handleError(error, toastID);
+      console.error(errorMsg);
     });
   };
 

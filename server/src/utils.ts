@@ -38,7 +38,7 @@ export const recordExists = async (
 
   const whereClause =
     conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
-  const query = `SELECT 1 FROM ${table} ${whereClause}`;
+  const query = `SELECT TOP 1 * FROM ${table} ${whereClause}`;
 
   try {
     const result = await request.query(query);

@@ -27,7 +27,7 @@ export function handleError(error: unknown, loadingToastId?: string | number) {
       showErrorToast(toastId, `Unexpected error (${status}).`);
     }
 
-    return errorMsg;
+    return errorMsg || "Unexpected error";
   } else {
     console.error("Unexpected error:", error);
     showErrorToast(

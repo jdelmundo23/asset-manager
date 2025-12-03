@@ -75,13 +75,10 @@ export default function NoteView({ children, currentNote, ID }: NoteViewProps) {
         ? toastReturn
         : undefined;
 
-    toastReturn
-      .unwrap()
-      .then((response) => response)
-      .catch((error) => {
-        handleError(error, toastID);
-        throw error;
-      });
+    toastReturn.unwrap().catch((error) => {
+      const errorMsg = handleError(error, toastID);
+      console.error(errorMsg);
+    });
   }
 
   useEffect(() => {

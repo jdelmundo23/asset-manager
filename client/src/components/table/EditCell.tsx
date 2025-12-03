@@ -75,7 +75,10 @@ const EditCellInner = memo(function EditCell<T>({
   };
 
   async function onSubmit(values: CellType) {
-    if (values[column.id] === currentValue) return;
+    if (values[column.id] === currentValue) {
+      form.reset();
+      return;
+    }
 
     const toastReturn = toast.promise(mutation.mutateAsync(values), {
       loading: `Editing ${column.columnDef.header}`,
@@ -87,13 +90,11 @@ const EditCellInner = memo(function EditCell<T>({
         ? toastReturn
         : undefined;
 
-    toastReturn
-      .unwrap()
-      .then((response) => response)
-      .catch((error) => {
-        handleError(error, toastID);
-        throw error;
-      });
+    toastReturn.unwrap().catch((error) => {
+      const errorMsg = handleError(error, toastID);
+      form.setError(column.id, { message: errorMsg || "Unexpected error" });
+      console.error(errorMsg);
+    });
   }
 
   let editField: JSX.Element = <></>;
