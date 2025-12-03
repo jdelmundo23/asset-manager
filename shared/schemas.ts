@@ -12,10 +12,32 @@ export const presetTableSchema = z.enum([
   "assettypes",
 ]);
 
-const trimmedString = (min: number, max: number) =>
+export const trimmedString = (min: number, max: number) =>
   z.preprocess(
-    (val) => (typeof val === "string" ? val.trim() : val),
-    z.string().min(min).max(max)
+    (val) => {
+      if (typeof val !== "string") return val;
+
+      return val.trim().replace(/\s+/g, " ");
+    },
+    z
+      .string()
+      .min(min, { message: `Must be at least ${min} characters` })
+      .max(max, { message: `Cannot exceed ${max} characters` })
+  );
+
+export const nullishTrimmedString = (min: number, max: number) =>
+  z.preprocess(
+    (val) => {
+      if (typeof val !== "string") return val;
+
+      const trimmed = val.trim().replace(/\s+/g, " ");
+      return trimmed === "" ? null : trimmed;
+    },
+    z
+      .string()
+      .min(min, { message: `Must be at least ${min} characters` })
+      .max(max, { message: `Cannot exceed ${max} characters` })
+      .nullish()
   );
 
 export const userSchema = z.object({
@@ -29,7 +51,7 @@ export const presetSchema = z.object({
   ID: z.number().optional(),
   name: trimmedString(2, 50),
   typeID: z.number().nullish(),
-  typeName: z.string().min(2).max(50).nullish(),
+  typeName: nullishTrimmedString(2, 50),
 });
 
 export const presetRowSchema = presetSchema.extend({
@@ -46,12 +68,12 @@ export const assetImportSchema = z
   .object({
     rowNumber: z.number(),
     Name: trimmedString(2, 100),
-    Identifier: trimmedString(2, 100).nullish(),
+    Identifier: nullishTrimmedString(2, 100),
     Type: trimmedString(2, 50),
     Model: trimmedString(2, 50),
     Location: trimmedString(2, 50),
     Department: trimmedString(2, 50),
-    "Assigned To": trimmedString(0, 255).nullish(),
+    "Assigned To": nullishTrimmedString(0, 255),
     "Purchase Date": nullableDate,
     "Warranty Exp": nullableDate,
     Cost: z
@@ -73,7 +95,7 @@ export const assetImportSchema = z
           .transform((v) => parseFloat(v.toFixed(2)))
       )
       .nullable(),
-    Note: trimmedString(0, 255).nullish(),
+    Note: nullishTrimmedString(0, 255),
   })
   .refine(
     (data) => {
@@ -90,15 +112,15 @@ export const assetImportSchema = z
 
 export const skippedRowSchema = z.object({
   rowNumber: z.number(),
-  identifier: z.string().min(2).max(100).nullish(),
-  reason: z.string().min(1),
+  identifier: nullishTrimmedString(2, 100),
+  reason: trimmedString(1, 255),
 });
 
 export const assetSchema = z
   .object({
     ID: z.number().optional(),
-    name: z.string().min(2).max(100),
-    identifier: z.string().min(2).max(100).nullish(),
+    name: trimmedString(2, 100),
+    identifier: nullishTrimmedString(2, 100),
     typeID: z.number().nullish(),
     modelID: z.number().nullish(),
     locationID: z.number().nullish(),
@@ -106,7 +128,7 @@ export const assetSchema = z
     assignedTo: z.string().uuid().nullish(),
     purchaseDate: z.coerce.date().nullish(),
     warrantyExp: z.coerce.date().nullish(),
-    note: z.string().max(255).nullish(),
+    note: nullishTrimmedString(0, 255),
     cost: z
       .union([
         z
@@ -142,11 +164,11 @@ export const assetSchema = z
 
 export const assetSummarySchema = z.object({
   ID: z.number(),
-  name: z.string().min(2).max(100),
-  identifier: z.string().min(2).max(100).nullish(),
-  typeName: z.string().min(2).max(50).nullish(),
-  modelName: z.string().min(2).max(50).nullish(),
-  locationName: z.string().min(2).max(50).nullish(),
+  name: trimmedString(2, 100),
+  identifier: nullishTrimmedString(2, 100),
+  typeName: nullishTrimmedString(2, 50),
+  modelName: nullishTrimmedString(2, 50),
+  locationName: nullishTrimmedString(2, 50),
 });
 
 export const assetRowSchema = assetSchema.innerType().extend({
@@ -182,9 +204,9 @@ const baseIPSchema = z.object({
     .nullish()
     .transform((value) => value ?? ""),
   assetID: z.number().nullish(),
-  assetName: z.string().min(2).max(100).nullish(),
-  name: z.string().min(2).max(100),
-  note: z.string().max(255).nullish(),
+  assetName: nullishTrimmedString(2, 100),
+  name: trimmedString(2, 100),
+  note: nullishTrimmedString(0, 255),
 });
 
 export const ipInputSchema = baseIPSchema.extend({
@@ -209,7 +231,7 @@ export const subnetSchema = z.object({
   ID: z.number().optional(),
   subnetPrefix: subnetPrefixSchema,
   locationID: z.number().nullish(),
-  locationName: z.string().min(2).max(50).nullish(),
+  locationName: nullishTrimmedString(2, 50),
 });
 
 export const subnetRowSchema = subnetSchema.extend({
