@@ -48,6 +48,7 @@ interface FormComboboxProps<
   };
   onSelect: (val: FieldPathValue<S, T>, fieldName: T, newVal: C) => void;
   className?: string;
+  disabled?: boolean;
 }
 
 function FormCombobox<
@@ -71,6 +72,7 @@ function FormCombobox<
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
+                  disabled={props.disabled}
                   variant="outline"
                   role="combobox"
                   className={cn(

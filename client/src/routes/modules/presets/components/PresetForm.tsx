@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/shadcn-ui/input";
 import { Button } from "@/components/shadcn-ui/button";
 
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import PresetContext from "@/context/PresetContext";
 import { handleError } from "@/lib/handleError";
 import axiosApi from "@/lib/axios";
@@ -75,6 +75,7 @@ export default function PresetForm({
   closeDialog,
 }: PresetFormprops) {
   const { activePreset } = useContext(PresetContext);
+  const [formError, setFormError] = useState("");
   const mutation = handlePresetMutation();
 
   const form = useForm<Preset>({
@@ -82,7 +83,19 @@ export default function PresetForm({
     ...(mode === "edit" && preset ? { defaultValues: preset } : {}),
   });
 
+  const watchedValues = form.watch();
+
   async function onSubmit(values: Preset) {
+    if (
+      mode === "edit" &&
+      JSON.stringify(presetSchema.parse(watchedValues)) ===
+        JSON.stringify(preset)
+    ) {
+      form.reset(presetSchema.parse(watchedValues));
+      setFormError("");
+      return;
+    }
+
     const variables = {
       mode,
       table: activePreset.tableName,
@@ -99,7 +112,9 @@ export default function PresetForm({
       )
       .unwrap()
       .catch((err) => {
-        handleError(err);
+        form.reset(presetSchema.parse(watchedValues));
+        const errorMsg = handleError(err);
+        setFormError(errorMsg);
       });
   }
 
@@ -127,13 +142,13 @@ export default function PresetForm({
           )}
         />
 
-        {activePreset.tableName === "assetmodels" ? (
+        {activePreset.tableName === "assetmodels" && (
           <TypeCombobox form={form} />
-        ) : (
-          ""
         )}
-        <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
+        <div className="flex flex-col-reverse items-center justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
+          <FormMessage>{formError}</FormMessage>
           <Button
+            type="button"
             variant="outline"
             className="text-white"
             onClick={(e) => {
@@ -143,7 +158,16 @@ export default function PresetForm({
           >
             Cancel
           </Button>
-          <Button type="submit">Confirm</Button>
+          <Button
+            type="submit"
+            disabled={
+              (mode === "edit" &&
+                JSON.stringify(preset) === JSON.stringify(watchedValues)) ||
+              Object.keys(form.formState.dirtyFields).length === 0
+            }
+          >
+            Confirm
+          </Button>
         </div>
       </form>
     </Form>

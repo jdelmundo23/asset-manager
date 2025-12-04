@@ -112,6 +112,7 @@ router.post(
 
       const check = await recordExists(pool, sanitizedTable, {
         name: preset.name,
+        ...(isModels && { typeID: preset.typeID }),
       });
       if (check.error) {
         res.status(500).json({ error: "Failed to check if preset exists" });
@@ -164,6 +165,7 @@ router.put(
 
       const check = await recordExists(pool, sanitizedTable, {
         name: preset.name,
+        ...(isModels && { typeID: preset.typeID }),
       });
       if (check.error) {
         res.status(500).json({ error: "Failed to check if preset exists" });
