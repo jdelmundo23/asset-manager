@@ -1,6 +1,6 @@
 import { subnetRowSchema, subnetSchema } from "@shared/schemas";
 import express from "express";
-import { getPool, withTransaction } from "@server/src/sql";
+import { getPool } from "@server/src/sql";
 import sql from "mssql";
 import { z } from "zod";
 import { parseInputReq, recordExists } from "@server/src/utils";
