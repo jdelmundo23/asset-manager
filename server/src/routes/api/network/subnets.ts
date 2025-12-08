@@ -50,19 +50,18 @@ router.post("/", async function (req, res) {
       return;
     }
 
-    const insertedRow = await withTransaction(async (request) => {
-      const result = await request
-        .input("subnetPrefix", sql.VarChar(11), subnet.subnetPrefix)
-        .input("locationID", sql.Int, subnet.locationID)
-        .query(
-          `
+    const result = await pool
+      .request()
+      .input("subnetPrefix", sql.VarChar(11), subnet.subnetPrefix)
+      .input("locationID", sql.Int, subnet.locationID)
+      .query(
+        `
         INSERT INTO Subnets (subnetPrefix, locationID) 
         OUTPUT INSERTED.*
         VALUES (@subnetPrefix, @locationID)`
-        );
+      );
 
-      return result.recordset[0];
-    });
+    const insertedRow = result.recordset[0];
 
     res
       .status(200)
@@ -81,10 +80,12 @@ router.put("/", async function (req, res) {
   }
 
   try {
-    const updatedRow = await withTransaction(async (request) => {
-      const result = await request
-        .input("ID", sql.Int, subnet.ID)
-        .input("locationID", sql.Int, subnet.locationID).query(`
+    const pool = await getPool();
+
+    const result = await pool
+      .request()
+      .input("ID", sql.Int, subnet.ID)
+      .input("locationID", sql.Int, subnet.locationID).query(`
         UPDATE Subnets
         SET 
           locationID = @locationID
@@ -92,8 +93,7 @@ router.put("/", async function (req, res) {
         WHERE ID = @ID
       `);
 
-      return result.recordset[0];
-    });
+    const updatedRow = result.recordset[0];
 
     res
       .status(200)
@@ -113,11 +113,11 @@ router.delete("/:subnetID", async function (req, res) {
   }
 
   try {
-    await withTransaction(async (request) => {
-      await request
-        .input("ID", sql.Int, subnetID)
-        .query(`DELETE FROM Subnets WHERE ID = @ID`);
-    });
+    const pool = await getPool();
+    await pool
+      .request()
+      .input("ID", sql.Int, subnetID)
+      .query(`DELETE FROM Subnets WHERE ID = @ID`);
 
     res.status(200).json({ message: "Subnet deleted successfully" });
   } catch (err) {
