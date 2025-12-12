@@ -53,13 +53,23 @@ router.post("/", async function (req, res) {
     const result = await pool
       .request()
       .input("subnetPrefix", sql.VarChar(11), subnet.subnetPrefix)
-      .input("locationID", sql.Int, subnet.locationID)
-      .query(
-        `
-        INSERT INTO Subnets (subnetPrefix, locationID) 
-        OUTPUT INSERTED.*
-        VALUES (@subnetPrefix, @locationID)`
-      );
+      .input("locationID", sql.Int, subnet.locationID).query(`
+          DECLARE @InsertedSubnets TABLE (
+              ID INT,
+              subnetPrefix VARCHAR(50),
+              locationID INT
+          );
+
+          INSERT INTO Subnets (subnetPrefix, locationID)
+          OUTPUT 
+              INSERTED.ID,
+              INSERTED.subnetPrefix,
+              INSERTED.locationID
+          INTO @InsertedSubnets
+          VALUES (@subnetPrefix, @locationID);
+
+          SELECT * FROM @InsertedSubnets;
+        `);
 
     const insertedRow = result.recordset[0];
 
@@ -86,12 +96,24 @@ router.put("/", async function (req, res) {
       .request()
       .input("ID", sql.Int, subnet.ID)
       .input("locationID", sql.Int, subnet.locationID).query(`
-        UPDATE Subnets
-        SET 
-          locationID = @locationID
-        OUTPUT INSERTED.*
-        WHERE ID = @ID
-      `);
+          DECLARE @UpdatedSubnets TABLE (
+              ID INT,
+              subnetPrefix VARCHAR(50),
+              locationID INT
+          );
+
+          UPDATE Subnets
+          SET 
+              locationID = @locationID
+          OUTPUT 
+              INSERTED.ID,
+              INSERTED.subnetPrefix,
+              INSERTED.locationID
+          INTO @UpdatedSubnets
+          WHERE ID = @ID;
+
+          SELECT * FROM @UpdatedSubnets;
+        `);
 
     const updatedRow = result.recordset[0];
 

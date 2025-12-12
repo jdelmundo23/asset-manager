@@ -5,6 +5,15 @@ const nullableDate = z.union([z.string(), z.null()]).transform((val) => {
   return new Date(val);
 });
 
+const bufferConversion = z
+  .union([z.string(), z.instanceof(Buffer)])
+  .transform((val) => {
+    if (Buffer.isBuffer(val)) {
+      return val.toString("base64");
+    }
+    return val;
+  });
+
 export const presetTableSchema = z.enum([
   "departments",
   "locations",
@@ -49,6 +58,7 @@ export const userSchema = z.object({
 
 export const presetSchema = z.object({
   ID: z.number().optional(),
+  rowVersion: bufferConversion.optional(),
   name: trimmedString(2, 50),
   typeID: z.number().nullish(),
   typeName: nullishTrimmedString(2, 50),
@@ -56,6 +66,7 @@ export const presetSchema = z.object({
 
 export const presetRowSchema = presetSchema.extend({
   ID: z.number(),
+  rowVersion: bufferConversion,
 });
 
 export const missingPresetsSchema = z.object({
@@ -119,6 +130,7 @@ export const skippedRowSchema = z.object({
 export const assetSchema = z
   .object({
     ID: z.number().optional(),
+    rowVersion: bufferConversion.optional(),
     name: trimmedString(2, 100),
     identifier: nullishTrimmedString(2, 100),
     typeID: z.number().nullish(),
@@ -173,6 +185,7 @@ export const assetSummarySchema = z.object({
 
 export const assetRowSchema = assetSchema.innerType().extend({
   ID: z.number(),
+  rowVersion: bufferConversion,
 });
 
 const subnetPrefixSchema = z
@@ -216,6 +229,7 @@ export const ipInputSchema = baseIPSchema.extend({
 
 export const ipRowSchema = baseIPSchema.extend({
   ID: z.number(),
+  rowVersion: bufferConversion,
   hostNumber: z
     .number()
     .int()
@@ -225,10 +239,14 @@ export const ipRowSchema = baseIPSchema.extend({
   subnetID: z.number(),
 });
 
-export const ipInsertSchema = ipRowSchema.partial({ ID: true });
+export const ipInsertSchema = ipRowSchema.partial({
+  ID: true,
+  rowVersion: true,
+});
 
 export const subnetSchema = z.object({
   ID: z.number().optional(),
+  rowVersion: bufferConversion.optional(),
   subnetPrefix: subnetPrefixSchema,
   locationID: z.number().nullish(),
   locationName: nullishTrimmedString(2, 50),
@@ -236,6 +254,7 @@ export const subnetSchema = z.object({
 
 export const subnetRowSchema = subnetSchema.extend({
   ID: z.number(),
+  rowVersion: bufferConversion,
 });
 
 export type SkippedRow = z.infer<typeof skippedRowSchema>;

@@ -1,6 +1,6 @@
 import express, { RequestHandler } from "express";
 import { getPool } from "@server/src/sql";
-import { Asset, assetSchema } from "@shared/schemas";
+import { Asset, assetRowSchema, assetSchema } from "@shared/schemas";
 import sql from "mssql";
 import { z, ZodObject, ZodRawShape } from "zod";
 
@@ -95,10 +95,11 @@ router.get("/all", async function (req, res) {
       Assets.purchaseDate,
       Assets.warrantyExp,
       Assets.cost,
+      Assets.rowVersion,
       Assets.note FROM Assets LEFT JOIN AssetModels ON Assets.modelID = AssetModels.ID`
     );
 
-    const parse = z.array(assetSchema).safeParse(result.recordset);
+    const parse = z.array(assetRowSchema).safeParse(result.recordset);
 
     if (parse.error) {
       console.error(parse.error);
