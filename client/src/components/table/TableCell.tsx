@@ -9,10 +9,16 @@ import { Pencil } from "lucide-react";
 interface MemoCellProps<T> {
   cell: Cell<T, unknown>;
   rowId: string;
+  rowVersion: string;
   schema?: ZodObject<ZodRawShape>;
 }
 
-export function MemoCellInner<T>({ cell, rowId, schema }: MemoCellProps<T>) {
+export function MemoCellInner<T>({
+  cell,
+  rowId,
+  rowVersion,
+  schema,
+}: MemoCellProps<T>) {
   const [cellTruncated, setCellTruncated] = useState<boolean>(false);
   const value = cell.getValue();
   const rendered = useMemo(
@@ -65,6 +71,7 @@ export function MemoCellInner<T>({ cell, rowId, schema }: MemoCellProps<T>) {
               currentValue={cell.getValue()}
               ID={rowId}
               schema={schema}
+              rowVersion={rowVersion}
             >
               {() => (
                 <button
@@ -89,6 +96,7 @@ export function MemoCellInner<T>({ cell, rowId, schema }: MemoCellProps<T>) {
               currentValue={cell.getValue()}
               ID={rowId}
               schema={schema}
+              rowVersion={rowVersion}
             >
               {(isOpen: boolean) => (
                 <button

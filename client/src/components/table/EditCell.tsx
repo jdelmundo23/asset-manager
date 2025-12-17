@@ -27,6 +27,7 @@ interface EditCellProps<T> {
   column: Column<T, unknown>;
   currentValue: unknown;
   ID: number | string;
+  rowVersion: string;
   schema: ZodObject<ZodRawShape>;
 }
 
@@ -35,6 +36,7 @@ const EditCellInner = memo(function EditCell<T>({
   column,
   currentValue,
   ID,
+  rowVersion,
   schema,
 }: EditCellProps<T>) {
   const { endpoint, queryKey } = useTableConfig();
@@ -47,6 +49,7 @@ const EditCellInner = memo(function EditCell<T>({
         value: values[column.id],
         column: column.id,
         ID: ID,
+        rowVersion: rowVersion,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({

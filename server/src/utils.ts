@@ -11,9 +11,8 @@ export const parseInputReq = <T extends ZodTypeAny>(
   if (!parse.success) {
     console.error(parse.error.format());
     return undefined;
-  } else {
-    return parse.data;
   }
+  return parse.data;
 };
 
 export const recordExists = async (

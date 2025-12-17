@@ -1,8 +1,9 @@
-import express, { RequestHandler } from "express";
+import express from "express";
 import { getPool } from "@server/src/sql";
-import { Asset, assetRowSchema, assetSchema } from "@shared/schemas";
+import { Asset, AssetRow, assetRowSchema, assetSchema } from "@shared/schemas";
 import sql from "mssql";
-import { z, ZodObject, ZodRawShape } from "zod";
+import { z } from "zod";
+import { parseInputReq } from "@server/src/utils";
 
 const inputDefinitions = [
   { name: "ID", type: sql.Int },
@@ -16,17 +17,21 @@ const inputDefinitions = [
   { name: "warrantyExp", type: sql.DateTime },
   { name: "cost", type: sql.Decimal(6, 2) },
   { name: "note", type: sql.NVarChar(255) },
+  { name: "rowVersion", type: sql.Binary() },
 ] as const;
 
-const inputs = (asset: Partial<Asset> = {}) =>
+const inputs = (asset: Partial<Asset> | Partial<AssetRow> = {}) =>
   inputDefinitions.map((def) => ({
     ...def,
-    value: asset[def.name as keyof Asset],
+    value:
+      def.name === "rowVersion" && asset.rowVersion
+        ? Buffer.from(asset.rowVersion, "base64")
+        : asset[def.name],
   }));
 
 const appendInputs = (
   request: sql.Request,
-  asset: Asset,
+  asset: Asset | AssetRow,
   exclusions: string[] = []
 ) => {
   for (const input of inputs(asset)) {
@@ -37,48 +42,7 @@ const appendInputs = (
   return request;
 };
 
-const validateAssetInput: RequestHandler = async (req, res, next) => {
-  if (!["POST", "PUT", "PATCH"].includes(req.method)) {
-    return next();
-  }
-
-  let result;
-
-  if (req.method === "PATCH") {
-    const shape = assetSchema.innerType() as ZodObject<ZodRawShape>;
-    const column = req.body.column;
-    const value = req.body.value;
-
-    const validColumns: string[] = shape.keyof().options as string[];
-    if (!validColumns.includes(column)) {
-      res.status(400).json({ error: "Invalid column" });
-      return;
-    }
-
-    const columnSchema = shape.pick({ [column]: true });
-    result = columnSchema.safeParse({ [column]: value });
-    if (!result.success) {
-      res.status(400).json({ error: result.error.format() });
-      return;
-    }
-
-    req.body = { ...result.data, column: column, ID: req.body.ID };
-  } else {
-    result = assetSchema.safeParse(req.body);
-    if (!result.success) {
-      res.status(400).json({ error: result.error.format() });
-      return;
-    }
-
-    req.body = result.data;
-  }
-
-  next();
-};
-
 const router = express.Router();
-
-router.use(validateAssetInput);
 
 router.get("/all", async function (req, res) {
   try {
@@ -114,12 +78,19 @@ router.get("/all", async function (req, res) {
 });
 
 router.post("/", async function (req, res) {
-  const asset: Asset = req.body;
+  const asset = parseInputReq(assetSchema, req.body);
+  if (!asset) {
+    res.status(400).json({ error: "Invalid asset" });
+    return;
+  }
 
   try {
     const pool = await getPool();
 
-    const appendedRequest = appendInputs(pool.request(), asset);
+    const appendedRequest = appendInputs(pool.request(), asset, [
+      "ID",
+      "rowVersion",
+    ]);
     await appendedRequest.query(`
     INSERT INTO Assets (
       name, 
@@ -158,10 +129,9 @@ router.post("/", async function (req, res) {
 });
 
 router.put("/", async function (req, res) {
-  const asset: Asset = req.body;
-
-  if (!asset.ID) {
-    res.status(400).json({ error: "Asset ID is required" });
+  const asset = parseInputReq(assetRowSchema, req.body);
+  if (!asset) {
+    res.status(400).json({ error: "Invalid asset row" });
     return;
   }
 
@@ -169,7 +139,7 @@ router.put("/", async function (req, res) {
     const pool = await getPool();
 
     const appendedRequest = appendInputs(pool.request(), asset);
-    await appendedRequest.query(`
+    const result = await appendedRequest.query(`
     UPDATE Assets
     SET 
       name = @name,
@@ -181,8 +151,13 @@ router.put("/", async function (req, res) {
       purchaseDate = @purchaseDate,
       warrantyExp = @warrantyExp,
       cost = @cost
-    WHERE ID = @ID
+    WHERE ID = @ID AND rowVersion = @rowVersion
   `);
+
+    if (result.rowsAffected[0] === 0) {
+      res.status(409).json({ error: "Row modified by another user" });
+      return;
+    }
 
     res.status(200).json({ message: "Data edited successfully!" });
   } catch (err) {
@@ -252,34 +227,48 @@ router.post("/duplicate", async function (req, res) {
 });
 
 router.patch("/", async function (req, res) {
+  const rowVersion = req.body.rowVersion;
   const assetID = req.body.ID;
-  const columnName = req.body.column;
-  const newValue = req.body[columnName];
+  if (!assetID || !rowVersion) {
+    res.status(400).json({ error: "Asset ID or row version missing" });
+    return;
+  }
 
-  if (!assetID) {
-    res.status(400).json({ error: "Asset ID is required" });
+  const column = parseInputReq(assetRowSchema.keyof(), req.body.column);
+  if (!column) {
+    res.status(400).json({ error: "Invalid column" });
+    return;
+  }
+
+  const value = parseInputReq(assetRowSchema.shape[column], req.body.value);
+  if (!value) {
+    res.status(400).json({ error: "Invalid value format" });
     return;
   }
 
   try {
     const pool = await getPool();
 
-    const sqlType = inputDefinitions.find(
-      (def) => def.name === columnName
-    )?.type;
+    const sqlType = inputDefinitions.find((def) => def.name === column)?.type;
 
     if (!sqlType) {
       res.status(400).json({ error: "Invalid column" });
       return;
     }
 
-    await pool
+    const result = await pool
       .request()
-      .input(columnName, sqlType, newValue)
+      .input(column, sqlType, value)
+      .input("rowVersion", sql.Binary(), Buffer.from(rowVersion, "base64"))
       .input("ID", sql.Int, assetID).query(`
         UPDATE Assets 
-        SET ${columnName} = @${columnName} 
-        WHERE ID = @ID`);
+        SET ${column} = @${column} 
+        WHERE ID = @ID AND rowVersion = @rowVersion`);
+
+    if (result.rowsAffected[0] === 0) {
+      res.status(409).json({ error: "Row modified by another user" });
+      return;
+    }
 
     res.status(200).json({ message: "Asset edited successfully!" });
   } catch (error) {

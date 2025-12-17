@@ -5,10 +5,14 @@ const defaultErrorMessages: Record<number, string> = {
   400: "Bad request",
   401: "Session expired or invalid",
   403: "Access denied",
+  409: "Conflict",
   500: "Server error",
 };
 
-export function handleError(error: unknown, loadingToastId?: string | number) {
+export function handleError(
+  error: unknown,
+  loadingToastId?: string | number
+): string | undefined {
   const toastId = loadingToastId ?? "error";
 
   if (axios.isAxiosError(error)) {

@@ -19,7 +19,11 @@ import {
 import { MemoCell, MemoCellInner } from "./TableCell";
 import MyTableHead from "./TableHead";
 
-interface TableRendererProps<T> {
+interface BaseRow {
+  rowVersion: string;
+}
+
+interface TableRendererProps<T extends BaseRow> {
   table: DataTable<T>;
   columnLength: number;
   singleSelect?: boolean;
@@ -27,7 +31,7 @@ interface TableRendererProps<T> {
   schema?: ZodObject<ZodRawShape>;
 }
 
-export default function TableRenderer<T>({
+export default function TableRenderer<T extends BaseRow>({
   table,
   columnLength,
   singleSelect,
@@ -74,6 +78,7 @@ export default function TableRenderer<T>({
                         <MemoCellInner
                           key={cell.id}
                           cell={cell}
+                          rowVersion={row.original.rowVersion}
                           rowId={row.id}
                           schema={schema}
                         />
@@ -82,6 +87,7 @@ export default function TableRenderer<T>({
                           key={cell.id}
                           cell={cell}
                           rowId={row.id}
+                          rowVersion={row.original.rowVersion}
                           schema={schema}
                         />
                       )
