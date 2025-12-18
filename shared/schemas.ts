@@ -224,6 +224,7 @@ const baseIPSchema = z.object({
 
 export const ipInputSchema = baseIPSchema.extend({
   ID: z.number().optional(),
+  rowVersion: z.string().optional(),
   ipAddress: z.string().ip({ message: "Invalid IP Format" }),
 });
 

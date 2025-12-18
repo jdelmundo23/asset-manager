@@ -1,7 +1,7 @@
 import express from "express";
 import { getPool } from "@server/src/sql";
 import sql from "mssql";
-import { IPInsert, ipInputSchema, ipRowSchema } from "@shared/schemas";
+import { IPInsert, IPRow, ipInputSchema, ipRowSchema } from "@shared/schemas";
 import { z } from "zod";
 import {
   addSubnet,
@@ -11,29 +11,28 @@ import {
   validateSingleField,
 } from "@server/src/utils";
 
-type InputField = {
-  name: string;
-  type: sql.ISqlType | (() => sql.ISqlType);
-};
-
-const inputDefinitions: InputField[] = [
+const inputDefinitions = [
   { name: "ID", type: sql.Int },
   { name: "hostNumber", type: sql.TinyInt },
   { name: "subnetID", type: sql.Int },
   { name: "name", type: sql.VarChar(100) },
   { name: "macAddress", type: sql.VarChar(24) },
   { name: "assetID", type: sql.Int },
-];
+  { name: "rowVersion", type: sql.Binary() },
+] as const;
 
 const inputs = (ip: Partial<IPInsert> = {}) =>
   inputDefinitions.map((def) => ({
     ...def,
-    value: ip[def.name as keyof IPInsert],
+    value:
+      def.name === "rowVersion" && ip.rowVersion
+        ? Buffer.from(ip.rowVersion, "base64")
+        : ip[def.name],
   }));
 
 const appendInputs = (
   request: sql.Request,
-  ip: IPInsert,
+  ip: IPInsert | IPRow,
   exclusions: string[] = []
 ) => {
   for (const input of inputs(ip)) {
@@ -180,11 +179,16 @@ router.post("/", async function (req, res) {
 });
 
 router.put("/", async function (req, res) {
+  const rowVersion = req.body.rowVersion;
+  const assetID = req.body.ID;
+  if (!assetID || !rowVersion) {
+    res.status(400).json({ error: "ID or row version missing" });
+    return;
+  }
+
   const ip = parseInputReq(ipInputSchema, req.body);
-  if (!ip || !ip.ID) {
-    res
-      .status(400)
-      .json({ error: `Invalid request body${!ip?.ID && ": Missing ID"}` });
+  if (!ip) {
+    res.status(400).json({ error: `Invalid request body` });
     return;
   }
 
@@ -236,7 +240,7 @@ router.put("/", async function (req, res) {
     };
 
     const appendedRequest = appendInputs(pool.request(), ipInsert);
-    await appendedRequest.query(`
+    const result = await appendedRequest.query(`
     UPDATE IPAddresses
     SET
       hostNumber = @hostNumber,
@@ -244,8 +248,15 @@ router.put("/", async function (req, res) {
       name = @name,
       macAddress = @macAddress,
       assetID = @assetID
-    WHERE ID = @ID
+    WHERE ID = @ID AND rowVersion = @rowVersion
     `);
+
+    if (result.rowsAffected[0] === 0) {
+      res
+        .status(409)
+        .json({ error: "Row does not exist or modified by another user" });
+      return;
+    }
 
     res.status(200).json({ message: "Data updated successfully!" });
   } catch (error) {
@@ -277,24 +288,28 @@ router.delete("/:ipID", async function (req, res) {
 
 router.patch("/", async function (req, res) {
   const ipID = req.body.ID;
+  const rowVersion = req.body.rowVersion;
   const columnName = req.body.column;
   const newValue = req.body.value;
 
   const valueCheck = validateSingleField(ipInputSchema, columnName, newValue);
   if (!valueCheck?.success) {
-    res.status(400).json({ error: "Value failed input validation" });
+    res.status(400).json({ error: "Invalid value" });
     return;
   }
 
-  if (!ipID) {
-    res.status(400).json({ error: "IP Address ID is required" });
+  if (!ipID || !rowVersion) {
+    res.status(400).json({ error: "Missing ID or row version" });
     return;
   }
 
   try {
     const pool = await getPool();
 
-    const sqlReq = pool.request().input("ID", sql.Int, ipID);
+    const sqlReq = pool
+      .request()
+      .input("ID", sql.Int, ipID)
+      .input("rowVersion", sql.Binary(), Buffer.from(rowVersion, "base64"));
 
     if (columnName === "ipAddress") {
       const { subnetPrefix, hostNumber } = splitIpAddress(newValue);
@@ -320,13 +335,20 @@ router.patch("/", async function (req, res) {
         return;
       }
 
-      await sqlReq
+      const result = await sqlReq
         .input("subnetID", sql.Int, subnetID)
         .input("hostNumber", sql.TinyInt, hostNumber).query(`UPDATE IPAddresses
           SET 
           hostNumber = @hostNumber, 
           subnetID = @subnetID
-          WHERE ID = @ID`);
+          WHERE ID = @ID AND rowVersion = @rowVersion`);
+
+      if (result.rowsAffected[0] === 0) {
+        res
+          .status(409)
+          .json({ error: "Row does not exist or modified by another user" });
+        return;
+      }
     } else {
       const inputField = inputDefinitions.find(
         (def) => def.name === columnName
@@ -338,11 +360,19 @@ router.patch("/", async function (req, res) {
           .json({ error: "Field type not found due to invalid column" });
         return;
       }
-      await sqlReq.input(columnName, inputField.type, newValue).query(`
+      const result = await sqlReq.input(columnName, inputField.type, newValue)
+        .query(`
         UPDATE IPAddresses
           
           SET ${columnName} = @${columnName} 
-          WHERE ID = @ID`);
+          WHERE ID = @ID AND rowVersion = @rowVersion`);
+
+      if (result.rowsAffected[0] === 0) {
+        res
+          .status(409)
+          .json({ error: "Row does not exist or modified by another user" });
+        return;
+      }
     }
     res.status(200).json({ message: "Cell edited successfully!" });
   } catch (error) {
