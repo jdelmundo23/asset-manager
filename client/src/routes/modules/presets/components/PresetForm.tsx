@@ -113,7 +113,7 @@ export default function PresetForm({
       .unwrap()
       .catch((err) => {
         form.reset(presetSchema.parse(watchedValues));
-        const errorMsg = handleError(err);
+        const errorMsg = handleError(err) || "Failed to submit";
         setFormError(errorMsg);
       });
   }

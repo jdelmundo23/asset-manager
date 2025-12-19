@@ -18,12 +18,16 @@ const inputDefinitions = [
   { name: "ID", type: sql.Int },
   { name: "name", type: sql.VarChar(50) },
   { name: "typeID", type: sql.Int },
+  { name: "rowVersion", type: sql.Binary() },
 ] as const;
 
 const inputs = (preset: Partial<Preset> = {}) =>
   inputDefinitions.map((def) => ({
     ...def,
-    value: preset[def.name as keyof Preset],
+    value:
+      def.name === "rowVersion" && preset.rowVersion
+        ? Buffer.from(preset.rowVersion, "base64")
+        : preset[def.name],
   }));
 
 const appendInputs = (
@@ -180,11 +184,19 @@ router.put(
         ? appendInputs(pool.request(), preset)
         : appendInputs(pool.request(), preset, ["typeID"]);
 
-      await appendedRequest.query(`UPDATE ${sanitizedTable}
+      const result = await appendedRequest.query(`UPDATE ${sanitizedTable}
         SET
           name = @name
           ${isModels ? ",typeID = @typeID" : ""}
-        WHERE ID = @ID`);
+        WHERE ID = @ID AND rowVersion = @rowVersion`);
+
+      if (result.rowsAffected[0] === 0) {
+        res.status(409).json({
+          error: "Preset no longer exists or modified by another user",
+        });
+        return;
+      }
+
       res.status(200).json({ message: "Data updated successfully!" });
     } catch (err) {
       console.error(err);

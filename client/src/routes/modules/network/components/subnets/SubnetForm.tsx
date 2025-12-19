@@ -96,7 +96,7 @@ export default function SubnetForm({
   return (
     <Form {...form}>
       <form
-        className="mx-auto space-y-3 py-1 text-white"
+        className="mx-auto w-56 space-y-3 py-1 text-white"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FormField

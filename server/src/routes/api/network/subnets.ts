@@ -95,6 +95,11 @@ router.put("/", async function (req, res) {
     const result = await pool
       .request()
       .input("ID", sql.Int, subnet.ID)
+      .input(
+        "rowVersion",
+        sql.Binary(),
+        Buffer.from(subnet.rowVersion, "base64")
+      )
       .input("locationID", sql.Int, subnet.locationID).query(`
           DECLARE @UpdatedSubnets TABLE (
               ID INT,
@@ -110,10 +115,16 @@ router.put("/", async function (req, res) {
               INSERTED.subnetPrefix,
               INSERTED.locationID
           INTO @UpdatedSubnets
-          WHERE ID = @ID;
+          WHERE ID = @ID AND rowVersion = @rowVersion;
 
           SELECT * FROM @UpdatedSubnets;
         `);
+    if (result.rowsAffected[0] === 0) {
+      res
+        .status(409)
+        .json({ error: "Subnet no longer exists or modified by another user" });
+      return;
+    }
 
     const updatedRow = result.recordset[0];
 
