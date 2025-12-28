@@ -254,7 +254,7 @@ router.put("/", async function (req, res) {
     if (result.rowsAffected[0] === 0) {
       res
         .status(409)
-        .json({ error: "Row does not exist or modified by another user" });
+        .json({ error: "Row no longer exists or modified by another user" });
       return;
     }
 
@@ -346,7 +346,7 @@ router.patch("/", async function (req, res) {
       if (result.rowsAffected[0] === 0) {
         res
           .status(409)
-          .json({ error: "Row does not exist or modified by another user" });
+          .json({ error: "Row no longer exists or modified by another user" });
         return;
       }
     } else {
@@ -370,7 +370,7 @@ router.patch("/", async function (req, res) {
       if (result.rowsAffected[0] === 0) {
         res
           .status(409)
-          .json({ error: "Row does not exist or modified by another user" });
+          .json({ error: "Row no longer exists or modified by another user" });
         return;
       }
     }

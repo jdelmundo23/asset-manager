@@ -106,7 +106,7 @@ export const useHandleAction = <T extends Entity, R>() => {
 
     const toastID =
       typeof toastReturn === "string" || typeof toastReturn === "number"
-        ? toastReturn
+        ? toastReturn.valueOf()
         : undefined;
 
     return toastReturn

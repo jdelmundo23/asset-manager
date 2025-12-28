@@ -1,5 +1,10 @@
 import axios from "axios";
-import { showErrorToast, showSessionExpiredToast } from "./toasts";
+import {
+  showConflictToast,
+  showErrorToast,
+  showSessionExpiredToast,
+} from "./toasts";
+import { QueryClient } from "@tanstack/react-query";
 
 const defaultErrorMessages: Record<number, string> = {
   400: "Bad request",
@@ -11,7 +16,9 @@ const defaultErrorMessages: Record<number, string> = {
 
 export function handleError(
   error: unknown,
-  loadingToastId?: string | number
+  loadingToastId?: string | number,
+  queryKey?: string[],
+  queryClient?: QueryClient
 ): string | undefined {
   const toastId = loadingToastId ?? "error";
 
@@ -31,6 +38,8 @@ export function handleError(
 
     if (status === 401) {
       showSessionExpiredToast(toastId);
+    } else if (status === 409) {
+      showConflictToast(toastId, errorMsg, queryKey, queryClient);
     } else {
       showErrorToast(toastId, errorMsg);
     }

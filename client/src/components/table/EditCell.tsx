@@ -90,11 +90,11 @@ const EditCellInner = memo(function EditCell<T>({
 
     const toastID =
       typeof toastReturn === "string" || typeof toastReturn === "number"
-        ? toastReturn
+        ? toastReturn.valueOf()
         : undefined;
 
     toastReturn.unwrap().catch((error) => {
-      const errorMsg = handleError(error, toastID);
+      const errorMsg = handleError(error, toastID, queryKey, queryClient);
       form.setError(column.id, { message: errorMsg || "Unexpected error" });
       console.error(errorMsg);
     });

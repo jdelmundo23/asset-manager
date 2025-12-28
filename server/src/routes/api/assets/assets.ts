@@ -155,7 +155,9 @@ router.put("/", async function (req, res) {
   `);
 
     if (result.rowsAffected[0] === 0) {
-      res.status(409).json({ error: "Row modified by another user" });
+      res
+        .status(409)
+        .json({ error: "Row no longer exists or modified by another user" });
       return;
     }
 
@@ -266,7 +268,9 @@ router.patch("/", async function (req, res) {
         WHERE ID = @ID AND rowVersion = @rowVersion`);
 
     if (result.rowsAffected[0] === 0) {
-      res.status(409).json({ error: "Row modified by another user" });
+      res
+        .status(409)
+        .json({ error: "Row no longer exists or modified by another user" });
       return;
     }
 
