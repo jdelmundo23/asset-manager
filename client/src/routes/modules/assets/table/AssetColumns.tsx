@@ -275,6 +275,8 @@ export const getColumns = (
       accessorKey: "cost",
       header: "Cost",
       cell: ({ row }) => {
+        if (row.getValue("cost") == null) return <div />;
+
         const amount = parseFloat(row.getValue("cost"));
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",

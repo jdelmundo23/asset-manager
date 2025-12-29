@@ -40,6 +40,10 @@ export function useAssetTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnSizing, setColSizing] = useState<ColumnSizingState>({});
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const rowSelection = selectedRows ?? {};
 
   type Key = (typeof hideColumns)[number];
@@ -78,14 +82,9 @@ export function useAssetTable({
     getRowId: (row) => row.ID.toString(),
     getPaginationRowModel: getPaginationRowModel(),
     onColumnOrderChange: setColumnOrder,
-    initialState: {
-      pagination: {
-        pageIndex: 0,
-        pageSize: 10,
-      },
-    },
     defaultColumn: { minSize: 25 },
-
+    onPaginationChange: setPagination,
+    autoResetPageIndex: false,
     state: {
       sorting,
       columnFilters,
@@ -93,6 +92,7 @@ export function useAssetTable({
       rowSelection,
       columnSizing,
       columnOrder,
+      pagination,
     },
   });
 

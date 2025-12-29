@@ -81,9 +81,7 @@ export const CostEditor = <T,>({
       name={column.id}
       render={({ field }) => {
         const [localValue, setLocalValue] = useState(
-          field.value !== null && field.value !== undefined
-            ? Number(field.value).toFixed(2)
-            : ""
+          field.value != null ? Number(field.value).toFixed(2) : null
         );
         return (
           <FormItem className="flex flex-col">
@@ -95,18 +93,30 @@ export const CostEditor = <T,>({
                 decimalsLimit={2}
                 prefix="$"
                 className="border-input file:text-foreground placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
-                value={localValue}
+                value={localValue || undefined}
                 onValueChange={(value) => {
-                  setLocalValue(value?.replace(/[^0-9.]/g, "") || "");
+                  if (value != null) {
+                    setLocalValue(value?.replace(/[^0-9.]/g, "") || "");
+                  } else {
+                    setLocalValue(null);
+                  }
                 }}
               />
             </FormControl>
-            {localValue !== Number(currentValue).toFixed(2) && (
+            {localValue !==
+              (currentValue != null
+                ? Number(currentValue).toFixed(2)
+                : null) && (
               <Button
                 className="h-8"
                 onClick={() => {
-                  field.onChange(parseFloat(localValue).toFixed(2));
-                  setLocalValue(Number(localValue).toFixed(2));
+                  if (localValue != null) {
+                    field.onChange(parseFloat(localValue).toFixed(2));
+                    setLocalValue(Number(localValue).toFixed(2));
+                  } else {
+                    field.onChange(null);
+                    setLocalValue(null);
+                  }
                 }}
               >
                 Confirm Edit

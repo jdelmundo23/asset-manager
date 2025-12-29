@@ -78,7 +78,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <Toaster richColors />
+    <Toaster richColors style={{ zIndex: 9999, pointerEvents: "auto" }} />
     <Root />
   </React.StrictMode>
 );

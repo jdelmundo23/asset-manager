@@ -243,7 +243,7 @@ router.patch("/", async function (req, res) {
   }
 
   const value = parseInputReq(assetRowSchema.shape[column], req.body.value);
-  if (!value) {
+  if (value === undefined) {
     res.status(400).json({ error: "Invalid value format" });
     return;
   }

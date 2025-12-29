@@ -3,6 +3,7 @@ import {
   ColumnSizingState,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   RowSelectionState,
   SortingState,
@@ -32,6 +33,10 @@ export function DataTable({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnSizing, setColSizing] = useState<ColumnSizingState>({});
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
   const rowSelection = selectedRow ?? {};
 
   type Key = (typeof hideColumns)[number];
@@ -60,13 +65,17 @@ export function DataTable({
     columnResizeMode: "onEnd",
     onColumnSizingChange: setColSizing,
     getRowId: (row) => row.ID.toString(),
+    getPaginationRowModel: getPaginationRowModel(),
     defaultColumn: { minSize: 25 },
+    onPaginationChange: setPagination,
+    autoResetPageIndex: false,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
       columnSizing,
+      pagination,
     },
   });
 
