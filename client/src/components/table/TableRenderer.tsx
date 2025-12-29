@@ -18,6 +18,7 @@ import {
 } from "../shadcn-ui/select";
 import { MemoCell, MemoCellInner } from "./TableCell";
 import MyTableHead from "./TableHead";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface BaseRow {
   rowVersion: string;
@@ -80,7 +81,7 @@ export default function TableRenderer<T extends BaseRow>({
                           cell={cell}
                           rowVersion={row.original.rowVersion}
                           rowId={row.id}
-                          schema={schema}
+                          schema={singleSelect ? undefined : schema}
                         />
                       ) : (
                         <MemoCell
@@ -88,7 +89,7 @@ export default function TableRenderer<T extends BaseRow>({
                           cell={cell}
                           rowId={row.id}
                           rowVersion={row.original.rowVersion}
-                          schema={schema}
+                          schema={singleSelect ? undefined : schema}
                         />
                       )
                     )}
@@ -138,15 +139,18 @@ export default function TableRenderer<T extends BaseRow>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Previous
+            <ArrowLeft />
           </Button>
+          <div className="bg-secondary text-secondary-foreground flex h-full w-8 items-center justify-center rounded-md border font-semibold">
+            <p>{table.getState().pagination.pageIndex + 1}</p>
+          </div>
           <Button
             variant="secondary"
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Next
+            <ArrowRight />
           </Button>
         </div>
       </div>
