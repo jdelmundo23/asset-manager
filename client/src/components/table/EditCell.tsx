@@ -96,7 +96,6 @@ const EditCellInner = memo(function EditCell<T>({
     toastReturn.unwrap().catch((error) => {
       const errorMsg = handleError(error, toastID, queryKey, queryClient);
       form.setError(column.id, { message: errorMsg || "Unexpected error" });
-      console.error(errorMsg);
     });
   }
 

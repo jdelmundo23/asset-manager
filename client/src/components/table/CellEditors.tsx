@@ -235,7 +235,7 @@ export const DateEditor = <T,>({
           {+field.value !== +(currentValue as number) && (
             <Button className="h-8">Confirm Edit</Button>
           )}
-          <FormMessage />
+          <FormMessage className="text-center" />
         </FormItem>
       )}
     />

@@ -119,6 +119,8 @@ export function MemoCellInner<T>({
 
 export const MemoCell = memo(MemoCellInner, (prev, next) => {
   return (
-    prev.rowId === next.rowId && prev.cell.getValue() === next.cell.getValue()
+    prev.rowId === next.rowId &&
+    prev.cell.getValue() === next.cell.getValue() &&
+    prev.rowVersion === next.rowVersion
   );
 }) as <T>(props: MemoCellProps<T>) => JSX.Element;
