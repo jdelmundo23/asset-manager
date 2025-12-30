@@ -8,13 +8,15 @@ import { RowSelectionState } from "@tanstack/react-table";
 import BulkActionDropdown from "@/components/table/BulkActionDropdown";
 import SubnetComboxbox from "./components/subnets/SubnetCombobox";
 import { TableConfigProvider } from "@/context/TableConfigContext";
+import { Button } from "@/components/shadcn-ui/button";
+import { ChevronsUpDown } from "lucide-react";
 
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
   const [selectedSubnet, setSelectedSubnet] = useState<SubnetRow | undefined>();
 
   return (
-    <div className="container mx-auto flex w-11/12 max-w-[800px] flex-col gap-2 py-10">
+    <div className="container mx-auto flex w-11/12 max-w-[950px] flex-col gap-2 py-10">
       <TableConfigProvider endpoint="/api/ips" queryKey={["ipData"]}>
         <IPProvider>
           <IPPageContent
@@ -66,7 +68,15 @@ function IPPageContent({
               selectedRows={selectedRows}
               setSelectedRows={setSelectedRows}
               deleting
-            />
+            >
+              <Button
+                variant={"secondary"}
+                className="gap-x-0.5 px-3.5 transition-all"
+              >
+                Selected
+                <ChevronsUpDown />
+              </Button>
+            </BulkActionDropdown>
             <AddIP />
           </div>
         </div>

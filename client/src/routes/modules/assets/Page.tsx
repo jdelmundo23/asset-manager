@@ -48,6 +48,7 @@ function AssetPageContent() {
     columnOrder,
     setColumnOrder,
     animated: true,
+    hideColumns: ["createdTime", "updatedTime"],
   });
 
   function onColumnReorder(activeId: string, overId: string) {

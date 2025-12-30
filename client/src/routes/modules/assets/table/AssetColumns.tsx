@@ -326,6 +326,56 @@ export const getColumns = (
       size: 50,
     },
     {
+      accessorKey: "createdTime",
+      header: "Created At",
+      cell: ({ row }) => {
+        if (!row.original.createdTime) {
+          return "";
+        }
+        const date = new Date(row.getValue("createdTime"));
+        return new Intl.DateTimeFormat("en-us", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }).format(date);
+      },
+      filterFn: (row, columnId, filterValue) => {
+        return dateFilterFn(row.getValue(columnId), filterValue);
+      },
+      meta: { type: "date", canEdit: false },
+      enableResizing: false,
+      size: 160,
+    },
+    {
+      accessorKey: "updatedTime",
+      header: "Updated At",
+      cell: ({ row }) => {
+        if (!row.original.createdTime) {
+          return "";
+        }
+        const date = new Date(row.getValue("updatedTime"));
+        return new Intl.DateTimeFormat("en-us", {
+          month: "2-digit",
+          day: "2-digit",
+          year: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }).format(date);
+      },
+      filterFn: (row, columnId, filterValue) => {
+        return dateFilterFn(row.getValue(columnId), filterValue);
+      },
+      meta: { type: "date", canEdit: false },
+      enableResizing: false,
+      size: 160,
+    },
+    {
       id: "actions",
       cell: ({ row }) => {
         const asset = row.original;

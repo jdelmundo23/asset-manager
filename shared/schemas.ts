@@ -186,6 +186,8 @@ export const assetSummarySchema = z.object({
 export const assetRowSchema = assetSchema.innerType().extend({
   ID: z.number(),
   rowVersion: bufferConversion,
+  createdTime: z.coerce.date(),
+  updatedTime: z.coerce.date(),
 });
 
 const subnetPrefixSchema = z
@@ -231,6 +233,8 @@ export const ipInputSchema = baseIPSchema.extend({
 export const ipRowSchema = baseIPSchema.extend({
   ID: z.number(),
   rowVersion: bufferConversion,
+  createdTime: z.coerce.date(),
+  updatedTime: z.coerce.date(),
   hostNumber: z
     .number()
     .int()
@@ -243,6 +247,8 @@ export const ipRowSchema = baseIPSchema.extend({
 export const ipInsertSchema = ipRowSchema.partial({
   ID: true,
   rowVersion: true,
+  createdTime: true,
+  updatedTime: true,
 });
 
 export const subnetSchema = z.object({

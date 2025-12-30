@@ -73,6 +73,8 @@ export function AssetTableSheet({
       "actions",
       "ips",
       "note",
+      "createdTime",
+      "updatedTime",
     ],
     selectedRows: selectedRow,
     onRowSelect: setSelectedRow,

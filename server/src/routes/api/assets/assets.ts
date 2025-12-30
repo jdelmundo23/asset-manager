@@ -60,6 +60,8 @@ router.get("/all", async function (req, res) {
       Assets.warrantyExp,
       Assets.cost,
       Assets.rowVersion,
+      Assets.createdTime,
+      Assets.updatedTime,
       Assets.note FROM Assets LEFT JOIN AssetModels ON Assets.modelID = AssetModels.ID`
     );
 
