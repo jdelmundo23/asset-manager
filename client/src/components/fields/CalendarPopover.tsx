@@ -2,14 +2,14 @@ import { cn } from "@/lib/utils";
 import { Button } from "../shadcn-ui/button";
 import { FormControl } from "../shadcn-ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "../shadcn-ui/popover";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { Calendar } from "../shadcn-ui/calendar";
 import { format } from "date-fns";
 import { useState } from "react";
 
 interface CalendarPopoverProps {
   value: Date | undefined;
-  onChange: (date: Date | undefined) => void;
+  onChange: (date: Date | undefined | null) => void;
   placeHolder: string;
   useFormControl?: boolean;
   width?: number;
@@ -36,6 +36,18 @@ export default function CalendarPopover({
     >
       {value ? format(value, "PPP") : <span>{placeHolder}</span>}
       <div className="ml-auto flex gap-x-1">
+        <button
+          aria-label="Clear date"
+          className={`${!value && "hidden"} opacity-50 hover:opacity-100`}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onChange(null);
+          }}
+        >
+          <X className="h-4 w-4" />
+        </button>
         <CalendarIcon className="h-4 w-4 opacity-50" />
       </div>
     </Button>

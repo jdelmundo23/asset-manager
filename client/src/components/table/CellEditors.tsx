@@ -173,6 +173,23 @@ export const SelectEditor = <T,>({
                   <CommandList>
                     <CommandEmpty>{`No results found.`}</CommandEmpty>
                     <CommandGroup>
+                      <CommandItem
+                        value={undefined}
+                        key={"empty"}
+                        onSelect={async () => {
+                          form.setValue(column.id, null);
+                          await form.trigger(column.id);
+                          setTimeout(() => setOpen(false), 50);
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            field.value === null ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {"(Empty)"}
+                      </CommandItem>
                       {options.map((choice) => (
                         <CommandItem
                           value={choice.name}

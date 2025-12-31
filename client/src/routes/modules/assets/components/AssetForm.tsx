@@ -70,7 +70,7 @@ export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mx-auto space-y-3 py-1 text-white"
+        className="mx-auto space-y-3 py-1 text-white sm:w-[450px]"
       >
         <FormField
           control={form.control}
@@ -121,7 +121,7 @@ export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
                 labelKey: "name",
               }}
               onSelect={async (val, fieldName, newVal) => {
-                if (val === newVal.ID) {
+                if (newVal == null) {
                   form.setValue(fieldName, null);
                   if (form.getValues("modelID")) {
                     form.setValue("modelID", null);
@@ -151,7 +151,7 @@ export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
                 labelKey: "name",
               }}
               onSelect={async (val, fieldName, newVal) => {
-                if (val === newVal.ID) {
+                if (newVal == null) {
                   form.setValue(fieldName, null);
                 } else {
                   form.setValue(fieldName, newVal.ID);
@@ -181,8 +181,8 @@ export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
                 labelKey: "name",
               }}
               onSelect={async (val, fieldName, newVal) => {
-                if (val === newVal.ID) {
-                  form.resetField(fieldName);
+                if (newVal == null) {
+                  form.setValue(fieldName, null);
                 } else {
                   form.setValue(fieldName, newVal.ID);
                   await form.trigger(fieldName);
@@ -205,8 +205,8 @@ export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
                 labelKey: "name",
               }}
               onSelect={async (val, fieldName, newVal) => {
-                if (val === newVal.ID) {
-                  form.resetField(fieldName);
+                if (newVal == null) {
+                  form.setValue(fieldName, null);
                 } else {
                   form.setValue(fieldName, newVal.ID);
                   await form.trigger(fieldName);
@@ -230,8 +230,8 @@ export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
             labelKey: "name",
           }}
           onSelect={async (val, fieldName, newVal) => {
-            if (val === newVal.ID) {
-              form.resetField(fieldName);
+            if (newVal == null) {
+              form.setValue(fieldName, null);
             } else {
               form.setValue(fieldName, newVal.ID);
               await form.trigger(fieldName);
@@ -248,23 +248,6 @@ export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
                 <FormItem className="flex flex-col">
                   <FormLabel className="flex items-baseline justify-between">
                     <p>Purchase Date</p>
-                    {field.value ? (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          form.setValue(field.name, null, {
-                            shouldDirty: true,
-                          });
-                        }}
-                      >
-                        <p className="text-[0.55rem] font-light underline opacity-50">
-                          Clear date
-                        </p>
-                      </button>
-                    ) : (
-                      ""
-                    )}
                   </FormLabel>
                   <CalendarPopover
                     value={field.value === null ? undefined : field.value}
@@ -286,23 +269,6 @@ export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
                 <FormItem className="flex flex-col">
                   <FormLabel className="flex items-baseline justify-between">
                     <p>Warranty Exp.</p>
-                    {field.value ? (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          form.setValue(field.name, null, {
-                            shouldDirty: true,
-                          });
-                        }}
-                      >
-                        <p className="text-[0.55rem] font-light underline opacity-50">
-                          Clear date
-                        </p>
-                      </button>
-                    ) : (
-                      ""
-                    )}
                   </FormLabel>
                   <CalendarPopover
                     value={field.value === null ? undefined : field.value}

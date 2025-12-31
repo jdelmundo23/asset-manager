@@ -46,7 +46,7 @@ interface FormComboboxProps<
     valueKey: V;
     labelKey: L;
   };
-  onSelect: (val: FieldPathValue<S, T>, fieldName: T, newVal: C) => void;
+  onSelect: (val: FieldPathValue<S, T>, fieldName: T, newVal: C | null) => void;
   className?: string;
   disabled?: boolean;
 }
@@ -102,6 +102,24 @@ function FormCombobox<
                 <CommandList>
                   <CommandEmpty>{`No ${props.options.msgLabel} found.`}</CommandEmpty>
                   <CommandGroup>
+                    <CommandItem
+                      value={undefined}
+                      key={"empty"}
+                      onSelect={async () => {
+                        props.onSelect(field.value, props.options.field, null);
+                        if (field.value !== null) {
+                          setTimeout(() => setOpen(false), 75);
+                        }
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          field.value === null ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {"(Empty)"}
+                    </CommandItem>
                     {items?.map((choice) => (
                       <CommandItem
                         value={choice[labelKey]}

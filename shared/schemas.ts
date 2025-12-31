@@ -131,6 +131,8 @@ export const assetSchema = z
   .object({
     ID: z.number().optional(),
     rowVersion: bufferConversion.optional(),
+    createdTime: z.coerce.date().optional(),
+    updatedTime: z.coerce.date().optional(),
     name: trimmedString(2, 100),
     identifier: nullishTrimmedString(2, 100),
     typeID: z.number().nullish(),

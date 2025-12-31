@@ -23,7 +23,7 @@ import IPView from "@/components/table/IPView";
 import NoteView from "@/components/table/NoteView";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
-  return array.find((item) => ID === item.ID)?.name || "N/A";
+  return array.find((item) => ID === item.ID)?.name || "";
 };
 
 const compareNames = (
@@ -127,7 +127,7 @@ export const getColumns = (
         const model = models.find(
           (model) => row.getValue("modelID") === model.ID
         );
-        return model ? model.name : "N/A";
+        return model ? model.name : "";
       },
       sortingFn: (rowA, rowB) => {
         return compareNames(
@@ -146,7 +146,7 @@ export const getColumns = (
       header: "Type",
       cell: ({ row }) => {
         const type = types.find((type) => row.getValue("typeID") === type.ID);
-        return type ? type.name : "N/A";
+        return type ? type.name : "";
       },
       sortingFn: (rowA, rowB) => {
         return compareNames(types, rowA.original.typeID, rowB.original.typeID);
@@ -164,7 +164,7 @@ export const getColumns = (
         const location = locations.find(
           (location) => row.getValue("locationID") === location.ID
         );
-        return location ? location.name : "N/A";
+        return location ? location.name : "";
       },
       sortingFn: (rowA, rowB) => {
         return compareNames(
@@ -186,7 +186,7 @@ export const getColumns = (
         const department = departments.find(
           (department) => row.getValue("departmentID") === department.ID
         );
-        return department ? department.name : "N/A";
+        return department ? department.name : "";
       },
       sortingFn: (rowA, rowB) => {
         return compareNames(
