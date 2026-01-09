@@ -41,12 +41,17 @@ const selectFilterFn = (
   filterValue: string[],
   items: Preset[] | User[]
 ): boolean => {
-  const name = items.find((item) => item.ID === rowValue)?.name;
-  if (!name) {
-    return false;
-  }
   if (filterValue.length <= 0) {
     return true;
+  }
+
+  const name =
+    rowValue == null
+      ? "(blank)"
+      : items.find((item) => item.ID === rowValue)?.name;
+
+  if (!name) {
+    return false;
   }
   return filterValue.includes(name);
 };
@@ -55,21 +60,43 @@ const dateFilterFn = (
   rowValue: Date | undefined,
   filterValue: [Date | undefined, Date | undefined]
 ): boolean => {
-  if (filterValue.some((item: Date | undefined) => item !== undefined)) {
+  if (filterValue === null) {
+    return rowValue === null;
+  }
+  if (filterValue.some((item: Date | undefined) => item != null)) {
     const [from, to] = filterValue;
     const date: Date | undefined = rowValue;
     if (!date) {
       return false;
     }
-    if (from !== undefined && to === undefined) {
+    if (from != null && to == null) {
       return date >= from;
     }
-    if (from === undefined && to !== undefined) {
+    if (from == null && to != null) {
       return date <= to;
     }
-    if (from !== undefined && to !== undefined) {
+    if (from != null && to != null) {
       return date >= from && date <= to;
     }
+  }
+  return true;
+};
+
+const textFilterFn = (rowValue: unknown, filterValue: string) => {
+  const val = rowValue;
+
+  if (filterValue === "(blank)") {
+    return val == null;
+  }
+
+  if (typeof filterValue === "string") {
+    if (val == null) return false;
+
+    if (typeof val === "string") {
+      return val.toLowerCase().includes(filterValue.toLowerCase());
+    }
+
+    return false;
   }
   return true;
 };
@@ -112,12 +139,18 @@ export const getColumns = (
       header: "Name",
       sortingFn: "text",
       meta: { type: "text" },
+      filterFn: (row, columnId, filterValue) => {
+        return textFilterFn(row.getValue(columnId), filterValue);
+      },
       size: 200,
     },
     {
       accessorKey: "identifier",
       header: "Identifier",
       sortingFn: "text",
+      filterFn: (row, columnId, filterValue) => {
+        return textFilterFn(row.getValue(columnId), filterValue);
+      },
       meta: { type: "text" },
     },
     {

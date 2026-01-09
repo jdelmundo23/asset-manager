@@ -14,6 +14,7 @@ interface CalendarPopoverProps {
   useFormControl?: boolean;
   width?: number;
   autoFocus?: boolean;
+  disabled?: boolean;
 }
 
 export default function CalendarPopover({
@@ -23,10 +24,12 @@ export default function CalendarPopover({
   useFormControl,
   width,
   autoFocus = false,
+  disabled = false,
 }: CalendarPopoverProps) {
   const [open, setOpen] = useState<boolean>(false);
   const trigger = (
     <Button
+      disabled={disabled}
       autoFocus={autoFocus}
       variant={"outline"}
       className={cn(

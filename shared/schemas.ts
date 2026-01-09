@@ -218,8 +218,8 @@ const baseIPSchema = z.object({
         ),
       z.literal(""),
     ])
-    .nullish()
-    .transform((value) => value ?? ""),
+    .transform((val) => (val === "" ? null : val))
+    .nullish(),
   assetID: z.number().nullish(),
   assetName: nullishTrimmedString(2, 100),
   name: trimmedString(2, 100),

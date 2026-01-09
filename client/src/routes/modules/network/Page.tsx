@@ -16,7 +16,7 @@ function Page() {
   const [selectedSubnet, setSelectedSubnet] = useState<SubnetRow | undefined>();
 
   return (
-    <div className="container mx-auto flex w-11/12 max-w-[950px] flex-col gap-2 py-10">
+    <div className="container mx-auto flex w-11/12 max-w-[1000px] flex-col gap-2 py-10">
       <TableConfigProvider endpoint="/api/ips" queryKey={["ipData"]}>
         <IPProvider>
           <IPPageContent

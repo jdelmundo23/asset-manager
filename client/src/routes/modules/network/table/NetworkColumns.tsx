@@ -20,21 +20,43 @@ const dateFilterFn = (
   rowValue: Date | undefined,
   filterValue: [Date | undefined, Date | undefined]
 ): boolean => {
-  if (filterValue.some((item: Date | undefined) => item !== undefined)) {
+  if (filterValue === null) {
+    return rowValue === null;
+  }
+  if (filterValue.some((item: Date | undefined) => item != null)) {
     const [from, to] = filterValue;
     const date: Date | undefined = rowValue;
     if (!date) {
       return false;
     }
-    if (from !== undefined && to === undefined) {
+    if (from != null && to == null) {
       return date >= from;
     }
-    if (from === undefined && to !== undefined) {
+    if (from == null && to != null) {
       return date <= to;
     }
-    if (from !== undefined && to !== undefined) {
+    if (from != null && to != null) {
       return date >= from && date <= to;
     }
+  }
+  return true;
+};
+
+const textFilterFn = (rowValue: unknown, filterValue: string) => {
+  const val = rowValue;
+
+  if (filterValue === "(blank)") {
+    return val == null;
+  }
+
+  if (typeof filterValue === "string") {
+    if (val == null) return false;
+
+    if (typeof val === "string") {
+      return val.toLowerCase().includes(filterValue.toLowerCase());
+    }
+
+    return false;
   }
   return true;
 };
@@ -79,18 +101,24 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
           .includes(filterValue.toLowerCase()),
       meta: { type: "text" },
       enableResizing: false,
-      size: 105,
+      size: 115,
     },
     {
       accessorKey: "name",
       header: "Name",
       sortingFn: "text",
+      filterFn: (row, columnId, filterValue) => {
+        return textFilterFn(row.getValue(columnId), filterValue);
+      },
       meta: { type: "text" },
     },
     {
       accessorKey: "macAddress",
       header: "MAC Address",
       sortingFn: "text",
+      filterFn: (row, columnId, filterValue) => {
+        return textFilterFn(row.getValue(columnId), filterValue);
+      },
       meta: { type: "text" },
     },
     {
@@ -105,9 +133,7 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
         );
       },
       filterFn: (row, columnId, filterValue) => {
-        return (row.original.assetName ?? "")
-          .toLowerCase()
-          .includes(filterValue.toLowerCase());
+        return textFilterFn(row.original.assetName, filterValue);
       },
       meta: { type: "text", editTable: "assets" },
     },

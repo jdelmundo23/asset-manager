@@ -15,8 +15,11 @@ import {
 } from "@/components/shadcn-ui/popover";
 import { Column } from "@tanstack/react-table";
 import { X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CalendarPopover from "../fields/CalendarPopover";
+import { Checkbox } from "../shadcn-ui/checkbox";
+import { Label } from "../shadcn-ui/label";
+import { CheckedState } from "@radix-ui/react-checkbox";
 
 export const FilterBox = <T,>({
   type,
@@ -54,29 +57,50 @@ export const FilterBox = <T,>({
 
 const TextFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [checked, setChecked] = useState<CheckedState>();
+
+  useEffect(() => {
+    if (column.getFilterValue() === "(blank)") {
+      setChecked(true);
+    }
+  }, []);
 
   return (
-    <>
+    <div className="flex flex-col gap-y-2 p-2">
       <Input
+        disabled={checked === true}
         ref={inputRef}
         placeholder={`Filter by ${column.columnDef.header}`}
         value={(column?.getFilterValue() as string) ?? ""}
         onChange={(event) => column.setFilterValue(event.target.value)}
         autoFocus
       />
-      {column.getFilterValue() && (
+      {column.getFilterValue() && !checked ? (
         <button
           aria-label="Clear text filter"
-          className="flex"
+          className="absolute inset-y-4 right-3 flex"
           onClick={() => {
             column.setFilterValue("");
             inputRef.current?.focus();
           }}
         >
-          <X className="hover:bg-muted text-muted-foreground absolute inset-y-2 right-1 cursor-pointer rounded-sm" />
+          <X className="text-muted-foreground hover:text-white" />
         </button>
+      ) : (
+        <></>
       )}
-    </>
+      <div className="flex items-center gap-3">
+        <Checkbox
+          id={`missing-${column.columnDef.id}`}
+          checked={checked}
+          onCheckedChange={(checked) => {
+            column.setFilterValue(checked === true ? "(blank)" : "");
+            setChecked(checked);
+          }}
+        />
+        <Label htmlFor={`missing-${column.columnDef.id}`}>Show blank</Label>
+      </div>
+    </div>
   );
 };
 
@@ -102,6 +126,9 @@ const SelectFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
       </MultiSelectorTrigger>
       <MultiSelectorContent>
         <MultiSelectorList className="mt-0.5">
+          <MultiSelectorItem key={"(blank)"} value={"(blank)"}>
+            {`(blank)`}
+          </MultiSelectorItem>
           {column.columnDef.meta?.options?.map((value) => (
             <MultiSelectorItem key={value.ID} value={value.name}>
               {`${value.name}`}
@@ -118,8 +145,15 @@ const DateFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
     Date | undefined,
     Date | undefined,
   ];
-  const [from, setFrom] = useState<Date | undefined>(current?.[0]);
-  const [to, setTo] = useState<Date | undefined>(current?.[1]);
+  const [from, setFrom] = useState<Date | undefined | null>(current?.[0]);
+  const [to, setTo] = useState<Date | undefined | null>(current?.[1]);
+  const [checked, setChecked] = useState<CheckedState>();
+
+  useEffect(() => {
+    if (column.getFilterValue() === null) {
+      setChecked(true);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col gap-y-4 p-4">
@@ -127,7 +161,8 @@ const DateFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
         <div>
           <label className="ml-0.5 text-sm">From:</label>
           <CalendarPopover
-            value={from}
+            disabled={checked === true}
+            value={from ?? undefined}
             onChange={setFrom}
             placeHolder="Pick a date"
           />
@@ -135,28 +170,31 @@ const DateFilter = <T,>({ column }: { column: Column<T, unknown> }) => {
         <div>
           <label className="ml-0.5 text-sm">To:</label>
           <CalendarPopover
-            value={to}
+            disabled={checked === true}
+            value={to ?? undefined}
             onChange={setTo}
             placeHolder="Pick a date"
           />
         </div>
       </div>
       <div className="flex items-center justify-between">
-        <Button
-          variant={"link"}
-          className="p-2 text-xs"
-          onClick={() => {
-            setFrom(undefined);
-            setTo(undefined);
-            column.setFilterValue(undefined);
-          }}
-        >
-          Clear filter
-        </Button>
+        <div className="flex items-center gap-3">
+          <Checkbox
+            id={`missing-${column.columnDef.id}`}
+            checked={checked}
+            onCheckedChange={(checked) => {
+              column.setFilterValue(checked === true ? null : undefined);
+              setChecked(checked);
+              setFrom(undefined);
+              setTo(undefined);
+            }}
+          />
+          <Label htmlFor={`missing-${column.columnDef.id}`}>Show blank</Label>
+        </div>
         <Button
           className="h-8"
           onClick={() => {
-            if ([from, to].every((item) => item === undefined)) {
+            if ([from, to].every((item) => item == null)) {
               column.setFilterValue(undefined);
             } else {
               column.setFilterValue([from, to]);
