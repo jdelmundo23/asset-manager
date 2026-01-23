@@ -172,6 +172,10 @@ class AuthProvider {
         return next(new Error("Error: response not found"));
       }
 
+      if (!req.session.authCodeRequest || !req.session.pkceCodes) {
+        return res.redirect("/auth/signin");
+      }
+
       const authCodeRequest = {
         ...req.session.authCodeRequest,
         code: req.body.code,

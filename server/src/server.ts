@@ -92,8 +92,8 @@ app.use(function (req, res, next) {
 });
 
 app.use(((err, req, res) => {
-  res.status(err.status || 500);
-  res.send(err.stack);
+  res.status(err.status || 500).json({ message: "Internal Server Error" });
+  console.log(err.stack);
 }) as ErrorRequestHandler);
 
 getPool()
