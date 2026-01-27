@@ -1,13 +1,13 @@
 import { Loader2 } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigation, useLocation } from "react-router";
 import { modules } from "@/lib/modules";
-import AuthContext from "@/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 import UserBadge from "@/components/UserBadge";
 import { useSidebar } from "@/context/SidebarContext";
 
 function Sidebar() {
-  const user = useContext(AuthContext);
+  const { authenticated, name } = useAuth();
   const { sidebarActive } = useSidebar();
   const navigation = useNavigation();
   const location = useLocation();
@@ -45,8 +45,8 @@ function Sidebar() {
           ))}
         </ul>
         <UserBadge
-          authenticated={user.authenticated}
-          name={user.name}
+          authenticated={authenticated}
+          name={name}
           className={`w-56 overflow-hidden md:hidden`}
         />
       </div>

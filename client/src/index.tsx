@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./routes/app/App";
@@ -17,12 +17,12 @@ import Presets from "./routes/modules/presets/Page";
 import Assets from "./routes/modules/assets/Page";
 import Network from "./routes/modules/network/Page";
 import Users from "./routes/modules/users/Page";
-import AuthContext, { AuthContextType } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
 import RedirectRoot from "./routes/RedirectRoot";
 import { Toaster } from "sonner";
 import PlaceholderRoute from "./routes/Placeholder";
-import axiosApi from "./lib/axios";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Signout from "./routes/Signout";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +35,7 @@ const router = createBrowserRouter(
         errorElement={<ErrorPage />}
       ></Route>
       <Route path="signin" element={<Signin />}></Route>
+      <Route path="signout" element={<Signout />}></Route>
       <Route element={<Protected />}>
         <Route path="app" element={<App />}>
           <Route index element={<Menu />}></Route>
@@ -50,25 +51,11 @@ const router = createBrowserRouter(
 );
 
 const Root = () => {
-  const [authInfo, setAuthInfo] = useState<AuthContextType>({
-    authenticated: false,
-  });
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await axiosApi.get(`/auth/user`);
-        setAuthInfo(response.data);
-      } catch {
-        console.error("Not authenticated");
-      }
-    })();
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={authInfo}>
+      <AuthProvider>
         <RouterProvider router={router} />
-      </AuthContext.Provider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

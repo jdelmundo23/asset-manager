@@ -1,13 +1,12 @@
-import { useContext } from "react";
 import { Link } from "react-router";
-import AuthContext from "../../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import UserBadge from "@/components/UserBadge";
 
 interface HeaderProps {
   sidebarActive: boolean;
 }
 const Header = ({ sidebarActive }: HeaderProps) => {
-  const user = useContext(AuthContext);
+  const { authenticated, name } = useAuth();
   return (
     <div className="flex h-14 w-full items-center justify-between px-3">
       <div className="flex">
@@ -19,8 +18,8 @@ const Header = ({ sidebarActive }: HeaderProps) => {
         </Link>
       </div>
       <UserBadge
-        authenticated={user.authenticated}
-        name={user.name}
+        authenticated={authenticated}
+        name={name}
         className="hidden md:inline-block"
       />
     </div>

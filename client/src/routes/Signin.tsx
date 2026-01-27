@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import AuthContext from "../context/AuthContext";
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { Navigate } from "react-router";
 import { Card } from "@/components/shadcn-ui/card";
 import { Button } from "@/components/shadcn-ui/button";
@@ -10,7 +10,7 @@ import { getServerUrl } from "@/lib/utils";
 
 function Signin() {
   const [redirecting, setRedirecting] = useState<boolean>(false);
-  const { authenticated } = useContext(AuthContext);
+  const { authenticated } = useAuth();
 
   useEffect(() => {
     setRedirecting(false);
