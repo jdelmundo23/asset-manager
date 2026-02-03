@@ -8,12 +8,6 @@ export const modules = [
     icon: Monitor,
   },
   {
-    link: "/app/Phones",
-    title: "Phones",
-    description: "View and manage phones",
-    icon: Phone,
-  },
-  {
     link: "/app/presets",
     title: "Presets",
     description: "Manage asset presets",

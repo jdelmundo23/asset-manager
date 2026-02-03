@@ -20,7 +20,6 @@ import Users from "./routes/modules/users/Page";
 import { AuthProvider } from "./context/AuthContext";
 import RedirectRoot from "./routes/RedirectRoot";
 import { Toaster } from "sonner";
-import PlaceholderRoute from "./routes/Placeholder";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Signout from "./routes/Signout";
 
@@ -39,7 +38,6 @@ const router = createBrowserRouter(
       <Route element={<Protected />}>
         <Route path="app" element={<App />}>
           <Route index element={<Menu />}></Route>
-          <Route path="phones" element={<PlaceholderRoute />} />
           <Route path="presets" element={<Presets />}></Route>
           <Route path="assets" element={<Assets />}></Route>
           <Route path="network" element={<Network />}></Route>
