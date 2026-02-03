@@ -29,7 +29,7 @@ export default function Menu() {
               className="flex odd:justify-end"
             >
               <Card
-                className={`animate-fade-in-up-scale stretch bg-muted border-muted-foreground/25 flex h-full flex-1 origin-center justify-between border shadow-lg transition-all hover:brightness-125`}
+                className={`animate-fade-in-up stretch bg-muted border-muted-foreground/25 flex h-full flex-1 origin-center justify-between border shadow-lg transition-all hover:brightness-125`}
                 onClick={() => setMenuClicked(true)}
               >
                 <CardHeader>

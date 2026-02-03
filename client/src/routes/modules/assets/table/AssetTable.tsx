@@ -101,7 +101,6 @@ export function useAssetTable({
     tableRender: (
       <TableRenderer
         table={table}
-        columnLength={columns.length}
         singleSelect={singleSelect}
         animated={animated}
         schema={assetSchema.innerType()}

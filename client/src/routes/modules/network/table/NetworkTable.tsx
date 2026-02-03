@@ -80,11 +80,6 @@ export function DataTable({
   });
 
   return (
-    <TableRenderer
-      table={table}
-      columnLength={columns.length}
-      animated={animated}
-      schema={ipInputSchema}
-    />
+    <TableRenderer table={table} animated={animated} schema={ipInputSchema} />
   );
 }

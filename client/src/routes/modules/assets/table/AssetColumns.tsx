@@ -338,6 +338,7 @@ export const getColumns = (
             <NoteView
               currentNote={row.original.note ?? ""}
               ID={row.original.ID}
+              rowVersion={row.original.rowVersion}
             >
               <button
                 className="group/button"

@@ -26,7 +26,6 @@ interface BaseRow {
 
 interface TableRendererProps<T extends BaseRow> {
   table: DataTable<T>;
-  columnLength: number;
   singleSelect?: boolean;
   animated?: boolean;
   schema?: ZodObject<ZodRawShape>;
@@ -34,7 +33,6 @@ interface TableRendererProps<T extends BaseRow> {
 
 export default function TableRenderer<T extends BaseRow>({
   table,
-  columnLength,
   singleSelect,
   animated,
   schema,
@@ -97,7 +95,10 @@ export default function TableRenderer<T extends BaseRow>({
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columnLength} className="h-24 text-center">
+                <TableCell
+                  colSpan={table.getVisibleLeafColumns().length}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>

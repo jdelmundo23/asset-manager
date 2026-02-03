@@ -28,9 +28,15 @@ interface NoteViewProps {
   children: JSX.Element;
   currentNote: string;
   ID: number | string;
+  rowVersion: string;
 }
 
-export default function NoteView({ children, currentNote, ID }: NoteViewProps) {
+export default function NoteView({
+  children,
+  currentNote,
+  ID,
+  rowVersion,
+}: NoteViewProps) {
   const { endpoint } = useTableConfig();
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<boolean>(false);
@@ -50,6 +56,7 @@ export default function NoteView({ children, currentNote, ID }: NoteViewProps) {
         value: values.note,
         column: "note",
         ID: ID,
+        rowVersion: rowVersion,
       }),
     onSuccess: () => {
       setOpen(false);
