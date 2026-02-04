@@ -7,13 +7,16 @@ import { Button } from "@/components/shadcn-ui/button";
 import { useState } from "react";
 import { X } from "lucide-react";
 import IPForm from "./IPForm";
+import AdminAction from "@/components/AdminAction";
 
 export default function AddIP() {
   const [open, setOpen] = useState(false);
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger>
-        <Button variant={"secondary"}>Add IP</Button>
+        <AdminAction>
+          <Button variant={"secondary"}>Add IP</Button>
+        </AdminAction>
       </AlertDialogTrigger>
       <AlertDialogContent className="max-h-screen overflow-y-auto sm:max-w-2xl">
         <div

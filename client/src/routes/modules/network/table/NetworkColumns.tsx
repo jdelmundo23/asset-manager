@@ -15,6 +15,7 @@ import DeleteIP from "../components/ips/DeleteIP";
 import EditIP from "../components/ips/EditIP";
 import { Checkbox } from "@/components/shadcn-ui/checkbox";
 import { formatIP } from "@/lib/utils";
+import AdminAction from "@/components/AdminAction";
 
 const dateFilterFn = (
   rowValue: Date | undefined,
@@ -211,15 +212,19 @@ export const getColumns = (): ColumnDef<IPRow>[] => {
                 Copy IP
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setEditOpen(true)}>
-                Edit IP
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setDeleteOpen(true)}
-                className="text-red-600"
-              >
-                Delete IP
-              </DropdownMenuItem>
+              <AdminAction>
+                <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                  Edit IP
+                </DropdownMenuItem>
+              </AdminAction>
+              <AdminAction>
+                <DropdownMenuItem
+                  onClick={() => setDeleteOpen(true)}
+                  className="text-red-600"
+                >
+                  Delete IP
+                </DropdownMenuItem>
+              </AdminAction>
             </DropdownMenuContent>
             <EditIP open={editOpen} setOpen={setEditOpen} ipID={ip.ID} />
             <DeleteIP open={deleteOpen} setOpen={setDeleteOpen} row={ip} />

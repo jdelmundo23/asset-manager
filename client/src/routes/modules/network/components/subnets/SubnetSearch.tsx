@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/shadcn-ui/skeleton";
 import { ScrollArea } from "@/components/shadcn-ui/scroll-area";
 import DeleteSubnet from "./DeleteSubnet";
 import EditSubnet from "./EditSubnet";
+import AdminAction from "@/components/AdminAction";
 
 export default function SubnetSearch() {
   const { subnets, isLoading, selectedSubnet, setSelectedSubnet } =
@@ -32,12 +33,14 @@ export default function SubnetSearch() {
         placeholder="Search subnet..."
       />
       <AddSubnet setSearch={setSearch}>
-        <Button
-          variant="ghost"
-          className="group-hover:hover:bg-accent bg-muted/50 flex h-full w-full justify-end rounded-none border-b p-1 text-xs"
-        >
-          + Add Subnet
-        </Button>
+        <AdminAction>
+          <Button
+            variant="ghost"
+            className="group-hover:hover:bg-accent bg-muted/50 flex h-full w-full justify-end rounded-none border-b p-1 text-xs"
+          >
+            + Add Subnet
+          </Button>
+        </AdminAction>
       </AddSubnet>
       <CommandList className="max-h-none">
         <CommandEmpty
@@ -53,11 +56,13 @@ export default function SubnetSearch() {
             <div className="">
               <p>{search ? "Subnet not found" : "No subnets"}</p>
               <AddSubnet setSearch={setSearch}>
-                <Button variant={"link"} className="font-bold">
-                  <div className="flex items-center">
-                    <Plus /> Add subnet
-                  </div>
-                </Button>
+                <AdminAction>
+                  <Button variant={"link"} className="font-bold">
+                    <div className="flex items-center">
+                      <Plus /> Add subnet
+                    </div>
+                  </Button>
+                </AdminAction>
               </AddSubnet>
             </div>
           )}
@@ -96,20 +101,24 @@ export default function SubnetSearch() {
 
                 <div className="flex w-full justify-end gap-x-1">
                   <EditSubnet setSearch={setSearch} subnet={subnet}>
-                    <button
-                      type="button"
-                      className="cursor-pointer opacity-0 transition-opacity duration-100 group-hover:opacity-100"
-                    >
-                      <Pencil />
-                    </button>
+                    <AdminAction hide>
+                      <button
+                        type="button"
+                        className="cursor-pointer opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                      >
+                        <Pencil />
+                      </button>
+                    </AdminAction>
                   </EditSubnet>
                   <DeleteSubnet subnet={subnet}>
-                    <button
-                      type="button"
-                      className="cursor-pointer opacity-0 transition-opacity duration-100 group-hover:opacity-100"
-                    >
-                      <Trash2 />
-                    </button>
+                    <AdminAction hide>
+                      <button
+                        type="button"
+                        className="cursor-pointer opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                      >
+                        <Trash2 />
+                      </button>
+                    </AdminAction>
                   </DeleteSubnet>
                 </div>
               </CommandItem>

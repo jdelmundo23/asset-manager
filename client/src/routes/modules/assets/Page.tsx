@@ -210,12 +210,10 @@ function LargeToolbar<T>({
         deleting
         duplicating
       >
-        <AdminAction>
-          <Button variant={"secondary"} className="gap-x-1 transition-all">
-            Selected
-            <ChevronsUpDown className="hidden sm:block" />
-          </Button>
-        </AdminAction>
+        <Button variant={"secondary"} className="gap-x-1 transition-all">
+          Selected
+          <ChevronsUpDown className="hidden sm:block" />
+        </Button>
       </BulkActionDropdown>
       <FileUpload>
         <AdminAction>

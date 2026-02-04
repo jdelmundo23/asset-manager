@@ -14,6 +14,7 @@ import {
   AlertDialogFooter,
 } from "../shadcn-ui/alert-dialog";
 import { useState } from "react";
+import AdminAction from "../AdminAction";
 
 interface BulkActionDropdownProps {
   children: React.ReactNode;
@@ -46,19 +47,23 @@ export default function BulkActionDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
         {editing && (
-          <DropdownMenuItem>
-            <Pencil />
-            Edit
-          </DropdownMenuItem>
+          <AdminAction>
+            <DropdownMenuItem>
+              <Pencil />
+              Edit
+            </DropdownMenuItem>
+          </AdminAction>
         )}
         {duplicating && (
           <BulkDuplicate
             onClick={() => handleBulkAction(entity, "duplicate", ids)}
           >
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              <Copy />
-              Duplicate
-            </DropdownMenuItem>
+            <AdminAction>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Copy />
+                Duplicate
+              </DropdownMenuItem>
+            </AdminAction>
           </BulkDuplicate>
         )}
         {deleting && (
@@ -68,13 +73,15 @@ export default function BulkActionDropdown({
               setSelectedRows({});
             }}
           >
-            <DropdownMenuItem
-              className="text-red-600"
-              onSelect={(e) => e.preventDefault()}
-            >
-              <Trash2 />
-              Delete
-            </DropdownMenuItem>
+            <AdminAction>
+              <DropdownMenuItem
+                className="text-red-600"
+                onSelect={(e) => e.preventDefault()}
+              >
+                <Trash2 />
+                Delete
+              </DropdownMenuItem>
+            </AdminAction>
           </BulkDelete>
         )}
       </DropdownMenuContent>
