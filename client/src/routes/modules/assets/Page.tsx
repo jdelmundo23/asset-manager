@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/shadcn-ui/dropdown-menu";
 import ColumnDialog from "./components/ColumnDialog";
+import AdminAction from "@/components/AdminAction";
 
 function Page() {
   return (
@@ -138,13 +139,15 @@ function SmallToolbar<T>({
         deleting
         duplicating
       >
-        <Button
-          variant={"secondary"}
-          className="gap-x-0.5 px-3.5 transition-all"
-        >
-          Selected
-          <ChevronsUpDown />
-        </Button>
+        <AdminAction>
+          <Button
+            variant={"secondary"}
+            className="gap-x-0.5 px-3.5 transition-all"
+          >
+            Selected
+            <ChevronsUpDown />
+          </Button>
+        </AdminAction>
       </BulkActionDropdown>
       <DropdownMenu>
         <DropdownMenuTrigger>
@@ -155,21 +158,25 @@ function SmallToolbar<T>({
         </DropdownMenuTrigger>
         <DropdownMenuContent>
           <FileUpload>
-            <DropdownMenuItem
-              onSelect={(e) => e.preventDefault()}
-              className="flex justify-between"
-            >
-              Import
-              <Upload />
-            </DropdownMenuItem>
+            <AdminAction>
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                className="flex justify-between"
+              >
+                Import
+                <Upload />
+              </DropdownMenuItem>
+            </AdminAction>
           </FileUpload>
           <AddAsset>
-            <DropdownMenuItem
-              onSelect={(e) => e.preventDefault()}
-              className="flex justify-between"
-            >
-              Add Asset <CirclePlus />
-            </DropdownMenuItem>
+            <AdminAction>
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                className="flex justify-between"
+              >
+                Add Asset <CirclePlus />
+              </DropdownMenuItem>
+            </AdminAction>
           </AddAsset>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -203,21 +210,27 @@ function LargeToolbar<T>({
         deleting
         duplicating
       >
-        <Button variant={"secondary"} className="gap-x-1 transition-all">
-          Selected
-          <ChevronsUpDown className="hidden sm:block" />
-        </Button>
+        <AdminAction>
+          <Button variant={"secondary"} className="gap-x-1 transition-all">
+            Selected
+            <ChevronsUpDown className="hidden sm:block" />
+          </Button>
+        </AdminAction>
       </BulkActionDropdown>
       <FileUpload>
-        <Button variant={"secondary"} className="gap-x-1">
-          Import
-          <Upload className="hidden sm:block" />
-        </Button>
+        <AdminAction>
+          <Button variant={"secondary"} className="gap-x-1">
+            Import
+            <Upload className="hidden sm:block" />
+          </Button>
+        </AdminAction>
       </FileUpload>
       <AddAsset>
-        <Button variant={"secondary"} className="gap-x-1">
-          Add Asset <Plus />
-        </Button>
+        <AdminAction>
+          <Button variant={"secondary"} className="gap-x-1">
+            Add Asset <Plus />
+          </Button>
+        </AdminAction>
       </AddAsset>
     </div>
   );

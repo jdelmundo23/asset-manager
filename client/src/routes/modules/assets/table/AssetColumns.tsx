@@ -21,6 +21,7 @@ import {
 } from "../components/ActionDialogs";
 import IPView from "@/components/table/IPView";
 import NoteView from "@/components/table/NoteView";
+import AdminAction from "@/components/AdminAction";
 
 const getNameFromID = (array: Preset[] | User[], ID: number | string) => {
   return array.find((item) => ID === item.ID)?.name || "";
@@ -347,7 +348,9 @@ export const getColumns = (
                 {row.original.note ? (
                   <NotebookText className="h-5 w-5" />
                 ) : (
-                  <Plus className="h-5 w-5 opacity-0 group-hover:opacity-100 group-focus-visible/button:!opacity-100" />
+                  <AdminAction hide>
+                    <Plus className="h-5 w-5 opacity-0 group-hover:opacity-100 group-focus-visible/button:!opacity-100" />
+                  </AdminAction>
                 )}
               </button>
             </NoteView>
@@ -427,22 +430,28 @@ export const getColumns = (
               <DropdownMenuSeparator />
 
               <EditAsset ID={asset.ID}>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  Edit Asset
-                </DropdownMenuItem>
+                <AdminAction>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    Edit Asset
+                  </DropdownMenuItem>
+                </AdminAction>
               </EditAsset>
               <DuplicateAsset row={asset}>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                  Duplicate Asset
-                </DropdownMenuItem>
+                <AdminAction>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    Duplicate Asset
+                  </DropdownMenuItem>
+                </AdminAction>
               </DuplicateAsset>
               <DeleteAsset row={asset}>
-                <DropdownMenuItem
-                  className="text-red-600"
-                  onSelect={(e) => e.preventDefault()}
-                >
-                  Delete Asset
-                </DropdownMenuItem>
+                <AdminAction>
+                  <DropdownMenuItem
+                    className="text-red-600"
+                    onSelect={(e) => e.preventDefault()}
+                  >
+                    Delete Asset
+                  </DropdownMenuItem>
+                </AdminAction>
               </DeleteAsset>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -5,6 +5,7 @@ import { TruncateHover } from "../TruncateHover";
 import { TableCell } from "../shadcn-ui/table";
 import { EditCell } from "./EditCell";
 import { Pencil } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 interface MemoCellProps<T> {
   cell: Cell<T, unknown>;
@@ -19,8 +20,11 @@ export function MemoCellInner<T>({
   rowVersion,
   schema,
 }: MemoCellProps<T>) {
+  const { isAdmin } = useAuth();
   const [cellTruncated, setCellTruncated] = useState<boolean>(false);
   const value = cell.getValue();
+  const editable =
+    schema && cell.column.columnDef.meta?.canEdit !== false && isAdmin;
   const rendered = useMemo(
     () => flexRender(cell.column.columnDef.cell, cell.getContext()),
     [cell]
@@ -65,7 +69,7 @@ export function MemoCellInner<T>({
     <TableCell className="group px-0 py-1 first:pl-0.5 hover:bg-slate-400/30">
       <div className="flex items-center justify-between px-2">
         {typeof value === "string" || typeof value === "number" ? (
-          schema && cell.column.columnDef.meta?.canEdit !== false ? (
+          editable ? (
             <EditCell
               column={cell.column}
               currentValue={cell.getValue()}
@@ -90,7 +94,7 @@ export function MemoCellInner<T>({
           rendered
         )}
         <div className="overflow-hidden" ref={parentRef}>
-          {schema && cell.column.columnDef.meta?.canEdit !== false ? (
+          {editable ? (
             <EditCell
               column={cell.column}
               currentValue={cell.getValue()}

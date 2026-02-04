@@ -23,6 +23,7 @@ import axiosApi from "@/lib/axios";
 import { useTableConfig } from "@/context/TableConfigContext";
 import { toast } from "sonner";
 import { handleError } from "@/lib/handleError";
+import AdminAction from "../AdminAction";
 
 interface NoteViewProps {
   children: JSX.Element;
@@ -134,19 +135,23 @@ export default function NoteView({
               )}
             />
             <div className="absolute bottom-0 right-0 flex p-2">
-              <button
-                aria-label={editing ? "Confirm note" : "Edit note"}
-                type="button"
-                onClick={
-                  editing ? form.handleSubmit(onSubmit) : () => setEditing(true)
-                }
-              >
-                {editing ? (
-                  <Check className="h-5 w-5" />
-                ) : (
-                  <Pencil className="h-5 w-5" />
-                )}
-              </button>
+              <AdminAction hide>
+                <button
+                  aria-label={editing ? "Confirm note" : "Edit note"}
+                  type="button"
+                  onClick={
+                    editing
+                      ? form.handleSubmit(onSubmit)
+                      : () => setEditing(true)
+                  }
+                >
+                  {editing ? (
+                    <Check className="h-5 w-5" />
+                  ) : (
+                    <Pencil className="h-5 w-5" />
+                  )}
+                </button>
+              </AdminAction>
             </div>
           </form>
         </Form>
