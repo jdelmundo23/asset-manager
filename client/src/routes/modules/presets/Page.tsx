@@ -19,6 +19,7 @@ import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PresetRow } from "@shared/schemas";
+import AdminAction from "@/components/AdminAction";
 
 const presets = [
   { displayName: "Types", tableName: "assettypes" },
@@ -106,7 +107,9 @@ function Page() {
                         <Row key={row.ID} preset={row} />
                       ))}
 
-                      <AddPreset />
+                      <AdminAction hide>
+                        <AddPreset />
+                      </AdminAction>
                     </div>
                   )}
                 </ScrollArea>

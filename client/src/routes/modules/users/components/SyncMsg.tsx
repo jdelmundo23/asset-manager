@@ -1,3 +1,4 @@
+import AdminAction from "@/components/AdminAction";
 import {
   Tooltip,
   TooltipContent,
@@ -45,10 +46,12 @@ export default function SyncMsg({ groupName }: SyncMsgProps) {
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <RefreshCcw
-              className="h-4 w-4 transition-transform active:-rotate-90"
-              onClick={handleSyncAction}
-            />
+            <AdminAction hide>
+              <RefreshCcw
+                className="h-4 w-4 transition-transform active:-rotate-90"
+                onClick={handleSyncAction}
+              />
+            </AdminAction>
           </TooltipTrigger>
           <TooltipContent className="bg-background text-foreground">
             Sync

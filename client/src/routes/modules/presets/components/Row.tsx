@@ -5,6 +5,7 @@ import EditPreset from "./EditPreset";
 import MissingAlert from "./MissingAlert";
 import { Card } from "@/components/shadcn-ui/card";
 import { PresetRow } from "@shared/schemas";
+import AdminAction from "@/components/AdminAction";
 
 interface RowProps {
   preset: PresetRow;
@@ -29,10 +30,12 @@ function Row({ preset }: RowProps) {
             )}
           </p>
           <div className="relative flex items-center space-x-2">
-            <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
-              <EditPreset preset={preset} />
-              <DeletePreset preset={preset} />
-            </div>
+            <AdminAction hide>
+              <div className="flex items-center space-x-2 opacity-0 transition-opacity ease-out group-hover:opacity-100">
+                <EditPreset preset={preset} />
+                <DeletePreset preset={preset} />
+              </div>
+            </AdminAction>
             {activePreset.displayName === "Models" && !preset.typeID ? (
               <MissingAlert message={"Missing asset type"} />
             ) : (

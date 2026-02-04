@@ -9,6 +9,7 @@ import { User } from "@shared/schemas";
 import { AlertTriangle, Info, MonitorSmartphone } from "lucide-react";
 import DeleteUser from "./DeleteUser";
 import UserView from "./UserView";
+import AdminAction from "@/components/AdminAction";
 
 export default function UserRow({ user }: { user: User }) {
   const date = new Date(user.last_sync);
@@ -35,7 +36,9 @@ export default function UserRow({ user }: { user: User }) {
           </p>
           <div className="flex items-center gap-x-1.5">
             <div className="flex items-center gap-x-1.5 opacity-0 transition-opacity duration-100 ease-out group-hover:opacity-100">
-              {!user.active && <DeleteUser user={user} />}
+              <AdminAction hide>
+                {!user.active ? <DeleteUser user={user} /> : <></>}
+              </AdminAction>
               <UserAssets user={user} />
             </div>
             <UserInfo user={user} datetime={datetime} />
