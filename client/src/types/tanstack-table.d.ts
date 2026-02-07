@@ -2,7 +2,7 @@ import "@tanstack/react-table";
 import { Preset, User } from "@shared/schemas";
 
 declare module "@tanstack/react-table" {
-  interface ColumnMeta<> {
+  interface ColumnMeta {
     type?: "text" | "select" | "date" | "cost";
     options?: Preset[] | User[];
     canEdit?: boolean;

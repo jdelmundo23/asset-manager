@@ -45,6 +45,10 @@ const appendInputs = (
 
 const validateTable: RequestHandler = (req: TableRequest, res, next) => {
   const { tableName } = req.params;
+  if (typeof tableName !== "string") {
+    res.status(400).json({ error: "Invalid table name" });
+    return;
+  }
   const parse = presetTableSchema.safeParse(tableName.trim().toLowerCase());
   if (parse.error) {
     console.error("Invalid table name:" + tableName);
