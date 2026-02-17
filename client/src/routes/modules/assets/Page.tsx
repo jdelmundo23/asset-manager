@@ -24,6 +24,7 @@ import {
 } from "@/components/shadcn-ui/dropdown-menu";
 import ColumnDialog from "./components/ColumnDialog";
 import AdminAction from "@/components/AdminAction";
+import DataDropdown from "@/components/table/DataDropdown";
 
 function Page() {
   return (
@@ -215,14 +216,12 @@ function LargeToolbar<T>({
           <ChevronsUpDown className="hidden sm:block" />
         </Button>
       </BulkActionDropdown>
-      <FileUpload>
-        <AdminAction>
-          <Button variant={"secondary"} className="gap-x-1">
-            Import
-            <Upload className="hidden sm:block" />
-          </Button>
-        </AdminAction>
-      </FileUpload>
+      <DataDropdown filteredRows={table.getFilteredRowModel().rows}>
+        <Button variant={"secondary"} className="gap-x-1 transition-all">
+          Data
+          <ChevronsUpDown className="hidden sm:block" />
+        </Button>
+      </DataDropdown>
       <AddAsset>
         <AdminAction>
           <Button variant={"secondary"} className="gap-x-1">
