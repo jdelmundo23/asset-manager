@@ -37,7 +37,14 @@ type AssetFormProps = AddModeProps | EditModeProps;
 
 export default function AssetForm({ mode, closeDialog, ID }: AssetFormProps) {
   const { handleAction } = useHandleAction<Asset, unknown>();
-  const { types, models, locations, departments, users, assets } = useAssets();
+  const {
+    types: { array: types },
+    models: { array: models },
+    locations: { array: locations },
+    departments: { array: departments },
+    users: { array: users },
+    assets,
+  } = useAssets();
 
   const defaultAsset = assets.find((asset) => asset.ID === ID);
 

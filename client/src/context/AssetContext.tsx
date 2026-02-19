@@ -7,11 +7,26 @@ import { handleError } from "@/lib/handleError";
 import { useTableConfig } from "./TableConfigContext";
 interface AssetContextType {
   assets: AssetRow[];
-  locations: Preset[];
-  departments: Preset[];
-  types: Preset[];
-  models: Preset[];
-  users: User[];
+  locations: {
+    array: Preset[];
+    map: Record<number | string, string>;
+  };
+  departments: {
+    array: Preset[];
+    map: Record<number | string, string>;
+  };
+  types: {
+    array: Preset[];
+    map: Record<number | string, string>;
+  };
+  models: {
+    array: Preset[];
+    map: Record<number | string, string>;
+  };
+  users: {
+    array: User[];
+    map: Record<number | string, string>;
+  };
 }
 
 interface AssetProviderProps {
@@ -30,13 +45,32 @@ const getAssetData = async () => {
     ]);
   const parsedAssets = z.array(assetRowSchema).parse(assetRes.data);
 
+  const arrayToMap = <T extends { ID: number | string; name: string }>(
+    arr: T[]
+  ) => Object.fromEntries(arr.map((x) => [x["ID"], x["name"]] as const));
+
   return {
     assets: parsedAssets,
-    locations: locRes.data,
-    departments: depRes.data,
-    types: typeRes.data,
-    models: modelRes.data,
-    users: usersRes.data,
+    locations: {
+      array: locRes.data,
+      map: arrayToMap(locRes.data),
+    },
+    departments: {
+      array: depRes.data,
+      map: arrayToMap(depRes.data),
+    },
+    types: {
+      array: typeRes.data,
+      map: arrayToMap(typeRes.data),
+    },
+    models: {
+      array: modelRes.data,
+      map: arrayToMap(modelRes.data),
+    },
+    users: {
+      array: usersRes.data,
+      map: arrayToMap(usersRes.data),
+    },
   };
 };
 
@@ -60,11 +94,26 @@ export function AssetProvider({ children }: AssetProviderProps) {
     <AssetContext.Provider
       value={{
         assets: assetQuery.data?.assets ?? [],
-        locations: assetQuery.data?.locations ?? [],
-        departments: assetQuery.data?.departments ?? [],
-        types: assetQuery.data?.types ?? [],
-        models: assetQuery.data?.models ?? [],
-        users: assetQuery.data?.users ?? [],
+        locations: {
+          array: assetQuery.data?.locations?.array ?? [],
+          map: assetQuery.data?.locations?.map ?? {},
+        },
+        departments: {
+          array: assetQuery.data?.departments?.array ?? [],
+          map: assetQuery.data?.departments?.map ?? {},
+        },
+        types: {
+          array: assetQuery.data?.types?.array ?? [],
+          map: assetQuery.data?.types?.map ?? {},
+        },
+        models: {
+          array: assetQuery.data?.models?.array ?? [],
+          map: assetQuery.data?.models?.map ?? {},
+        },
+        users: {
+          array: assetQuery.data?.users?.array ?? [],
+          map: assetQuery.data?.users?.map ?? {},
+        },
       }}
     >
       {children}

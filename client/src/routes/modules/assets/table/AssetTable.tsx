@@ -58,11 +58,11 @@ export function useAssetTable({
   const data = assets;
   const contextData = singleSelect ? undefined : useAssets();
   const columns = getColumns(
-    contextData?.locations,
-    contextData?.departments,
-    contextData?.types,
-    contextData?.models,
-    contextData?.users
+    contextData?.locations.array,
+    contextData?.departments.array,
+    contextData?.types.array,
+    contextData?.models.array,
+    contextData?.users.array
   );
 
   const table = useReactTable({

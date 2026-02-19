@@ -25,6 +25,7 @@ import {
 import ColumnDialog from "./components/ColumnDialog";
 import AdminAction from "@/components/AdminAction";
 import DataDropdown from "@/components/table/DataDropdown";
+import { AssetRow } from "@shared/schemas";
 
 function Page() {
   return (
@@ -103,19 +104,19 @@ function AssetPageContent() {
   );
 }
 
-interface ToolbarProps<T> {
-  table: Table<T>;
+interface ToolbarProps {
+  table: Table<AssetRow>;
   selectedRows: RowSelectionState;
   setSelectedRows: React.Dispatch<React.SetStateAction<RowSelectionState>>;
   onColumnReorder: (activeId: string, overId: string) => void;
 }
 
-function SmallToolbar<T>({
+function SmallToolbar({
   table,
   selectedRows,
   setSelectedRows,
   onColumnReorder,
-}: ToolbarProps<T>) {
+}: ToolbarProps) {
   const filtered = table
     .getAllLeafColumns()
     .filter(
@@ -185,12 +186,12 @@ function SmallToolbar<T>({
   );
 }
 
-function LargeToolbar<T>({
+function LargeToolbar({
   table,
   selectedRows,
   setSelectedRows,
   onColumnReorder,
-}: ToolbarProps<T>) {
+}: ToolbarProps) {
   const filtered = table
     .getAllLeafColumns()
     .filter(
@@ -216,7 +217,7 @@ function LargeToolbar<T>({
           <ChevronsUpDown className="hidden sm:block" />
         </Button>
       </BulkActionDropdown>
-      <DataDropdown filteredRows={table.getFilteredRowModel().rows}>
+      <DataDropdown table={table}>
         <Button variant={"secondary"} className="gap-x-1 transition-all">
           Data
           <ChevronsUpDown className="hidden sm:block" />

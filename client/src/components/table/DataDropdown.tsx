@@ -8,17 +8,16 @@ import AdminAction from "../AdminAction";
 import { FileDown, Upload } from "lucide-react";
 import ExportDialog from "./ExportDialog";
 import FileUpload from "@/routes/modules/assets/components/ImportDialog";
-import { Row } from "@tanstack/react-table";
+import { Table } from "@tanstack/react-table";
+import { AssetRow } from "@shared/schemas";
 
-export default function DataDropdown<T>({
+export default function DataDropdown({
   children,
-  filteredRows,
+  table,
 }: {
   children: React.ReactNode;
-  filteredRows: Row<T>[];
+  table: Table<AssetRow>;
 }) {
-  const data = filteredRows.map((row) => row.original);
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
@@ -31,7 +30,7 @@ export default function DataDropdown<T>({
             </DropdownMenuItem>
           </AdminAction>
         </FileUpload>
-        <ExportDialog filteredRows={filteredRows}>
+        <ExportDialog table={table}>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
             <FileDown className="hidden sm:block" />
             Export
