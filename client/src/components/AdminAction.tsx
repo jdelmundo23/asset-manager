@@ -17,7 +17,15 @@ const AdminAction = React.forwardRef<HTMLElement, AdminActionProps>(
     const { isAdmin: can } = useAuth();
 
     if (hide) {
-      if (can) return <>{children}</>;
+      if (can)
+        return (
+          <>
+            {React.cloneElement(children, {
+              ref,
+              ...props,
+            })}
+          </>
+        );
       return <></>;
     } else {
       return (

@@ -131,10 +131,10 @@ export default function SubnetForm({
             labelKey: "name",
           }}
           onSelect={async (val, fieldName, newVal) => {
-            if (val === newVal.ID) {
+            if ((newVal && val === newVal.ID) || newVal === null) {
               form.setValue(fieldName, null);
               await form.trigger(fieldName);
-            } else {
+            } else if (newVal) {
               form.setValue(fieldName, newVal.ID);
               await form.trigger(fieldName);
             }
