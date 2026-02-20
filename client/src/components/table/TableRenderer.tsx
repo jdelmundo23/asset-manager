@@ -18,7 +18,13 @@ import {
 } from "../shadcn-ui/select";
 import { MemoCell, MemoCellInner } from "./TableCell";
 import MyTableHead from "./TableHead";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
+import { ButtonGroup } from "../shadcn-ui/button-group";
 
 interface BaseRow {
   rowVersion: string;
@@ -127,32 +133,57 @@ export default function TableRenderer<T extends BaseRow>({
               <SelectValue defaultValue={"10"} />
             </SelectTrigger>
             <SelectContent>
-              {[5, 10, 25].map((pageSize) => (
+              {[5, 10, 25, 50].map((pageSize) => (
                 <SelectItem key={pageSize} value={String(pageSize)}>
                   {pageSize}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            <ArrowLeft />
-          </Button>
-          <div className="bg-secondary text-secondary-foreground flex h-full w-8 items-center justify-center rounded-md border font-semibold">
-            <p>{table.getState().pagination.pageIndex + 1}</p>
-          </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            <ArrowRight />
-          </Button>
+
+          <ButtonGroup>
+            <Button
+              size="sm"
+              variant={"secondary"}
+              className="px-2"
+              onClick={() => table.firstPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronsLeft />
+            </Button>
+            <Button
+              size="sm"
+              variant={"secondary"}
+              className="px-2"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeft />
+            </Button>
+            <Button variant={"secondary"} size="sm" className="bg-black p-1">
+              <span className="inline-flex h-6 w-6 items-center justify-center text-sm font-semibold">
+                {table.getState().pagination.pageIndex + 1}
+              </span>
+            </Button>
+            <Button
+              size="sm"
+              variant={"secondary"}
+              className="px-2"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronRight />
+            </Button>
+            <Button
+              size="sm"
+              variant={"secondary"}
+              className="px-2"
+              onClick={() => table.lastPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <ChevronsRight />
+            </Button>
+          </ButtonGroup>
         </div>
       </div>
     </>

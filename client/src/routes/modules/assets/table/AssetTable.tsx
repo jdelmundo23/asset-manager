@@ -42,7 +42,7 @@ export function useAssetTable({
   const [columnSizing, setColSizing] = useState<ColumnSizingState>({});
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 25,
   });
   const rowSelection = selectedRows ?? {};
 
