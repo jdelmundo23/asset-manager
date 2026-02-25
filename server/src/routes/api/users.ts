@@ -136,11 +136,18 @@ router.post("/sync-users", async function (req, res) {
       const tempTable = new sql.Table("StagingUsers");
       tempTable.columns.add("ID", sql.UniqueIdentifier, { nullable: false });
       tempTable.columns.add("name", sql.VarChar(255), { nullable: false });
+      tempTable.columns.add("email", sql.VarChar(320), { nullable: false });
       tempTable.columns.add("last_sync", sql.DateTime2, { nullable: false });
       tempTable.columns.add("active", sql.Bit, { nullable: false });
 
       users.forEach((user) => {
-        tempTable.rows.add(user.id, user.displayName, syncTime, true);
+        tempTable.rows.add(
+          user.id,
+          user.displayName,
+          user.userPrincipalName,
+          syncTime,
+          true
+        );
       });
 
       const bulkRequest = new sql.Request(transaction);
@@ -153,11 +160,12 @@ router.post("/sync-users", async function (req, res) {
         WHEN MATCHED THEN
           UPDATE SET
             name = source.name,
+            email = source.email,
             last_sync = source.last_sync,
             active = 1
         WHEN NOT MATCHED THEN
-          INSERT (ID, name, last_sync, active)
-          VALUES (source.ID, source.name, source.last_sync, 1);
+          INSERT (ID, name, email, last_sync, active)
+          VALUES (source.ID, source.name, source.email, source.last_sync, 1);
 
         UPDATE Users
         SET active = 0

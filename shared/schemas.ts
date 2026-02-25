@@ -52,6 +52,7 @@ export const nullishTrimmedString = (min: number, max: number) =>
 export const userSchema = z.object({
   ID: z.string().uuid(),
   name: z.string().max(255),
+  email: z.string().email().max(320),
   last_sync: z.coerce.date(),
   active: z.boolean(),
 });

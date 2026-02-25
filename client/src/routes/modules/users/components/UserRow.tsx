@@ -28,12 +28,10 @@ export default function UserRow({ user }: { user: User }) {
         className={`bg-muted border-muted-foreground/25 text-foreground group rounded-md px-2 py-1 ${user.active}`}
       >
         <div className="flex items-center justify-between">
-          <p
-            title={user.name}
-            className="w-5/6 max-w-[200px] truncate lg:max-w-[300px]"
-          >
+          <div className="flex w-5/6 max-w-[200px] flex-col lg:max-w-[300px]">
             {user.name}
-          </p>
+            <p className="text-xs font-normal opacity-60">{user.email}</p>
+          </div>
           <div className="flex items-center gap-x-1.5">
             <div className="flex items-center gap-x-1.5 opacity-0 transition-opacity duration-100 ease-out group-hover:opacity-100">
               <AdminAction hide>

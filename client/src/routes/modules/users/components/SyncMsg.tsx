@@ -41,7 +41,7 @@ export default function SyncMsg({ groupName }: SyncMsgProps) {
   };
 
   return (
-    <div className="flex w-full items-center justify-end gap-x-1 text-sm">
+    <div className="animate-fade-in flex w-full items-center justify-end gap-x-1 text-sm">
       Synced from group: <span className="font-semibold">{groupName}</span>
       <TooltipProvider>
         <Tooltip>

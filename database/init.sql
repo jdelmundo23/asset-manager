@@ -93,6 +93,7 @@ CREATE TABLE AssetModels (
 CREATE TABLE Users (
     ID UNIQUEIDENTIFIER PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    email VARCHAR(320) NOT NULL,
     last_sync DATETIME2 NOT NULL,
     active BIT NOT NULL
 );
@@ -100,6 +101,7 @@ CREATE TABLE Users (
 CREATE TABLE StagingUsers (
     ID UNIQUEIDENTIFIER NOT NULL,
     name VARCHAR(255) NOT NULL,
+    email VARCHAR(320) NOT NULL,
     last_sync DATETIME2 NOT NULL,
     active BIT NOT NULL
 );
@@ -180,10 +182,11 @@ VALUES (
     ''Lenovo''
 );
 
-INSERT INTO Users (ID, name, last_sync, active)
+INSERT INTO Users (ID, name, email, last_sync, active)
 VALUES (
     ''ffffffff-ffff-ffff-ffff-ffffffffffff'', 
     ''Test User'',
+    ''test@mail.com'',
     GETUTCDATE(),
     0                                       
 );
