@@ -21,13 +21,15 @@ if (!devMode) {
     const account = req.session.account;
 
     if (!account) {
-      return res.status(401).json({ error: "Unauthorized" });
+      res.status(401).json({ error: "Unauthorized" });
+      return;
     }
 
     const roles = account.idTokenClaims?.roles ?? [];
 
     if (req.method !== "GET" && !roles.includes(adminRole)) {
-      return res.status(403).json({ error: "Admin role required" });
+      res.status(403).json({ error: "Admin role required" });
+      return;
     }
 
     next();
