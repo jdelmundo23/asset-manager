@@ -15,6 +15,7 @@ import {
 } from "../shadcn-ui/alert-dialog";
 import { useState } from "react";
 import AdminAction from "../AdminAction";
+import BulkAssetForm from "@/routes/modules/assets/components/BulkAssetForm";
 
 interface BulkActionDropdownProps {
   children: React.ReactNode;
@@ -47,12 +48,14 @@ export default function BulkActionDropdown({
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-[--radix-dropdown-menu-trigger-width]">
         {editing && (
-          <AdminAction>
-            <DropdownMenuItem>
-              <Pencil />
-              Edit
-            </DropdownMenuItem>
-          </AdminAction>
+          <BulkEdit ids={ids}>
+            <AdminAction>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                <Pencil />
+                Edit
+              </DropdownMenuItem>
+            </AdminAction>
+          </BulkEdit>
         )}
         {duplicating && (
           <BulkDuplicate
@@ -86,6 +89,34 @@ export default function BulkActionDropdown({
         )}
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+}
+
+function BulkEdit({
+  children,
+  ids,
+}: {
+  children: React.ReactNode;
+  ids: string[];
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <GenericDialog
+      content={
+        <BulkAssetForm
+          mode={"edit"}
+          ids={ids}
+          closeDialog={() => setOpen(false)}
+        />
+      }
+      open={open}
+      setOpen={setOpen}
+      title="Bulk Edit"
+      description="Changes will only affect the fields that are checked below"
+    >
+      {children}
+    </GenericDialog>
   );
 }
 

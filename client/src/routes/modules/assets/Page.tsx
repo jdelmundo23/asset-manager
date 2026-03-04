@@ -211,6 +211,7 @@ function LargeToolbar({
         setSelectedRows={setSelectedRows}
         deleting
         duplicating
+        editing
       >
         <Button variant={"secondary"} className="gap-x-1 transition-all">
           Selected

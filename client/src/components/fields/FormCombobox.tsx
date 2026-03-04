@@ -66,7 +66,7 @@ function FormCombobox<
       control={props.form.control}
       name={props.options.field}
       render={({ field }) => (
-        <FormItem className="flex flex-col">
+        <FormItem className={cn("flex w-full flex-col", props.className)}>
           <FormLabel>{props.options.fieldLabel}</FormLabel>
           <Popover modal={true} open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -76,9 +76,8 @@ function FormCombobox<
                   variant="outline"
                   role="combobox"
                   className={cn(
-                    "w-[200px] justify-between",
-                    !field.value && "text-muted-foreground",
-                    props.className
+                    "justify-between",
+                    !field.value && "text-muted-foreground"
                   )}
                 >
                   <TruncateHover>
