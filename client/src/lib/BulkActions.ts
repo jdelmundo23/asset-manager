@@ -3,6 +3,7 @@ import axiosApi from "./axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import { toast } from "sonner";
+import { Asset } from "@shared/schemas";
 
 type ActionType = "duplicate" | "edit" | "delete";
 
@@ -12,7 +13,7 @@ interface Action {
   ing: string;
   ed: string;
   url: (endpoint: EndpointType) => string;
-  method: "post" | "put";
+  method: "post" | "patch";
 }
 
 const queryKeys: Record<EndpointType, string> = {
@@ -29,7 +30,7 @@ const actions: Record<ActionType, Action> = {
     ed: "Deleted",
   },
   edit: {
-    method: "put",
+    method: "patch",
     url: (endpoint) => `/api/${endpoint}s/bulk/edit`,
     ing: "Editing",
     ed: "Edited",
@@ -52,10 +53,16 @@ export const useBulkAction = <R>() => {
       action: Action;
       endpointType: EndpointType;
       ids: string[];
+      template?: Asset;
+      fieldsToUpdate?: Record<string, boolean>;
     }
   >({
-    mutationFn: ({ action, endpointType, ids }) =>
-      axiosApi[action.method](action.url(endpointType), { ids }),
+    mutationFn: ({ action, endpointType, ids, template, fieldsToUpdate }) =>
+      axiosApi[action.method](action.url(endpointType), {
+        ids,
+        template,
+        fieldsToUpdate,
+      }),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: [queryKeys[variables.endpointType]],
@@ -66,12 +73,20 @@ export const useBulkAction = <R>() => {
   const handleBulkAction = async (
     endpointType: EndpointType,
     actionType: ActionType,
-    ids: string[]
+    ids: string[],
+    template?: Asset,
+    fieldsToUpdate?: Record<string, boolean>
   ): Promise<AxiosResponse<R>> => {
     const action = actions[actionType];
 
     const toastReturn = toast.promise(
-      mutation.mutateAsync({ action, endpointType, ids }),
+      mutation.mutateAsync({
+        action,
+        endpointType,
+        ids,
+        template,
+        fieldsToUpdate,
+      }),
       {
         loading: `${action.ing} ${endpointType}(s)`,
         success: `${action.ed} ${endpointType}(s)`,

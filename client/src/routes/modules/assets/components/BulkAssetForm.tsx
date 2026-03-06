@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/shadcn-ui/form";
 import { useAssets } from "@/context/AssetContext";
+import { useBulkAction } from "@/lib/bulkActions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Asset, assetSchema } from "@shared/schemas";
 import { LoaderCircle } from "lucide-react";
@@ -39,6 +40,8 @@ export default function BulkAssetForm({
   closeDialog,
   ids,
 }: BulkAssetFormProps) {
+  const { handleBulkAction } = useBulkAction();
+
   const [fieldsEnabled, setFieldsEnabled] = useState({
     modelID: false,
     locationID: false,
@@ -62,6 +65,8 @@ export default function BulkAssetForm({
     resolver: zodResolver(assetSchema),
   });
 
+  form.setValue("name", "TEMP");
+
   const toggleField = (field: keyof typeof fieldsEnabled) => {
     form.setValue(field, null);
     if (field === "modelID") {
@@ -73,7 +78,9 @@ export default function BulkAssetForm({
     }));
   };
 
-  async function onSubmit(values: Asset) {}
+  async function onSubmit(values: Asset) {
+    await handleBulkAction("asset", "edit", ids, values, fieldsEnabled);
+  }
 
   useEffect(() => {
     if (form.formState.isSubmitSuccessful) {

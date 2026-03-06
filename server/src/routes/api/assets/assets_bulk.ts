@@ -58,54 +58,30 @@ router.post("/duplicate", async function (req, res) {
   try {
     const pool = await getPool();
 
-    const { request: selectRequest, placeholders } = appendPlaceholderInputs(
+    const { request, placeholders } = appendPlaceholderInputs(
       pool.request(),
       ids
     );
 
-    const result = await selectRequest.query(`
-    SELECT name, identifier, locationID, departmentID, modelID,
-           assignedTo, purchaseDate, warrantyExp, cost, note
-    FROM Assets
-    WHERE ID IN (${placeholders})
-  `);
-    const rows = result.recordset;
-
-    const insertRequest = pool.request();
-
-    rows.forEach((row, index) => {
-      insertRequest.input(`name${index}`, sql.VarChar, `${row.name} - Copy`);
-      insertRequest.input(`identifier${index}`, sql.VarChar, null);
-      insertRequest.input(`locationID${index}`, sql.Int, row.locationID);
-      insertRequest.input(`departmentID${index}`, sql.Int, row.departmentID);
-      insertRequest.input(`modelID${index}`, sql.Int, row.modelID);
-      insertRequest.input(`assignedTo${index}`, sql.VarChar, row.assignedTo);
-      insertRequest.input(
-        `purchaseDate${index}`,
-        sql.DateTime,
-        row.purchaseDate
-      );
-      insertRequest.input(`warrantyExp${index}`, sql.DateTime, row.warrantyExp);
-      insertRequest.input(`cost${index}`, sql.Decimal(6, 2), row.cost);
-      insertRequest.input(`note${index}`, sql.NVarChar, row.note);
-    });
-
-    const valuesClause = rows
-      .map(
-        (_, i) =>
-          `(@name${i}, @identifier${i}, @locationID${i}, @departmentID${i}, @modelID${i}, @assignedTo${i}, @purchaseDate${i}, @warrantyExp${i}, @cost${i}, @note${i})`
-      )
-      .join(", ");
-
-    const insertQuery = `
+    await request.query(`
       INSERT INTO Assets (
         name, identifier, locationID, departmentID, modelID,
         assignedTo, purchaseDate, warrantyExp, cost, note
       )
-      VALUES ${valuesClause}
-    `;
-
-    await insertRequest.query(insertQuery);
+      SELECT 
+        name + ' - Copy',
+        NULL,
+        locationID,
+        departmentID,
+        modelID,
+        assignedTo,
+        purchaseDate,
+        warrantyExp,
+        cost,
+        note
+      FROM Assets
+      WHERE ID IN (${placeholders})
+    `);
 
     res.json({
       message: "Assets duplicated successfully",
@@ -114,6 +90,64 @@ router.post("/duplicate", async function (req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to duplicate assets" });
+  }
+});
+
+router.patch("/edit", async function (req, res) {
+  const { ids, template, fieldsToUpdate } = req.body;
+  console.log(req.body);
+
+  try {
+    const pool = await getPool();
+
+    const { request, placeholders } = appendPlaceholderInputs(
+      pool.request(),
+      ids
+    );
+
+    const fieldConfig = {
+      modelID: sql.Int,
+      locationID: sql.Int,
+      departmentID: sql.Int,
+      assignedTo: sql.UniqueIdentifier,
+      purchaseDate: sql.DateTime,
+      warrantyExp: sql.DateTime,
+      cost: sql.Decimal(6, 2),
+      note: sql.NVarChar,
+    };
+
+    const updates = Object.entries(fieldConfig)
+      .filter(([field]) => fieldsToUpdate[field])
+      .map(([field, type]) => {
+        request.input(field, type, template[field]);
+        return `${field} = @${field}`;
+      });
+
+    if (!updates.length) {
+      res.status(400).json({ error: "No fields selected for update" });
+      return;
+    }
+
+    await request.query(`
+      UPDATE Assets
+      SET ${updates.join(", ")}
+      WHERE ID IN (${placeholders})
+    `);
+
+    res.json({
+      message: "Assets updated successfully",
+      updated: ids.length,
+    });
+  } catch (err) {
+    console.error(err);
+    if (err instanceof sql.RequestError && err.message.includes("warranty")) {
+      res.status(500).json({
+        error:
+          "One or more selected assets will have conflicting purchase/warranty dates",
+      });
+      return;
+    }
+    res.status(500).json({ error: "Failed to update assets" });
   }
 });
 
