@@ -173,6 +173,8 @@ class AuthProvider {
       }
 
       if (!req.session.authCodeRequest || !req.session.pkceCodes) {
+        res.clearCookie("connect.sid");
+
         return res.redirect("/auth/signin");
       }
 
