@@ -70,7 +70,7 @@ export const getSubnetByPrefix = async (
   try {
     const result = await pool
       .request()
-      .input("subnetPrefix", sql.VarChar(11), subnetPrefix)
+      .input("subnetPrefix", sql.NVarChar(11), subnetPrefix)
       .query("SELECT TOP 1 * FROM Subnets WHERE subnetPrefix = @subnetPrefix");
     if (result.recordset.length === 0) {
       return { subnetID: null };
@@ -96,7 +96,7 @@ export const addSubnet = async (
 
     const result = await pool
       .request()
-      .input("subnetPrefix", sql.VarChar(11), subnetPrefix).query(`
+      .input("subnetPrefix", sql.NVarChar(11), subnetPrefix).query(`
       INSERT INTO Subnets (subnetPrefix)
       OUTPUT INSERTED.ID
       VALUES (@subnetPrefix)

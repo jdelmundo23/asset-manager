@@ -16,7 +16,7 @@ interface TableRequest extends Request {
 
 const inputDefinitions = [
   { name: "ID", type: sql.Int },
-  { name: "name", type: sql.VarChar(50) },
+  { name: "name", type: sql.NVarChar(50) },
   { name: "typeID", type: sql.Int },
   { name: "rowVersion", type: sql.Binary() },
 ] as const;

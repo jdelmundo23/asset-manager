@@ -52,11 +52,11 @@ router.post("/", async function (req, res) {
 
     const result = await pool
       .request()
-      .input("subnetPrefix", sql.VarChar(11), subnet.subnetPrefix)
+      .input("subnetPrefix", sql.NVarChar(11), subnet.subnetPrefix)
       .input("locationID", sql.Int, subnet.locationID).query(`
           DECLARE @InsertedSubnets TABLE (
               ID INT,
-              subnetPrefix VARCHAR(50),
+              subnetPrefix NVARCHAR(50),
               locationID INT
           );
 
@@ -103,7 +103,7 @@ router.put("/", async function (req, res) {
       .input("locationID", sql.Int, subnet.locationID).query(`
           DECLARE @UpdatedSubnets TABLE (
               ID INT,
-              subnetPrefix VARCHAR(50),
+              subnetPrefix NVARCHAR(50),
               locationID INT
           );
 

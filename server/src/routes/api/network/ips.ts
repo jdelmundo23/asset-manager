@@ -15,8 +15,8 @@ const inputDefinitions = [
   { name: "ID", type: sql.Int },
   { name: "hostNumber", type: sql.TinyInt },
   { name: "subnetID", type: sql.Int },
-  { name: "name", type: sql.VarChar(100) },
-  { name: "macAddress", type: sql.VarChar(24) },
+  { name: "name", type: sql.NVarChar(100) },
+  { name: "macAddress", type: sql.NVarChar(24) },
   { name: "assetID", type: sql.Int },
   { name: "rowVersion", type: sql.Binary() },
 ] as const;

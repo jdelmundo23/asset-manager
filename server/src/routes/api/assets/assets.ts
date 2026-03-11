@@ -7,12 +7,12 @@ import { parseInputReq } from "@server/src/utils";
 
 const inputDefinitions = [
   { name: "ID", type: sql.Int },
-  { name: "name", type: sql.VarChar(100) },
-  { name: "identifier", type: sql.VarChar(100) },
+  { name: "name", type: sql.NVarChar(100) },
+  { name: "identifier", type: sql.NVarChar(100) },
   { name: "locationID", type: sql.Int },
   { name: "departmentID", type: sql.Int },
   { name: "modelID", type: sql.Int },
-  { name: "assignedTo", type: sql.VarChar(75) },
+  { name: "assignedTo", type: sql.NVarChar(75) },
   { name: "purchaseDate", type: sql.DateTime },
   { name: "warrantyExp", type: sql.DateTime },
   { name: "cost", type: sql.Decimal(6, 2) },
@@ -217,8 +217,8 @@ router.post("/duplicate", async function (req, res) {
     ]);
 
     await appendedRequest
-      .input("name", sql.VarChar(100), `${originalAsset.name} - Copy`)
-      .input("identifier", sql.VarChar(100), null).query(`
+      .input("name", sql.NVarChar(100), `${originalAsset.name} - Copy`)
+      .input("identifier", sql.NVarChar(100), null).query(`
       INSERT INTO Assets (name, identifier, locationID, departmentID, modelID, assignedTo, purchaseDate, warrantyExp, cost)
       VALUES (@name, @identifier, @locationID, @departmentID, @modelID, @assignedTo, @purchaseDate, @warrantyExp, @cost)
     `);

@@ -135,8 +135,8 @@ router.post("/sync-users", async function (req, res) {
 
       const tempTable = new sql.Table("StagingUsers");
       tempTable.columns.add("ID", sql.UniqueIdentifier, { nullable: false });
-      tempTable.columns.add("name", sql.VarChar(255), { nullable: false });
-      tempTable.columns.add("email", sql.VarChar(320), { nullable: false });
+      tempTable.columns.add("name", sql.NVarChar(255), { nullable: false });
+      tempTable.columns.add("email", sql.NVarChar(320), { nullable: false });
       tempTable.columns.add("last_sync", sql.DateTime2, { nullable: false });
       tempTable.columns.add("active", sql.Bit, { nullable: false });
 

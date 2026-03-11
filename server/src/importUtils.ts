@@ -281,12 +281,12 @@ export const checkExistingAssets = async (
     const checkRequest = pool.request();
 
     assetInserts.forEach(({ asset }, index) => {
-      checkRequest.input(`name${index}`, sql.VarChar, asset.name);
-      checkRequest.input(`identifier${index}`, sql.VarChar, asset.identifier);
+      checkRequest.input(`name${index}`, sql.NVarChar, asset.name);
+      checkRequest.input(`identifier${index}`, sql.NVarChar, asset.identifier);
       checkRequest.input(`locationID${index}`, sql.Int, asset.locationID);
       checkRequest.input(`departmentID${index}`, sql.Int, asset.departmentID);
       checkRequest.input(`modelID${index}`, sql.Int, asset.modelID);
-      checkRequest.input(`assignedTo${index}`, sql.VarChar, asset.assignedTo);
+      checkRequest.input(`assignedTo${index}`, sql.NVarChar, asset.assignedTo);
       checkRequest.input(
         `purchaseDate${index}`,
         sql.DateTime,
@@ -336,10 +336,10 @@ export const insertAssets = async (
 
     if (toInsert.length > 0) {
       toInsert.forEach(({ asset }, index) => {
-        insertRequest.input(`name${index}`, sql.VarChar, asset.name);
+        insertRequest.input(`name${index}`, sql.NVarChar, asset.name);
         insertRequest.input(
           `identifier${index}`,
-          sql.VarChar,
+          sql.NVarChar,
           asset.identifier
         );
         insertRequest.input(`locationID${index}`, sql.Int, asset.locationID);
@@ -351,7 +351,7 @@ export const insertAssets = async (
         insertRequest.input(`modelID${index}`, sql.Int, asset.modelID);
         insertRequest.input(
           `assignedTo${index}`,
-          sql.VarChar,
+          sql.NVarChar,
           asset.assignedTo
         );
         insertRequest.input(
