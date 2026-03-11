@@ -117,28 +117,10 @@ router.post("/confirm", async function (req, res) {
       allUsersResult.recordset.map((row) => [row.name.toLowerCase(), row.ID])
     );
 
-    const assetsToAdd: AssetImport[] = [];
-
     const skippedAssets: SkippedRow[] = [];
 
-    assets.forEach((asset) => {
-      if (
-        departmentsMap.has(asset.Department.toLowerCase()) &&
-        locationsMap.has(asset.Location.toLowerCase()) &&
-        modelsMap.has(asset.Model.toLowerCase())
-      ) {
-        assetsToAdd.push(asset);
-      } else {
-        skippedAssets.push({
-          rowNumber: asset.rowNumber,
-          identifier: asset.Identifier,
-          reason: "Required department, location, or model was not added",
-        });
-      }
-    });
-
-    if (assetsToAdd.length > 0) {
-      const result = await addAssets(pool, assetsToAdd, {
+    if (assets.length > 0) {
+      const result = await addAssets(pool, assets, {
         departments: departmentsMap,
         locations: locationsMap,
         models: modelsMap,

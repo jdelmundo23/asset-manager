@@ -11,7 +11,7 @@ export async function detectMissingRows(
   pool: ConnectionPool,
   table: PresetTable,
   column: string,
-  getValue: (asset: AssetImport) => string,
+  getValue: (asset: AssetImport) => string | null | undefined,
   assets: AssetImport[]
 ): Promise<string[]> {
   const map = new Map<string, number>();
@@ -35,6 +35,8 @@ export async function detectMissingRows(
       for (const asset of assets) {
         const modelName = asset.Model;
         const typeName = asset.Type;
+
+        if (!modelName || !typeName) continue;
 
         const key = `${modelName.toLowerCase()}|${typeName.toLowerCase()}`;
 
@@ -227,9 +229,10 @@ export const addAssets = async (
       name: row.Name,
       cost: row.Cost ?? 0,
       identifier: row.Identifier,
-      modelID: maps.models.get(row.Model.toLowerCase()) ?? null,
-      locationID: maps.locations.get(row.Location.toLowerCase()) ?? null,
-      departmentID: maps.departments.get(row.Department.toLowerCase()) ?? null,
+      modelID: maps.models.get(row.Model?.toLowerCase() ?? "") ?? null,
+      locationID: maps.locations.get(row.Location?.toLowerCase() ?? "") ?? null,
+      departmentID:
+        maps.departments.get(row.Department?.toLowerCase() ?? "") ?? null,
       assignedTo:
         maps.users.get(row["Assigned To"]?.toLowerCase() ?? "") ?? null,
       purchaseDate: row["Purchase Date"],

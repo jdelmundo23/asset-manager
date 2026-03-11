@@ -78,7 +78,7 @@ export default function UploadStage({
       }
 
       const key = `${row.Model}-${row.Identifier}`;
-      if (seen.has(key)) {
+      if (seen.has(key) && row.Model && row.Identifier) {
         skippedRows.push({
           rowNumber,
           identifier: result.data.Identifier,
