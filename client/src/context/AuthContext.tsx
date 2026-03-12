@@ -6,6 +6,7 @@ interface AuthState {
   upn?: string;
   name?: string;
   roles?: string[];
+  loading: boolean;
 }
 
 export interface AuthContextType extends AuthState {
@@ -15,6 +16,7 @@ export interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType>({
   authenticated: false,
   clear: () => {},
+  loading: true,
 });
 
 export default AuthContext;
@@ -22,21 +24,25 @@ export default AuthContext;
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [authInfo, setAuthInfo] = useState<AuthState>({
     authenticated: false,
+    loading: true,
   });
 
   useEffect(() => {
     (async () => {
       try {
         const response = await axiosApi.get(`/auth/user`);
-        setAuthInfo(response.data);
+        setAuthInfo({
+          ...response.data,
+          loading: false,
+        });
       } catch {
-        setAuthInfo({ authenticated: false });
+        setAuthInfo({ authenticated: false, loading: false });
       }
     })();
   }, []);
 
   const clear = () => {
-    setAuthInfo({ authenticated: false });
+    setAuthInfo({ authenticated: false, loading: false });
   };
 
   return (
