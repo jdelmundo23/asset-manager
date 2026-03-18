@@ -24,13 +24,17 @@ interface TableSheetProps {
   selectedRow: RowSelectionState;
   setSelectedRow: React.Dispatch<React.SetStateAction<RowSelectionState>>;
   onConfirm: () => void;
+  onClear: () => void;
+  disabled?: boolean;
 }
 
 export function AssetTableSheet({
+  disabled,
   value,
   selectedRow,
   setSelectedRow,
   onConfirm,
+  onClear,
 }: TableSheetProps) {
   const [open, setOpen] = useState<boolean>(false);
 
@@ -92,13 +96,14 @@ export function AssetTableSheet({
         );
       }}
     >
-      <SheetTrigger>
+      <SheetTrigger asChild>
         <Button
+          disabled={disabled}
           type="button"
           variant="outline"
           role="sheet"
           className={cn(
-            "w-full justify-between",
+            "w-full min-w-0 justify-between disabled:cursor-not-allowed",
             !value || assetQuery.isLoading ? "text-muted-foreground" : ""
           )}
         >
@@ -122,6 +127,11 @@ export function AssetTableSheet({
         </SheetHeader>
         {tableRender}
         <div className="flex justify-end space-x-2">
+          <SheetClose asChild>
+            <Button variant="link" className="text-white" onClick={onClear}>
+              Clear
+            </Button>
+          </SheetClose>
           <SheetClose asChild>
             <Button variant="secondary">Cancel</Button>
           </SheetClose>

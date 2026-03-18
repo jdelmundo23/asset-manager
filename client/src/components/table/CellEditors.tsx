@@ -282,6 +282,7 @@ export const AssetSelector = <T,>({
                 onConfirm={() =>
                   field.onChange(parseInt(Object.keys(selectedRow)[0]))
                 }
+                onClear={() => field.onChange(null)}
               />
             </FormControl>
             {field.value !== currentValue && (

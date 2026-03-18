@@ -10,6 +10,8 @@ import SubnetComboxbox from "./components/subnets/SubnetCombobox";
 import { TableConfigProvider } from "@/context/TableConfigContext";
 import { Button } from "@/components/shadcn-ui/button";
 import { ChevronsUpDown } from "lucide-react";
+import BulkAddIP from "./components/ips/BulkAddIP";
+import AdminAction from "@/components/AdminAction";
 
 function Page() {
   const [selectedRows, setSelectedRows] = useState<RowSelectionState>({});
@@ -77,6 +79,11 @@ function IPPageContent({
                 <ChevronsUpDown />
               </Button>
             </BulkActionDropdown>
+            <BulkAddIP>
+              <AdminAction>
+                <Button variant={"secondary"}>Bulk Add</Button>
+              </AdminAction>
+            </BulkAddIP>
             <AddIP />
           </div>
         </div>

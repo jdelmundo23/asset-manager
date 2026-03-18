@@ -239,10 +239,12 @@ export const ipRowSchema = baseIPSchema.extend({
   createdTime: z.coerce.date(),
   updatedTime: z.coerce.date(),
   hostNumber: z
-    .number()
-    .int()
+    .number({ invalid_type_error: "Number required" })
     .min(1, "Host number must be between 1 and 255")
-    .max(255, "Host number must be between 1 and 255"),
+    .max(255, "Host number must be between 1 and 255")
+    .refine(Number.isInteger, {
+      message: "Digits only (no decimals or symbols)",
+    }),
   subnetPrefix: subnetPrefixSchema.nullish(),
   subnetID: z.number(),
 });
@@ -253,6 +255,35 @@ export const ipInsertSchema = ipRowSchema.partial({
   createdTime: true,
   updatedTime: true,
 });
+
+export const bulkIpSchema = z.array(
+  ipInsertSchema.partial({
+    hostNumber: true,
+    subnetID: true,
+  })
+);
+
+export const bulkIpInsertSchema = z
+  .array(ipInsertSchema)
+  .superRefine((ips, ctx) => {
+    const map = new Map<number, number[]>();
+    ips.forEach((ip, index) => {
+      if (ip.hostNumber == null) return;
+      if (!map.has(ip.hostNumber)) map.set(ip.hostNumber, []);
+      map.get(ip.hostNumber)!.push(index);
+    });
+    for (const [, indexes] of map) {
+      if (indexes.length > 1) {
+        indexes.forEach((i) =>
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Duplicate host number",
+            path: [i, "hostNumber"],
+          })
+        );
+      }
+    }
+  });
 
 export const subnetSchema = z.object({
   ID: z.number().optional(),
@@ -292,6 +323,8 @@ export type IPInput = z.infer<typeof ipInputSchema>;
 export type IPInsert = z.infer<typeof ipInsertSchema>;
 
 export type IPRow = z.infer<typeof ipRowSchema>;
+
+export type BulkIPs = z.infer<typeof bulkIpSchema>;
 
 export type Subnet = z.infer<typeof subnetSchema>;
 

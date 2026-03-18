@@ -125,6 +125,7 @@ export default function IPForm({ mode, closeDialog, ipID }: IPFormProps) {
                   placeholder="ex: 00-1A-2B-3C-4D-5E"
                   type="text"
                   {...field}
+                  value={field.value ?? ""}
                 />
               </FormControl>
               <FormMessage />
@@ -169,6 +170,7 @@ export default function IPForm({ mode, closeDialog, ipID }: IPFormProps) {
                     onConfirm={() =>
                       field.onChange(parseInt(Object.keys(selectedRow)[0]))
                     }
+                    onClear={() => field.onChange(null)}
                   />
                 </FormControl>
                 <FormMessage />
