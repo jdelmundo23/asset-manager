@@ -202,9 +202,9 @@ export default function BulkIPForm({ closeDialog }: BulkIPFormProps) {
                     onClick={() => remove(index)}
                     aria-label="remove row"
                     disabled={!selectedSubnet}
-                    className="disabled:cursor-not-allowed disabled:opacity-25"
+                    className="group disabled:cursor-not-allowed disabled:opacity-25"
                   >
-                    <X />
+                    <X className="rounded-sm transition-transform group-hover:bg-white/25 group-active:scale-90" />
                   </button>
                 </div>
               ))}
@@ -220,28 +220,38 @@ export default function BulkIPForm({ closeDialog }: BulkIPFormProps) {
           >
             <Plus />
           </Button>
-          <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
-            {form.formState.isSubmitting ? (
-              <div className="flex items-center">
-                <LoaderCircle
-                  className="aspect-square animate-spin"
-                  color="gray"
-                />
-              </div>
-            ) : (
-              <></>
-            )}
-            <Button
-              type="button"
-              variant="outline"
-              className="text-white"
-              onClick={closeDialog}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!selectedSubnet}>
-              Add
-            </Button>
+          <div className="flex justify-between">
+            <div className="text-muted-foreground flex items-center font-medium">
+              {fields.length > 0
+                ? `${fields.length} IP${fields.length > 1 ? "s" : ""}`
+                : ``}
+            </div>
+            <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse sm:flex-row sm:space-x-2 sm:space-y-0">
+              {form.formState.isSubmitting ? (
+                <div className="flex items-center">
+                  <LoaderCircle
+                    className="aspect-square animate-spin"
+                    color="gray"
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+              <Button
+                type="button"
+                variant="outline"
+                className="text-white"
+                onClick={closeDialog}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={!selectedSubnet || fields.length === 0}
+              >
+                Add
+              </Button>
+            </div>
           </div>
         </form>
       </Form>

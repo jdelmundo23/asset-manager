@@ -134,6 +134,7 @@ export default function BulkAssetForm({
 
           <div className="col-span-6 flex items-end">
             <FormCombobox
+              className="overflow-hidden"
               disabled={!fieldsEnabled["modelID"]}
               form={form}
               options={{
@@ -172,7 +173,7 @@ export default function BulkAssetForm({
             <FormCombobox
               disabled={!fieldsEnabled["locationID"]}
               form={form}
-              className="w-[200px]"
+              className="w-[200px] overflow-hidden"
               options={{
                 field: "locationID",
                 fieldLabel: "Location",
@@ -201,7 +202,7 @@ export default function BulkAssetForm({
 
           <div className="col-span-6 flex items-end">
             <FormCombobox
-              className="w-[200px]"
+              className="w-[200px] overflow-hidden"
               disabled={!fieldsEnabled["departmentID"]}
               form={form}
               options={{

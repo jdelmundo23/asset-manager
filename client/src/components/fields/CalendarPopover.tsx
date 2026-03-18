@@ -37,7 +37,7 @@ export default function CalendarPopover({
         !value && "text-muted-foreground"
       )}
     >
-      {value ? format(value, "PPP") : <span>{placeHolder}</span>}
+      {value ? format(value, "MM/dd/yy") : <span>{placeHolder}</span>}
       <div className="ml-auto flex gap-x-1">
         <button
           aria-label="Clear date"
