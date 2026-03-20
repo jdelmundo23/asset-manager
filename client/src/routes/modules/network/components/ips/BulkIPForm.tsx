@@ -1,4 +1,10 @@
-import { bulkIpInsertSchema, BulkIPs, SubnetRow } from "@shared/schemas";
+import {
+  bulkIpInsertSchema,
+  BulkIPs,
+  BulkResult,
+  bulkResultSchema,
+  SubnetRow,
+} from "@shared/schemas";
 import SubnetComboxbox from "../subnets/SubnetCombobox";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -23,13 +29,23 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/shadcn-ui/tooltip";
+import { useBulkAction } from "@/lib/bulkActions";
+import BulkSummary from "./BulkSummary";
+import axios from "axios";
 
 interface BulkIPFormProps {
   closeDialog: () => void;
 }
 
 export default function BulkIPForm({ closeDialog }: BulkIPFormProps) {
+  const { handleBulkAction } = useBulkAction();
+
   const [selectedSubnet, setSelectedSubnet] = useState<SubnetRow | undefined>();
+  const [bulkResult, setBulkResult] = useState<BulkResult | undefined>(
+    undefined
+  );
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const form = useForm<{
     ips: BulkIPs;
@@ -62,12 +78,47 @@ export default function BulkIPForm({ closeDialog }: BulkIPFormProps) {
     });
   };
 
-  const onSubmit = (data: { ips: BulkIPs }) => {
-    console.log(data);
-  };
+  async function onSubmit(data: { ips: BulkIPs }) {
+    const newIps = bulkIpInsertSchema.safeParse(data.ips);
+
+    if (!newIps.success) {
+      setFormError("Invalid submission format");
+      return;
+    }
+
+    try {
+      const response = await handleBulkAction(
+        "ip",
+        "add",
+        [],
+        undefined,
+        undefined,
+        newIps.data
+      );
+
+      const parse = bulkResultSchema.safeParse(response.data);
+
+      setBulkResult(parse.data);
+      setSummaryOpen(true);
+    } catch (error) {
+      setFormError(
+        axios.isAxiosError(error) && error.status !== 500
+          ? error.response?.data?.error
+          : "An error has occurred"
+      );
+    }
+  }
 
   return (
     <div>
+      <BulkSummary
+        open={summaryOpen}
+        setOpen={setSummaryOpen}
+        bulkResult={bulkResult}
+        subnetPrefix={selectedSubnet?.subnetPrefix}
+        closeDialog={closeDialog}
+      />
+
       <div className="w-40">
         <SubnetComboxbox
           selectedSubnet={selectedSubnet}
@@ -237,6 +288,9 @@ export default function BulkIPForm({ closeDialog }: BulkIPFormProps) {
               ) : (
                 <></>
               )}
+              <div className="text-destructive flex items-center">
+                {formError}
+              </div>
               <Button
                 type="button"
                 variant="outline"

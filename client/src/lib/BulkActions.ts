@@ -3,9 +3,9 @@ import axiosApi from "./axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
 import { toast } from "sonner";
-import { Asset } from "@shared/schemas";
+import { Asset, IPInsert } from "@shared/schemas";
 
-type ActionType = "duplicate" | "edit" | "delete";
+type ActionType = "duplicate" | "edit" | "delete" | "add";
 
 type EndpointType = "asset" | "ip" | "subnet";
 
@@ -23,6 +23,12 @@ const queryKeys: Record<EndpointType, string> = {
 } as const;
 
 const actions: Record<ActionType, Action> = {
+  add: {
+    method: "post",
+    url: (endpoint) => `/api/${endpoint}s/bulk/add`,
+    ing: "Adding",
+    ed: "Added",
+  },
   delete: {
     method: "post",
     url: (endpoint) => `/api/${endpoint}s/bulk/delete`,
@@ -55,13 +61,22 @@ export const useBulkAction = <R>() => {
       ids: string[];
       template?: Asset;
       fieldsToUpdate?: Record<string, boolean>;
+      newIps?: IPInsert[];
     }
   >({
-    mutationFn: ({ action, endpointType, ids, template, fieldsToUpdate }) =>
+    mutationFn: ({
+      action,
+      endpointType,
+      ids,
+      template,
+      fieldsToUpdate,
+      newIps,
+    }) =>
       axiosApi[action.method](action.url(endpointType), {
         ids,
         template,
         fieldsToUpdate,
+        newIps,
       }),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
@@ -75,7 +90,8 @@ export const useBulkAction = <R>() => {
     actionType: ActionType,
     ids: string[],
     template?: Asset,
-    fieldsToUpdate?: Record<string, boolean>
+    fieldsToUpdate?: Record<string, boolean>,
+    newIps?: IPInsert[]
   ): Promise<AxiosResponse<R>> => {
     const action = actions[actionType];
 
@@ -86,6 +102,7 @@ export const useBulkAction = <R>() => {
         ids,
         template,
         fieldsToUpdate,
+        newIps,
       }),
       {
         loading: `${action.ing} ${endpointType}(s)`,

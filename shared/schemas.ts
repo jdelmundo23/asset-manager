@@ -285,6 +285,12 @@ export const bulkIpInsertSchema = z
     }
   });
 
+export const bulkResultSchema = z.object({
+  inserted: z.number(),
+  skipped: z.number(),
+  skippedRows: bulkIpInsertSchema,
+});
+
 export const subnetSchema = z.object({
   ID: z.number().optional(),
   rowVersion: bufferConversion.optional(),
@@ -325,6 +331,8 @@ export type IPInsert = z.infer<typeof ipInsertSchema>;
 export type IPRow = z.infer<typeof ipRowSchema>;
 
 export type BulkIPs = z.infer<typeof bulkIpSchema>;
+
+export type BulkResult = z.infer<typeof bulkResultSchema>;
 
 export type Subnet = z.infer<typeof subnetSchema>;
 
