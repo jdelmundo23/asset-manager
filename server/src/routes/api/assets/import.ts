@@ -110,11 +110,11 @@ router.post("/confirm", async function (req, res) {
     );
 
     const allUsersResult = await pool.request().query(`
-        SELECT ID, name
+        SELECT ID, email
         FROM users
       `);
     const usersMap: Map<string, string> = new Map(
-      allUsersResult.recordset.map((row) => [row.name.toLowerCase(), row.ID])
+      allUsersResult.recordset.map((row) => [row.email.toLowerCase(), row.ID])
     );
 
     const skippedAssets: SkippedRow[] = [];
